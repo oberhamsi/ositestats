@@ -3,7 +3,8 @@ var {setInterval} = require('ringo/scheduler');
 module.share = true
 
 exports.httpConfig = {
-  staticDir: './static'
+  staticDir: './static',
+  port: 8787,
 };
 
 exports.urls = [

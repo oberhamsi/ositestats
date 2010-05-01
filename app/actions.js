@@ -6,10 +6,10 @@ var {Hit, HitAggregate, Distribution} = require('./model');
 exports.index = function(req) {
    var userAgent = req.getHeader("User-Agent").toLowerCase();
    if (userAgent.contains("bot") || userAgent.contains("spider")) {
-      return new Response('bot;');
+      return new Response();
    }
    
-   var response = new Response('okay;');
+   var response = new Response('');
    var unique;
    if (!req.cookies.stss) {
       unique = req.env.REMOTE_HOST + "/" +  Math.random() + "/" + userAgent;
