@@ -26,3 +26,8 @@ exports.macros = [
 exports.charset = 'UTF-8';
 exports.contentType = 'text/javascript';
 
+// FIXME safeguard against multi invocation
+/*exports.crons = {
+   'aggregator': setInterval(require('./cron').aggregate, 1000 * 60),
+}
+*/

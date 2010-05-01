@@ -35,35 +35,15 @@ exports.index = function(req) {
  * &starttime = startdate
  * // optional: endtime, wenn nicht angegeben nur 1 obj zurückgeben
  */
-exports.aggregate = function(req) {
+exports.aggregates = function(req) {
    var txtStarttime = parseInt(req.params.starttime, 10);
    var txtDuration = req.params.duration || 'hour';
+   var txtEndtime = parseInt(req.params.endtime, 10);
 
-   var [hits, stime, etime] = Hit.forRange(txtStarttime, txtDuration);
-
-   // memory
-   var uniques = [];
-   for each (var hit in hits) {
-      var unique = hit.unique;
-      print (unique);
-      if (! unique in uniques) uniques.push(unique);
-   }
-
-   (new HitAggregate({
-      'starttime': stime.getTime(),
-      'endtime': etime.getTime(),
-      'duration': txtDuration, // day, week, month
-      'uniques': uniques.length,
-      'pageimpression': hits.length,
-   })).save();
-
-   return jsonResponse({
-      'starttime': stime.getTime(),
-      'endtime': etime.getTime(),
-      'duration': txtDuration, // day, week, month
-      'uniques': uniques.length,
-      'pageimpression': hits.length,
-   });
+   var hitAggregates = HitAggregate.getRorRange(txtStarttime, txtDuration, txtEndtime);
+   return jsonResponse([
+      ha.serialize() for each (ha in hitAggregates)
+   ]);
 };
 
 
