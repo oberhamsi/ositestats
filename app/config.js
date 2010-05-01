@@ -15,7 +15,7 @@ exports.app = 'ringo/webapp';
 
 exports.middleware = [
     'ringo/middleware/etag',
-    'ringo/middleware/responselog'
+    'ringo/middleware/responselog',
 ];
 
 var Store = require('ringo/storage/berkeleystore').Store;

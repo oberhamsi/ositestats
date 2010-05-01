@@ -81,7 +81,7 @@ HitAggregate.getTodoStarttime = function(duration) {
 
    // only aggregate history timeranges
    // DEUBG deactivated for DEBUG
-   if (floorTime(new Date(starttime), duration).getTime() < floorTime(new Date(), duration).getTime()) {
+   if (ceilTime(starttime, duration).getTime() < floorTime(new Date(), duration).getTime()) {
       return starttime || null;
    }
    
