@@ -1,0 +1,7 @@
+{
+    "name": "sitestats",
+    "version": "0.1.0",
+    "description": "Website Visitor Statistics",
+    "keywords": ["application", "logger"],
+    "author": "Simon Oberhammer <simon@nekapuzer.at>"
+}
