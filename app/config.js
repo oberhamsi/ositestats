@@ -1,3 +1,5 @@
+var {setInterval} = require('ringo/scheduler');
+
 module.share = true
 
 exports.httpConfig = {
@@ -24,10 +26,11 @@ exports.macros = [
 ];
 
 exports.charset = 'UTF-8';
-exports.contentType = 'text/javascript';
+exports.contentType = 'text/html';
 
 // FIXME safeguard against multi invocation
-/*exports.crons = {
-   'aggregator': setInterval(require('./cron').aggregate, 1000 * 60),
+if (!crons) {
+   var crons = exports.crons = {
+      'aggregator': setInterval(require('./cron').hits, 1000 * 60 * 30),
+   }
 }
-*/

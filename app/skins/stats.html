@@ -1,0 +1,56 @@
+<% extends 'skins/base.html' %>
+
+<% subskin 'head' %>
+<script type="text/javascript">
+$(document).ready(function() {
+   $('table').visualize({type: 'line', parseDirection: 'y'});
+});
+</script>
+
+<% subskin 'content' %>
+
+<table>
+	<caption><% duration %> Hits, <% starttime %> - <% endtime %></caption>
+	<thead>
+		<tr>
+		   <td></td>
+			<th scope="row">Hits</th>
+			<th scope="row">Uniques</th>
+		</tr>
+	</thead>
+	<tbody>
+      <% for ag in <% hitAggregates %> render aggregateRow %>
+      
+         <tr>
+            <th>1234</th>
+            <td>50</td>
+            <td>1</td>
+         </tr>
+         <tr>
+            <th>12341234</th>
+            <td>60</td>
+            <td>1</td>
+         </tr>
+
+         <tr>
+            <th>123512351235</th>
+            <td>20</td>
+            <td>1</td>
+         </tr>
+
+         <tr>
+            <th>2345123512</th>
+            <td>100</td>
+            <td>1</td>
+         </tr>
+	</tbody>
+</table>
+
+<% for ag in <% hitAggregates %> render hitAggRow %>
+
+<% subskin 'aggregateRow' %>
+<tr>
+   <th><% ag.starttime %></th>
+   <td><% ag.hits %></td>
+   <td><% ag.uniques %></td>
+</tr>

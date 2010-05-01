@@ -13,13 +13,13 @@ HitAggregate.prototype.serialize = function() {
       'starttime': this.starttime,
       'endtime': this.endtime,
       'duration': this.duration,
-      'uniques': this.unique,
+      'uniques': this.uniques,
       'hits': this.hits,
    }
 };
 
 HitAggregate.create = function(txtStarttime, txtDuration) {
-   var [hits, stime, etime] = Hit.forRange(txtStarttime, txtDuration);
+   var [hits, stime, etime] = Hit.getForRange(txtStarttime, txtDuration);
    var uniques = [];
    for each (var hit in hits) {
       var unique = hit.unique;
@@ -41,8 +41,9 @@ HitAggregate.create = function(txtStarttime, txtDuration) {
  * @param {String} txtEndtime optional endtime
  */
 HitAggregate.getForRange = function(txtStarttime, txtDuration, txtEndtime) {
+   txtDuration = txtDuration || 'day';
    var stime = txtStarttime && new Date(txtStarttime) || new Date();
-   stime = floorTime(stime);
+   stime = floorTime(stime, txtDuration);
    var etime;
    if (txtEndtime) {
       etime = new Date(txtEndtime);
@@ -53,8 +54,7 @@ HitAggregate.getForRange = function(txtStarttime, txtDuration, txtEndtime) {
    return [
          HitAggregate.query().
             equals('duration', txtDuration).
-            greaterEquals('timestamp', stime.getTime()).
-            less('timestamp', etime.getTime()).select(),
+            equals('starttime', stime.getTime()).select(),
          stime,
          etime
    ];
@@ -71,28 +71,19 @@ HitAggregate.getTodoStarttime = function(duration) {
    if (ha) {
       var hit = Hit.getLatest(duration);
       if (hit.timestamp > ha.endtime) {
-         starttime = ha.endtime;
-         if ('hour' == duration) {
-            starttime = new Date(starttime + (1000 * 60 * 60)).getTime();
-         } else if ('day' == duration) {
-            starttime = new Date(starttime + (1000 * 60 * 60 * 24)).getTime();
-         } else {
-            starttime = new Date(starttime);
-            // FIXME wrap year
-            starttime.setMonth(starttime.getMonth()+1);
-            starttime = starttime.getTime();
-         }
-
+         starttime = ceilTime(new Date(ha.endtime)).getTime();
       }
    } else { 
       hit = Hit.getFirst();
-      starttime = hit && hit.timestamp && floorTime(new Date(hit.timestamp), duration).getTime();
+      starttime = hit && hit.timestamp && 
+               floorTime(new Date(hit.timestamp), duration).getTime();
    }
 
    // only aggregate history timeranges
-   //if (floorTime(new Date(hit.timestamp), duration).getTime() < floorTime(new Date(), duration).getTime()) {
+   // DEUBG deactivated for DEBUG
+   if (floorTime(new Date(starttime), duration).getTime() < floorTime(new Date(), duration).getTime()) {
       return starttime || null;
-   //}
+   }
    
    return null;
 }
@@ -109,7 +100,7 @@ HitAggregate.getLatest = function(duration) {
    return latestAggregate;
 }
 
-Hit.forRange = function(txtStarttime, txtDuration) {
+Hit.getForRange = function(txtStarttime, txtDuration) {
    var [stime, etime] = getStartEndTime(txtStarttime, txtDuration);
    return [
       Hit.query().
@@ -124,7 +115,7 @@ Hit.getLatest = function() {
    var hits = Hit.query().select();
    var latestStarttime = 0;
    var latestHit = null;
-   for each (hit in hits) {
+   for each (var hit in hits) {
       if (hit.timestamp > latestStarttime) {
          latestHit = hit;
       }
@@ -155,21 +146,26 @@ var floorTime = function(time, duration) {
       time.setHours(0);
    }
    return time;
+}
+
+var ceilTime = function(time, duration) {
+   if ('month' == duration) {
+      time = new Date(time.getTime());
+      // FIXME wrap around newyear
+      time.setMonth(time.getMonth()+1);
+   } else if ('day' == duration) {
+      time = new Date(time.getTime() + (1000 * 60 * 60 * 24));
+   } else { // hour, default
+      time = new Date(time.getTime() + (1000 * 60 * 60));
+   }
+   return time;
 
 }
 
 var getStartEndTime = function(txtStarttime, txtDuration) {
    var stime = txtStarttime ? new Date(txtStarttime) : new Date();
-   stime = floorTime(stime, txtDuration);
-   if ('month' == txtDuration) {
-      etime = new Date(stime.getTime());
-      // FIXME wrap around newyear
-      etime.setMonth(stime.getMonth()+1);
-   } else if ('day' == txtDuration) {
-      etime = new Date(stime.getTime() + (1000 * 60 * 60 * 24));
-   } else { // hour, default
-      etime = new Date(stime.getTime() + (1000 * 60 * 60));
-   }
+   var stime = floorTime(stime, txtDuration);
+   var etime = ceilTime(stime, txtDuration);
    return [stime, etime];
 }
 

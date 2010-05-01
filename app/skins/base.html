@@ -1,0 +1,31 @@
+<html lang="en">
+<head>
+<title><% title %></title>
+<link rel="stylesheet" href="<% href /static/visualize.css %>" />
+<script type="text/javascript" src="<% href /static/jquery.js %>"></script>
+
+<script type="text/javascript" src="<% href /static/jquery.visualize.js %>"></script>
+<% render 'head' %>
+</head>
+<body>
+<div id="wrap">
+    <div id="header">
+        <div id="logo">
+        </div>
+        <h1><% title %></h1>
+    </div>
+    <div id="main">
+        <% render 'content' %>
+    </div>
+    <div id="menu">
+        <% render 'menu' %>
+    </div>
+    <div id="footer"><% footer %></div>
+</div>
+</body>
+</html>
+
+<% subskin 'content' %>
+Overwrite this subskin to add content.
+
+<% subskin 'menu' %>
