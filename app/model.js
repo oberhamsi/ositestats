@@ -92,7 +92,7 @@ HitAggregate.getLatest = function(duration) {
    var hitAggregates = HitAggregate.query().equals('duration', duration).select();
    var latestStarttime = 0;
    var latestAggregate = null;
-   for each (ha in hitAggregates) {
+   for each (var ha in hitAggregates) {
       if (ha.starttime > latestStarttime) {
          latestAggregate = ha;
       }
@@ -127,7 +127,7 @@ Hit.getFirst = function() {
    var hits = Hit.query().select();
    var latestStarttime = Infinity;
    var latestHit = null;
-   for each (hit in hits) {
+   for each (var hit in hits) {
       if (hit.timestamp < latestStarttime) {
          latestHit = hit;
       }

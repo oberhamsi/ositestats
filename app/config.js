@@ -1,6 +1,6 @@
 var {setInterval} = require('ringo/scheduler');
 
-module.share = true
+module.shared = true
 
 exports.httpConfig = {
   staticDir: './static',
