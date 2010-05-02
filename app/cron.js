@@ -12,7 +12,7 @@ var getTodoKey = exports.getTodoKey = function(duration) {
    
    if (ha) {
       var hit = Hit.getLast(duration);
-      if (hit[duration] > ha[duration]) {
+      if (hit[duration] >= ha[duration]) {
          starttime = ha[duration];
       }
    } else { 

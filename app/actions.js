@@ -18,7 +18,6 @@ exports.index = function(req) {
    var now = new Date();
    var day = dateToKey(now, 'day');
    var month = dateToKey(now, 'month');
-   var month = [now.getFullYear(), now.getMonth()].join('');
    (new Hit({
       timestamp: now.getTime(),
       ip: req.env.REMOTE_HOST,
