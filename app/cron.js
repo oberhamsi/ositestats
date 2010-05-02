@@ -1,24 +1,44 @@
-var {HitAggregate} = require('./model');
+var {Hit, HitAggregate, dateToKey, keyToDate} = require('./model');
 var {store} = require('./config');
 var log = require('ringo/logging').getLogger(module.id);
+
+/**
+ * @returns the latest starttime for a duration aggregate
+ * which is not yet created. or null if all have been created.
+ */
+var getTodoKey = exports.getTodoKey = function(duration) {
+   var ha = HitAggregate.getLast(duration);
+   var starttime = null;
+   
+   if (ha) {
+      var hit = Hit.getLast(duration);
+      if (hit[duration] > ha[duration]) {
+         starttime = ha[duration];
+      }
+   } else { 
+      hit = Hit.getFirst(duration);
+      if (hit) starttime = hit[duration];
+   }
+   
+   return starttime;
+}
 
 exports.hits = function() {
    store.beginTransaction();
    log.info('[cron.hits] checking');
-   for each (var duration in ['hour', 'day', 'month']) {
-      var starttime = HitAggregate.getTodoStarttime(duration);
-      if (!starttime) continue;
+   for each (var duration in ['day', 'month']) {
+      var startKey = getTodoKey(duration);
+      if (!startKey) continue;
 
-      var now = new Date();
-      var rmObj = {};
-      rmObj[duration + 's'] = -1;
-      now.add(rmObj);
-      while (starttime.isBefore(now)) {
-         var ha = HitAggregate.create(starttime, duration);
-         log.info('[cron.aggregate] Created {}', ha);
-         var addObj = {}
-         addObj[duration + 's'] = 1;
-         starttime.add(addObj);
+      var currentKey = startKey;
+      var currentTs = keyToDate(startKey).getTime();
+      var now = dateToKey(new Date(), duration);
+      while (currentKey <= now) {
+         var ha = HitAggregate.create(currentKey);
+         log.info('[cron.aggregate] create or update {}', ha);
+         // FIX date calculation
+         currentTs += (duration === 'day' ? 1000 * 60 * 60 * 24 : 1000 * 60 * 60 * 30);
+         currentKey = dateToKey(new Date(currentTs));
       }
    }
    store.commitTransaction();

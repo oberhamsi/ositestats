@@ -1,7 +1,7 @@
 include('core/string');
 
 var {Response, jsonResponse, skinResponse} = require('ringo/webapp/response');
-var {Hit, HitAggregate, Distribution} = require('./model');
+var {Hit, HitAggregate, Distribution, dateToKey} = require('./model');
 
 exports.index = function(req) {
    var userAgent = req.getHeader("User-Agent").toLowerCase();
@@ -15,14 +15,20 @@ exports.index = function(req) {
       unique = req.env.REMOTE_HOST + "/" +  Math.random() + "/" + userAgent;
       response.setCookie('stss', unique.digest());
    }
-   
+   var now = new Date();
+   var day = dateToKey(now, 'day');
+   var month = dateToKey(now, 'month');
+   var month = [now.getFullYear(), now.getMonth()].join('');
    (new Hit({
-      'timestamp': Date.now(),
-      'ip': req.env.REMOTE_HOST,
-      'userAgent': userAgent,
-      'unique': unique || req.cookies.stss || null,
-      'referer': unescape(req.params.referer) || null,
-      'page': req.getHeader('Referer') || null,
+      timestamp: now.getTime(),
+      ip: req.env.REMOTE_HOST,
+      userAgent: userAgent,
+      unique: unique || req.cookies.stss || null,
+      referer: unescape(req.params.referer) || null,
+      page: req.getHeader('Referer') || null,
+
+      day: day,
+      month: month,
    })).save();
 
    return response;
@@ -36,21 +42,25 @@ exports.index = function(req) {
  * // optional: endtime, wenn nicht angegeben nur 1 obj zurückgeben
  */
 exports.stats = function(req, duration) {
-   var txtStarttime = parseInt(req.params.starttime, 10);
-   var txtDuration = duration || req.params.duration || 'hour';
-   var txtEndtime = parseInt(req.params.endtime, 10);
+   var duration = duration || req.params.duration || 'month';
 
-   var starttime = txtStarttime ? new Date(txtStarttime) : new Date();
-   var rmObj = {};
-   rmObj[txtDuration + 's'] = -1;
-   starttime.add(rmObj);
+   var aggregateDuration;
+   if (duration === 'month') {
+      aggregateDuration = "day";
+   // year
+   } else if (duration == 'year'){
+      aggregateDuration = "month";
+   }
+   var now = new Date();
+   var key = dateToKey(now, aggregateDuration);
+   var hitAggregates = HitAggregate.query().
+         equals('duration', aggregateDuration).
+         equals(aggregateDuration, key).select();
 
-   var [hitAggregates, stime, etime] = HitAggregate.getForRange(starttime, txtDuration, txtEndtime);
    return skinResponse('./skins/stats.html', {
-      duration: txtDuration,
-      starttime: stime,
-      endtime: etime,
-      hitAggregates: [ha.serialize() for each (ha in hitAggregates) if (ha.serialize)],
+      duration: duration,
+      starttime: key,
+      hitAggregates: [ha.serialize() for each (ha in hitAggregates)],
    });
 };
 

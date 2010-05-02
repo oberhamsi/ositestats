@@ -1,5 +1,5 @@
-require('core/array');
-include('datejs');
+include('core/array');
+include('core/number');
 var $f = require('ringo/utils').format;
 export('Hit', 'HitAggregate', 'Distribution');
 module.shared = true;
@@ -16,118 +16,67 @@ var Distribution = store.defineClass('Distribution');
  */
 var HitAggregate = store.defineClass('HitAggregate');
 
-Object.defineProperty(HitAggregate.prototype, 'enddatetime', {
+Object.defineProperty(HitAggregate.prototype, 'starttime', {
    get: function() {
-      return this.endtime ? new Date(this.endtime) : null;
-   },
-   set: function(val) {
-      this.endtime = val ? val.getTime() : null;
-      return
+      return keyToDate(this[this.duration]);
    },
    configurable: true,
 });
-
-Object.defineProperty(HitAggregate.prototype, 'startdatetime', {
-   get: function() {
-      return this.starttime ? new Date(this.starttime) : null;
-   },
-   configurable: true,
-});
-
 
 HitAggregate.prototype.toString = function() {
-   return $f('[{}: {} - {}, hits: {}, uniques: {}]', 
-         this.duration, this.startdatetime, this.enddatetime, this.hits, this.uniques);
+   return $f('[{}: {} , hits: {}, uniques: {}]', 
+         this.duration, this.day || this.month, this.hits, this.uniques);
 };
 
 HitAggregate.prototype.serialize = function() {
    return {
-      'starttime': this.starttime,
-      'endtime': this.endtime,
       'duration': this.duration,
+      'day': this.day,
+      'month': this.month,
       'uniques': this.uniques,
       'hits': this.hits,
-   }
+   };
 };
 
-HitAggregate.create = function(txtStarttime, txtDuration) {
-   var [hits, stime, etime] = Hit.getForRange(txtStarttime, txtDuration);
-   var uniques = [];
+HitAggregate.create = function(dayOrMonth) {
+   var keyDayOrMonth = dayOrMonth.length === 6 ? 'month' : 'day';
+   var otherKey = dayOrMonth.length === 6 ? 'day' : 'month';
+   var hits = Hit.query().
+      equals(keyDayOrMonth, dayOrMonth).select();
+
+   var uCount = 0;
+   var uniques = {};
    for each (var hit in hits) {
-      var unique = hit.unique;
-      if (!uniques.contains(unique)) uniques.push(unique);
-   }
-
-   var hitAggregrate = new HitAggregate({
-      'starttime': stime,
-      'endtime': etime,
-      'duration': txtDuration, // day, month, hour
-      'uniques': uniques.length,
-      'hits': hits.length,
-   });
-   hitAggregrate.save();
-   return hitAggregrate;
-}
-
-/**
- * @param {String} txtEndtime optional endtime
- */
-HitAggregate.getForRange = function(txtStarttime, txtDuration, txtEndtime) {
-   txtDuration = txtDuration || 'day';
-   var stime = txtStarttime && new Date(txtStarttime) || new Date();
-   stime = floorTime(stime, txtDuration);
-   var etime;
-   if (txtEndtime) {
-      etime = new Date(txtEndtime);
-   } else {
-      var tmp;
-      [tmp, etime] = getStartEndTime(stime, txtDuration);
-   }
-   return [
-         HitAggregate.query().
-            equals('duration', txtDuration).
-            equals('starttime', stime).select(),
-         stime,
-         etime
-   ];
-};
-
-/**
- * @returns the latest starttime for a duration aggregate
- * which is not yet created. or null if all have been created.
- */
-HitAggregate.getTodoStarttime = function(duration) {
-   var ha = HitAggregate.getLast(duration);
-   var starttime = null;
-   
-   if (ha) {
-      var hit = Hit.getLast();
-      if (hit.datetime.isAfter(ha.enddatetime)) {
-         starttime = ha.enddatetime;
+      if (!uniques[hit.unique]) {
+         uniques[hit.unique] = true;
+         uCount++;
       }
-   } else { 
-      hit = Hit.getFirst();
-      starttime = hit && hit.datetime && 
-               floorTime(hit.datetime, duration);
    }
 
-   // only aggregate history timeranges
-   // DEUBG deactivated for DEBUG
-   if (starttime.isBefore(floorTime(new Date(), duration))) {
-      return starttime || null;
-   }
+   var date = keyToDate(dayOrMonth);
+   var hitAggregate = HitAggregate.query().
+      equals('duration', keyDayOrMonth).
+      equals(keyDayOrMonth, dayOrMonth).select()[0] || new HitAggregate();
+   hitAggregate.duration = keyDayOrMonth;
+   hitAggregate.year = dateToKey(date, 'year');
+   hitAggregate.uniques = uCount;
+   hitAggregate.hits = hits.length;
    
-   return null;
+   hitAggregate[keyDayOrMonth] = dayOrMonth;
+   hitAggregate[otherKey] = dateToKey(date, otherKey);
+
+   hitAggregate.save();
+   return hitAggregate;
 }
 
 HitAggregate.getLast = function(duration) {
    var hitAggregates = HitAggregate.query().equals('duration', duration).select();
-   var latestStarttime = new Date(0);
+   var latestStarttime = "";
    var latestAggregate = null;
    for each (var ha in hitAggregates) {
-      if (ha.startdatetime.isAfter(latestStarttime)) {
+      if (ha[duration] > latestStarttime) {
          latestAggregate = ha;
-         latestStarttime = ha.startdatetime;
+         latestStarttime = ha[duration];
       }
    }
    return latestAggregate;
@@ -137,16 +86,6 @@ HitAggregate.getLast = function(duration) {
  * Hit
  */
 var Hit = store.defineClass('Hit');
-Hit.getForRange = function(txtStarttime, txtDuration) {
-   var [stime, etime] = getStartEndTime(txtStarttime, txtDuration);
-   return [
-      Hit.query().
-         greaterEquals('timestamp', stime).
-         less('timestamp', etime).select(),
-      stime,
-      etime
-   ];
-};
 
 /**
  * timestamp getter/setter
@@ -165,72 +104,68 @@ Hit.prototype.toString = function() {
    return $f('[{} - {} - {} - {}]', this.ip, this.datetime, this.page, this.userAgent);
 };
 
-Hit.getLast = function() {
+Hit.getLast = function(duration) {
    var hits = Hit.query().select();
-   var latestStarttime = new Date(0);
+   var latestStarttime = 0;
    var latestHit = null;
    for each (var hit in hits) {
-      if (hit.datetime.isAfter(latestStarttime)) {
+      if (hit[duration] > latestStarttime) {
          latestHit = hit;
-         latestStarttime = hit.datetime;
+         latestStarttime = hit[duration];
       }
    }
    return latestHit;
 }
 
-Hit.getFirst = function() {
+Hit.getFirst = function(duration) {
    var hits = Hit.query().select();
-   var latestStarttime = new Date();
+   var latestStarttime = Infinity;
    var latestHit = null;
    for each (var hit in hits) {
-      if (hit.datetime.isBefore(latestStarttime)) {
+      if (hit[duration] < latestStarttime) {
          latestHit = hit;
-         latestStarttime = hit.datetime;
+         latestStarttime = hit[duration];
       }
    }
    return latestHit;
 }
 
-/** 
- * helpers
- *
+/**
+ * 
  */
 
-var floorTime = exports.floorTime = function(atime, duration) {
-   var time = new Date(atime);
-   time.setMinutes(0);
-   time.setSeconds(0);
-   time.setMilliseconds(0);
-   if ('month' == duration) {
-      time.setDate(0);
-      time.setHours(0);
-   } else if ('day' == duration) {
-      time.setHours(0);
+var dateToKey = exports.dateToKey = function(date, duration) {
+   if (duration === 'day') {
+      return [date.getFullYear(), date.getMonth().format("00"), date.getDate().format("00")].join('');
+   } else if (duration === 'month') {
+      return [date.getFullYear(), date.getMonth().format("00")].join('');
+   } else if (duration === 'year') {
+      return ""+date.getFullYear();
    }
-   return time;
 }
 
-var ceilTime = exports.ceilTime = function(atime, duration) {
-   var time = new Date(atime);
-   time.setMinutes(0);
-   time.setSeconds(0);
-   time.setMilliseconds(0);
-   if ('month' == duration) {
-      time.addMonths(1);
-   } else if ('day' == duration) {
-      time.addDays(1);
-   } else {
-      time.addHours(1);
+var keyToDate = exports.keyToDate = function(key) {
+   var date = new Date();
+   var year = parseInt(key.substr(0,4), 10);
+   var month = 0;
+   // day
+   if (key.length === 8) {
+      var day = parseInt(key.substr(7,2), 10);
+      month = parseInt(key.substr(5,2), 10);
+      date.setDate(day);
+   // month
+   } else if (key.length == 6) {
+      date.setDate(0);
+      month = parseInt(key.substr(5,2), 10);
+   // year
+   } else if (key.length == 4) {
+      date.setDate(0);
    }
-   return time;
-
+   date.setYear(year);
+   date.setMonth(month);
+   date.setHours(0);
+   date.setMinutes(0);
+   date.setSeconds(0);
+   date.setMilliseconds(0);
+   return date;
 }
-
-var getStartEndTime = exports.getStartEndTime = function(txtStarttime, txtDuration) {
-   var stime = txtStarttime ? new Date(txtStarttime) : new Date();
-   var stime = floorTime(stime, txtDuration);
-   var etime = ceilTime(stime, txtDuration);
-   return [stime, etime];
-}
-
-
