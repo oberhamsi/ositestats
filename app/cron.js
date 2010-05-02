@@ -1,15 +1,27 @@
 var {HitAggregate} = require('./model');
+var {store} = require('./config');
 var log = require('ringo/logging').getLogger(module.id);
 
 exports.hits = function() {
+   store.beginTransaction();
    log.info('[cron.hits] checking');
    for each (var duration in ['hour', 'day', 'month']) {
       var starttime = HitAggregate.getTodoStarttime(duration);
       if (!starttime) continue;
 
-      var ha = HitAggregate.create(starttime, duration);
-      log.info('[cron.aggregate] Created {} - Aggregate starting at {} \n {} ', duration, starttime, ha.serialize());
+      var now = new Date();
+      var rmObj = {};
+      rmObj[duration + 's'] = -1;
+      now.add(rmObj);
+      while (starttime.isBefore(now)) {
+         var ha = HitAggregate.create(starttime, duration);
+         log.info('[cron.aggregate] Created {}', ha);
+         var addObj = {}
+         addObj[duration + 's'] = 1;
+         starttime.add(addObj);
+      }
    }
+   store.commitTransaction();
    return;
 };
 

@@ -37,10 +37,15 @@ exports.index = function(req) {
  */
 exports.stats = function(req, duration) {
    var txtStarttime = parseInt(req.params.starttime, 10);
-   var txtDuration = duration || req.params.duration;
+   var txtDuration = duration || req.params.duration || 'hour';
    var txtEndtime = parseInt(req.params.endtime, 10);
 
-   var [hitAggregates, stime, etime] = HitAggregate.getForRange(txtStarttime, txtDuration, txtEndtime);
+   var starttime = txtStarttime ? new Date(txtStarttime) : new Date();
+   var rmObj = {};
+   rmObj[txtDuration + 's'] = -1;
+   starttime.add(rmObj);
+
+   var [hitAggregates, stime, etime] = HitAggregate.getForRange(starttime, txtDuration, txtEndtime);
    return skinResponse('./skins/stats.html', {
       duration: txtDuration,
       starttime: stime,
