@@ -155,11 +155,11 @@ var keyToDate = exports.keyToDate = function(key) {
       date.setDate(day);
    // month
    } else if (key.length == 6) {
-      date.setDate(0);
+      date.setDate(1);
       month = parseInt(key.substr(5,2), 10);
    // year
    } else if (key.length == 4) {
-      date.setDate(0);
+      date.setDate(1);
    }
    date.setYear(year);
    date.setMonth(month);

@@ -32,6 +32,6 @@ exports.contentType = 'text/html';
 // FIXME safeguard against multi invocation
 if (!crons) {
    var crons = exports.crons = {
-      'aggregator': setInterval(require('./cron').hits, 1000 * 60 * 30),
+      'aggregator': setInterval(require('./cron').hits, 1000 * 60 * 10),
    }
 }
