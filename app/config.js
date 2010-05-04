@@ -23,7 +23,8 @@ exports.store = new Store('/home/simon/db.sitestats/', {enableTransactions: fals
 
 exports.macros = [
     'ringo/skin/macros',
-    'ringo/skin/filters'
+    'ringo/skin/filters',
+    './macros',
 ];
 
 exports.charset = 'UTF-8';

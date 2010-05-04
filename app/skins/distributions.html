@@ -1,0 +1,35 @@
+<% extends 'skins/base.html' %>
+
+<% subskin 'head' %>
+<script type="text/javascript">
+$(document).ready(function() {
+   $('table').visualize({type: 'line', parseDirection: 'y'});
+});
+</script>
+
+<% subskin 'content' %>
+
+<table>
+	<caption><% duration %> Distributions <% distributionKey %>, <% timeKey %></caption>
+	<thead>
+		<tr>
+		   <td></td>
+	      <% for key in <% keys %> render distributionHeader %>
+		</tr>
+	</thead>
+	<tbody>
+      <% for dist in <% distributions %> render distributionRowContainer %>      
+	</tbody>
+</table>
+
+<% subskin 'distributionHeader' %>
+<th scope="row"> <% key %> </th>
+
+<% subskin 'distributionRowContainer' %>
+<tr>
+   <% for key in <% keys %> render 'distributionRow' %>
+</tr>
+
+<% subskin 'distributionRow' %>
+   <th><% dist | getKey key %></th>
+

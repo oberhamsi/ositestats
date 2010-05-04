@@ -10,7 +10,7 @@ $(document).ready(function() {
 <% subskin 'content' %>
 
 <table>
-	<caption><% duration %> Hits, <% starttime %> - <% endtime %></caption>
+	<caption><% duration %> Hits, <% timeKey %></caption>
 	<thead>
 		<tr>
 		   <td></td>
@@ -19,22 +19,9 @@ $(document).ready(function() {
 		</tr>
 	</thead>
 	<tbody>
-      <% for ag in <% hitAggregates %> render aggregateRow %>
-      
-         <tr>
-            <th>fake 1</th>
-            <td>50</td>
-            <td>1</td>
-         </tr>
-         <tr>
-            <th>fake 2</th>
-            <td>100</td>
-            <td>1</td>
-         </tr>
+      <% for ag in <% hitAggregates %> render aggregateRow %>      
 	</tbody>
 </table>
-
-<% for ag in <% hitAggregates %> render hitAggRow %>
 
 <% subskin 'aggregateRow' %>
 <tr>

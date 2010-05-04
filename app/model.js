@@ -4,12 +4,111 @@ var $f = require('ringo/utils').format;
 export('Hit', 'HitAggregate', 'Distribution');
 module.shared = true;
 
-var store = require('./config').store
+var {store, log} = require('./config');
+
+var getLast = exports.getLast = function(entity, duration) {
+   var items = [];
+   if (entity === Hit) {
+      items = entity.query().select();
+   } else {
+      items = entity.query().equals('duration', duration).select();
+   }
+   var latestStarttime = "";
+   var latest = null;
+   for each (var item in items) {
+      if (item[duration] > latestStarttime) {
+         latest = item;
+         latestStarttime = item[duration];
+      }
+   }
+   return latest;
+
+};
+
+var getFirst = exports.getFirst = function(entity, duration) {
+   var items = [];
+   if (entity === Hit) {
+      items = entity.query().select();
+   } else {
+      items = entity.query().equals('duration', duration).select();
+   }
+   var latestStarttime = Infinity;
+   var latest = null;
+   for each (var item in items) {
+      if (item[duration] < latestStarttime) {
+         latest = item;
+         latestStarttime = item[duration];
+      }
+   }
+   return latest;
+};
 
 /**
  * Distribution
  */
 var Distribution = store.defineClass('Distribution');
+
+Distribution.prototype.toString = function() {
+
+   return $f("[Distribution: {}, {} - {}", 
+         this.key, this[this.duration], this.distributions && this.distributions.toSource());
+};
+
+/**
+ * normalizer values before calculation distribution
+ */
+Distribution.Normalizer = {
+   'userAgent': function(rawKey) {
+      return rawKey;
+   },
+   'referer': function(rawKey) {
+      return rawKey;
+   },
+   'page': function(rawKey) {
+      return rawKey;
+   },
+};
+
+Distribution.create = function(dayOrMonth) {
+   var keyDayOrMonth = dayOrMonth.length === 6 ? 'month' : 'day';
+   var otherKey = dayOrMonth.length === 6 ? 'day' : 'month';
+   
+   var hits = Hit.query().
+      equals(keyDayOrMonth, dayOrMonth).select();
+   var hitsCount = hits.length;
+   var date = keyToDate(dayOrMonth);
+   var newDistributions = [];
+   for each (var key in ['userAgent', 'referer', 'page']) {
+      var counter = {};
+      var normalize = Distribution.Normalizer[key];
+      // FIXME smarter sample taking, don't check them all
+      for (var i=0; i<hitsCount; i++) {
+         var hit = hits[i];
+         var distributionKey = normalize(hit[key]);
+         if (counter[distributionKey] === undefined) counter[distributionKey] = 0;
+         counter[distributionKey]++;
+      }
+
+      // calc distributions
+      var distributions = {};
+      for (var cKey in counter) {
+         distributions[cKey] = parseInt((counter[cKey] / hitsCount) * 1000, 10);
+      }
+      var distribution = Distribution.query().
+         equals('duration', keyDayOrMonth).
+         equals(keyDayOrMonth, dayOrMonth).
+         equals('key', key).select()[0] || new Distribution();
+
+      distribution.duration = keyDayOrMonth;
+      distribution.key = key;
+      distribution.distributions = distributions;
+      distribution[keyDayOrMonth] = dayOrMonth;
+      distribution[otherKey] = dateToKey(date, otherKey);
+      distribution.save();
+      newDistributions.push(distribution);
+   };
+   return newDistributions;
+}
 
 /**
  * HitAggregate
@@ -24,8 +123,8 @@ Object.defineProperty(HitAggregate.prototype, 'starttime', {
 });
 
 HitAggregate.prototype.toString = function() {
-   return $f('[{}: {} , hits: {}, uniques: {}]', 
-         this.duration, this.day || this.month, this.hits, this.uniques);
+   return $f('[HitAggregate: {} {} , hits: {}, uniques: {}]', 
+         this.duration, this[this.duration], this.hits, this.uniques);
 };
 
 HitAggregate.prototype.serialize = function() {
@@ -38,6 +137,30 @@ HitAggregate.prototype.serialize = function() {
    };
 };
 
+/**
+ * @returns the latest starttime for a duration aggregate
+ * which is not yet created. or null if all have been created.
+ */
+HitAggregate.getTodoKey = function(duration) {
+   var ha = getLast(HitAggregate, duration);
+   var starttime = null;
+   
+   if (ha) {
+      var hit = getLast(Hit, duration);
+      if (hit[duration] >= ha[duration]) {
+         starttime = ha[duration];
+      }
+   } else { 
+      hit = getFirst(Hit, duration);
+      if (hit) starttime = hit[duration];
+   }
+   
+   return starttime;
+}
+
+/**
+ * create or update the HitAggregate for the given timeKey
+ */
 HitAggregate.create = function(dayOrMonth) {
    var keyDayOrMonth = dayOrMonth.length === 6 ? 'month' : 'day';
    var otherKey = dayOrMonth.length === 6 ? 'day' : 'month';
@@ -69,69 +192,17 @@ HitAggregate.create = function(dayOrMonth) {
    return hitAggregate;
 }
 
-HitAggregate.getLast = function(duration) {
-   var hitAggregates = HitAggregate.query().equals('duration', duration).select();
-   var latestStarttime = "";
-   var latestAggregate = null;
-   for each (var ha in hitAggregates) {
-      if (ha[duration] > latestStarttime) {
-         latestAggregate = ha;
-         latestStarttime = ha[duration];
-      }
-   }
-   return latestAggregate;
-}
-
 /**
  * Hit
  */
 var Hit = store.defineClass('Hit');
 
-/**
- * timestamp getter/setter
- */
-Object.defineProperty(Hit.prototype, "datetime", {
-   get: function() {
-      return this.timestamp ? new Date(this.timestamp) : null;
-   },
-   set: function(val) {
-      this.timestamp = val ? val.getTime() : null;
-   },
-   configurable: true,
-});
-
 Hit.prototype.toString = function() {
-   return $f('[{} - {} - {} - {}]', this.ip, this.datetime, this.page, this.userAgent);
+   return $f('[{} - {} - {} - {}]', this.ip, new Date(this.timestamp), this.page, this.userAgent);
 };
 
-Hit.getLast = function(duration) {
-   var hits = Hit.query().select();
-   var latestStarttime = 0;
-   var latestHit = null;
-   for each (var hit in hits) {
-      if (hit[duration] > latestStarttime) {
-         latestHit = hit;
-         latestStarttime = hit[duration];
-      }
-   }
-   return latestHit;
-}
-
-Hit.getFirst = function(duration) {
-   var hits = Hit.query().select();
-   var latestStarttime = Infinity;
-   var latestHit = null;
-   for each (var hit in hits) {
-      if (hit[duration] < latestStarttime) {
-         latestHit = hit;
-         latestStarttime = hit[duration];
-      }
-   }
-   return latestHit;
-}
-
 /**
- * 
+ * `key` helpers
  */
 
 var dateToKey = exports.dateToKey = function(date, duration) {
