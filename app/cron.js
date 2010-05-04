@@ -1,6 +1,5 @@
 var {Hit, HitAggregate, dateToKey, keyToDate} = require('./model');
-var {store} = require('./config');
-var log = require('ringo/logging').getLogger(module.id);
+var {store, log} = require('./config');
 
 /**
  * @returns the latest starttime for a duration aggregate

@@ -29,6 +29,11 @@ exports.macros = [
 exports.charset = 'UTF-8';
 exports.contentType = 'text/html';
 
+if (!log) {
+   var log = exports.log = require('ringo/logging').getLogger('sitestats');
+}
+
+
 /*if (!crons) {
    var crons = exports.crons = {
       'aggregator': setInterval(require('./cron').hits, 1000 * 60 * 10),

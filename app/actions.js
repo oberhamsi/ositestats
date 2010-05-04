@@ -2,6 +2,7 @@ include('core/string');
 
 var {Response, jsonResponse, skinResponse} = require('ringo/webapp/response');
 var {Hit, HitAggregate, Distribution, dateToKey} = require('./model');
+var {log} = require('./config');
 
 exports.index = function(req) {
    var userAgent = req.getHeader("User-Agent").toLowerCase();
@@ -11,20 +12,30 @@ exports.index = function(req) {
    
    var response = new Response('');
    var unique;
+   var ip = req.env.REMOTE_HOST;
+   var forwardedFor = req.getHeader("X-Forwarded-For");
+   if (forwardedFor != null && typeof(forwardedFor) === "string") {
+      if (forwardedFor.contains(",") === true) {
+         ip = forwardedFor.trim().split(/\s*,\s*/)[0];
+      } else {
+         ip = forwardedFor;
+      }
+   }   
    if (!req.cookies.stss) {
-      unique = req.env.REMOTE_HOST + "/" +  Math.random() + "/" + userAgent;
+      unique = ip + "/" +  Math.random() + "/" + userAgent;
       response.setCookie('stss', unique.digest());
    }
+   log.error('env is ', req.env.toSource());
    var now = new Date();
    var day = dateToKey(now, 'day');
    var month = dateToKey(now, 'month');
    (new Hit({
       timestamp: now.getTime(),
-      ip: req.env.REMOTE_HOST,
+      ip: ip,
       userAgent: userAgent,
       unique: unique || req.cookies.stss || null,
       referer: unescape(req.params.referer) || null,
-      page: req.getHeader('Referer') || req.getHeader('Referrer') || null,
+      page: req.getHeader('Referer') || null,
 
       day: day,
       month: month,
