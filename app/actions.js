@@ -61,11 +61,14 @@ exports.stats = function(req, duration) {
       aggregateDuration = "month";
    }
    var now = new Date();
-   var key = dateToKey(now, aggregateDuration);
+   var key = dateToKey(now, duration);
    var hitAggregates = HitAggregate.query().
          equals('duration', aggregateDuration).
-         equals(aggregateDuration, key).select();
-
+         equals(duration, key).select();
+   
+   hitAggregates.sort(function(a, b) {
+      return b[aggregateDuration] - a[aggregateDuration];
+   });
    return skinResponse('./skins/stats.html', {
       duration: duration,
       starttime: key,
