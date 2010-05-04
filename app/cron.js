@@ -37,8 +37,12 @@ exports.hits = function() {
          var ha = HitAggregate.create(currentKey);
          log.info('[cron.aggregate] create or update {}', ha);
          // FIX date calculation
-         currentTs += (duration === 'day' ? 1000 * 60 * 60 * 24 : 1000 * 60 * 60 * 30);
-         currentKey = dateToKey(new Date(currentTs));
+         if (duration === 'day') {
+            currentTs += (1000 * 60 * 60 * 24);
+         } else {
+            currentTs += (1000 * 60 * 60 * 24 * 33);
+         }
+         currentKey = dateToKey(new Date(currentTs), duration);
       }
    }
    store.commitTransaction();

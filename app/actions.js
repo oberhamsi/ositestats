@@ -24,7 +24,7 @@ exports.index = function(req) {
       userAgent: userAgent,
       unique: unique || req.cookies.stss || null,
       referer: unescape(req.params.referer) || null,
-      page: req.getHeader('Referer') || null,
+      page: req.getHeader('Referer') || req.getHeader('Referrer') || null,
 
       day: day,
       month: month,

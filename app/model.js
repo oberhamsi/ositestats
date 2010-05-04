@@ -150,13 +150,13 @@ var keyToDate = exports.keyToDate = function(key) {
    var month = 0;
    // day
    if (key.length === 8) {
-      var day = parseInt(key.substr(7,2), 10);
-      month = parseInt(key.substr(5,2), 10);
+      var day = parseInt(key.substr(6,2), 10);
+      month = parseInt(key.substr(4,2), 10);
       date.setDate(day);
    // month
    } else if (key.length == 6) {
       date.setDate(1);
-      month = parseInt(key.substr(5,2), 10);
+      month = parseInt(key.substr(4,2), 10);
    // year
    } else if (key.length == 4) {
       date.setDate(1);
