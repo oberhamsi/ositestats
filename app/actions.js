@@ -25,7 +25,6 @@ exports.index = function(req) {
       unique = ip + "/" +  Math.random() + "/" + userAgent;
       response.setCookie('stss', unique.digest());
    }
-   log.error('env is ', req.env.toSource());
    var now = new Date();
    var day = dateToKey(now, 'day');
    var month = dateToKey(now, 'month');
