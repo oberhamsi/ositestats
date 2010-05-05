@@ -6,6 +6,8 @@ module.shared = true;
 
 var {store, log} = require('./config');
 
+// FIXME would getLast/getFirst would be super fast with
+//       access to berkley cursors
 var getLast = exports.getLast = function(entity, duration) {
    var items = [];
    if (entity === Hit) {

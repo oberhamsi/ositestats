@@ -1,16 +1,28 @@
 # SiteStats
+Beginnings of a Site Tracker.
 
-<script type="text/javascript">
-   var sts = {site: 'default'};
-  (function() {
-    var ga = document.createElement('script');
-    ga.type = 'text/javascript';
-    ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + 
-         '.nekapuzer.at/sts.js?referer' + escape(document.referrer) +
-         '&random=' + (new Date()).getTime();
-    var s = document.getElementsByTagName('script')[0];
-    s.parentNode.insertBefore(ga, s);
-  })();
+What it currently does well is: track. The statistics are rudimentary and their generation must
+be triggered manually.
 
-</script>
+# Howto
+You'll have to change the database directory in config.js. Start the app.
+
+All the pages you want tracked must contain this piece of JavaScript:
+
+Replace <URL TO SITESTATS>.
+
+    <script type="text/javascript">
+      (function() {
+        var stss = document.createElement('script');
+        stss.type = 'text/javascript';
+        stss.async = true;
+        stss.src = 'http://<URL TO SITESTATS>/?referer' + escape(document.referrer) +
+             '&random=' + (new Date()).getTime();
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(stss, s);
+      })();
+    </script>
+
+# Statistics
+Startup a ringo shell. Import cron.js and run createstats(). You can view
+Access stats under ./stats. More to come...
