@@ -1,5 +1,4 @@
-
-exports.getKey_filter = function getKey_filter(input, tag) {
-   print( 'got key ', tag.parameters[0]);
-   return input[tag.key];
-}
+exports.renderDistRow_macro = function(tag) {
+   print ('arguments ', tag.parameters.toSource());
+   print ('------------');
+};

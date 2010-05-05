@@ -80,13 +80,17 @@ exports.stats = function(req, timeKey) {
 };
 
 
+exports.distributions = function(req) {
+   return skinResponse('./skins/distributions.html');
+};
+
 /**
  * ?key = 
  * &duration = day
  * &starttime =
  * // optiona; endtime, wenn nicht: dann nur 1 zurückgeben
  */
-exports.distributions = function(req, distributionKey, timeKey) {
+exports.distributiondata = function(req, distributionKey, timeKey) {
    var distributionKey = distributionKey || req.params.distributionKey || 'userAgent';
    var timeKey = timeKey || req.params.timeKey;  
    if (!timeKey) {
@@ -108,16 +112,13 @@ exports.distributions = function(req, distributionKey, timeKey) {
       equals(duration, timeKey).select();
 
    distributions.sort(function(a, b) {
-      if (a.day > b.day) return 1;
+      if (a.day < b.day) return 1;
       return -1;
    });
-
-   
  
-   return skinResponse('./skins/distributions.html', {
+   return jsonResponse({
       duration: duration,
       timeKey: timeKey,
-      keys: [key for (key in distributions[0] && distributions[0].distributions || {})],
       distributionKey: distributionKey,
       distributions: distributions,
    });
