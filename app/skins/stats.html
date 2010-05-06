@@ -2,14 +2,55 @@
 
 <% subskin 'head' %>
 <script type="text/javascript">
+
+var renderDistTable = function(data, $table) {
+   $("#sts-tablecaption", $table).html(data.distributionKey + "s, " + data.timeKey);
+   var dist = data.distributions[0];
+   var keys = [key for (key in dist && dist.distributions || {})];
+   var thead = $("#sts-tablehead", $table);
+   thead.append("<td>&nbsp;</td>");
+   thead.append("<th scope='row'>" + dist.month + "</th>");
+
+   var $tbody = $("#sts-tablebody", $table);
+
+   keys = keys.filter(function(k) {
+      return dist.distributions[k];
+   });
+   keys.sort(function(a, b) {
+      return ( (dist.distributions[b] || 0) - (dist.distributions[a] || 0));
+   });
+   
+   keys.forEach(function(key) {
+      var $row = $("<tr></tr>");
+      $row.append("<th>" + key + "</th>");
+      $row.append("<td>" + (dist.distributions[key] || 0) + "</td>");
+      $tbody.append($row);
+   }, this);
+   return;
+};
+
 $(document).ready(function() {
-   $('table').visualize({type: 'line', parseDirection: 'y'});
+   $('table#hits').visualize({type: 'line', parseDirection: 'y'});
+
+   $.get('/distributiondata/page', function(data) {
+      renderDistTable(data, $("table#distribution"));
+      $('table#distribution').visualize({type: 'pie', parseDirection: 'x'});
+   });
+   $.get('/distributiondata/referer', function(data) {
+      renderDistTable(data, $("table#referer"));
+      $('table#referer').visualize({type: 'pie', parseDirection: 'x'});
+   });
+   $.get('/distributiondata/userAgent', function(data) {
+      renderDistTable(data, $("table#useragents"));
+      $('table#useragents').visualize({type: 'pie', parseDirection: 'x'});
+   });
+   
 });
 </script>
 
 <% subskin 'content' %>
 
-<table>
+<table id='hits'>
 	<caption><% duration %> Hits, <% timeKey %></caption>
 	<thead>
 		<tr>
@@ -20,6 +61,39 @@ $(document).ready(function() {
 	</thead>
 	<tbody>
       <% for ag in <% hitAggregates %> render aggregateRow %>      
+	</tbody>
+</table>
+
+<table id='distribution'>
+	<caption id='sts-tablecaption'></caption>
+	<thead>
+		<tr id='sts-tablehead'>
+		</tr>
+	</thead>
+	<tbody id='sts-tablebody'>
+
+	</tbody>
+</table>
+
+<table id='referer'>
+	<caption id='sts-tablecaption'></caption>
+	<thead>
+		<tr id='sts-tablehead'>
+		</tr>
+	</thead>
+	<tbody id='sts-tablebody'>
+
+	</tbody>
+</table>
+
+<table id='useragents'>
+	<caption id='sts-tablecaption'></caption>
+	<thead>
+		<tr id='sts-tablehead'>
+		</tr>
+	</thead>
+	<tbody id='sts-tablebody'>
+
 	</tbody>
 </table>
 

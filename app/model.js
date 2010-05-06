@@ -15,16 +15,7 @@ var getLast = exports.getLast = function(entity, duration) {
    } else {
       items = entity.query().equals('duration', duration).select();
    }
-   var latestStarttime = "";
-   var latest = null;
-   for each (var item in items) {
-      if (item[duration] > latestStarttime) {
-         latest = item;
-         latestStarttime = item[duration];
-      }
-   }
-   return latest;
-
+   return items[items.length-1];
 };
 
 var getFirst = exports.getFirst = function(entity, duration) {
@@ -34,15 +25,7 @@ var getFirst = exports.getFirst = function(entity, duration) {
    } else {
       items = entity.query().equals('duration', duration).select();
    }
-   var latestStarttime = Infinity;
-   var latest = null;
-   for each (var item in items) {
-      if (item[duration] < latestStarttime) {
-         latest = item;
-         latestStarttime = item[duration];
-      }
-   }
-   return latest;
+   return items[0];
 };
 
 /**
@@ -61,24 +44,35 @@ Distribution.prototype.toString = function() {
  */
 Distribution.Normalizer = {
    'userAgent': function(rawKey) {
-      return rawKey;
+      rawKey = rawKey.toLowerCase();
+      var os;
+      // order is significant
+      var oses = ['mac', 'linux', 'blackberry', 'iphone', 'windows'];
+      var os = 'windows';
+      for each (o in oses) {
+         if (rawKey.indexOf(o) > -1) os = o;
+      }
+      var browsers = ['firefox', 'safari', 'opera', 'chrome'];
+      var browser = 'ie'
+      for each (b in browsers) {
+         if (rawKey.indexOf(b) > -1) browser = b;
+      }
+      return browser + ', ' + os;
    },
    'referer': function(rawKey) {
-      return rawKey;
+      return rawKey.split('/').slice(0,3).join('/')
    },
    'page': function(rawKey) {
       return rawKey;
    },
 };
 
-Distribution.create = function(dayOrMonth) {
-   var keyDayOrMonth = dayOrMonth.length === 6 ? 'month' : 'day';
-   var otherKey = dayOrMonth.length === 6 ? 'day' : 'month';
+Distribution.create = function(monthKey) {
    
    var hits = Hit.query().
-      equals(keyDayOrMonth, dayOrMonth).select();
+      equals('month', monthKey).select();
    var hitsCount = hits.length;
-   var date = keyToDate(dayOrMonth);
+   var date = keyToDate(monthKey);
    var newDistributions = [];
    for each (var key in ['userAgent', 'referer', 'page']) {
       var counter = {};
@@ -97,15 +91,15 @@ Distribution.create = function(dayOrMonth) {
          distributions[cKey] = parseInt((counter[cKey] / hitsCount) * 1000, 10);
       }
       var distribution = Distribution.query().
-         equals('duration', keyDayOrMonth).
-         equals(keyDayOrMonth, dayOrMonth).
+         equals('duration', 'month').
+         equals('month', monthKey).
          equals('key', key).select()[0] || new Distribution();
 
-      distribution.duration = keyDayOrMonth;
+      distribution.duration = 'month';
       distribution.key = key;
       distribution.distributions = distributions;
-      distribution[keyDayOrMonth] = dayOrMonth;
-      distribution[otherKey] = dateToKey(date, otherKey);
+      distribution.month = monthKey;
+      distribution.year = dateToKey(date, 'year');
       distribution.save();
       newDistributions.push(distribution);
    };

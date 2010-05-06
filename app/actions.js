@@ -22,8 +22,8 @@ exports.index = function(req) {
       }
    }   
    if (!req.cookies.stss) {
-      unique = ip + "/" +  Math.random() + "/" + userAgent;
-      response.setCookie('stss', unique.digest());
+      unique = (ip + "/" +  Math.random() + "/" + userAgent).digest();
+      response.setCookie('stss', unique);
    }
    var now = new Date();
    var day = dateToKey(now, 'day');
@@ -70,7 +70,7 @@ exports.stats = function(req, timeKey) {
          equals(duration, timeKey).select();
    
    hitAggregates.sort(function(a, b) {
-      return b[aggregateDuration] - a[aggregateDuration];
+      return a[aggregateDuration] - b[aggregateDuration];
    });
    return skinResponse('./skins/stats.html', {
       duration: duration,
@@ -97,19 +97,11 @@ exports.distributiondata = function(req, distributionKey, timeKey) {
       var now = new Date();
       timeKey = dateToKey(now, 'month');
    }
-   var duration, distributionDuration;
-   if (timeKey.length === 6) {
-      duration = 'month';
-      distributionDuration = "day";
-   } else if (timeKey.length == 4){
-      duration = "year";
-      distributionDuration == 'month'
-   }
 
    var distributions = Distribution.query().
-      equals('duration', distributionDuration).
+      equals('duration', 'month').
       equals('key', distributionKey).
-      equals(duration, timeKey).select();
+      equals('month', timeKey).select();
 
    distributions.sort(function(a, b) {
       if (a.day < b.day) return 1;
@@ -117,7 +109,6 @@ exports.distributiondata = function(req, distributionKey, timeKey) {
    });
  
    return jsonResponse({
-      duration: duration,
       timeKey: timeKey,
       distributionKey: distributionKey,
       distributions: distributions,

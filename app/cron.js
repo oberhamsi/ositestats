@@ -26,6 +26,8 @@ exports.createstats = function() {
    log.info('[cron] starting...');
    for each (var entity in [HitAggregate, Distribution]) {
       for each (var duration in ['day', 'month']) {
+         if (entity == Distribution && duration === 'day') continue;
+         
          var startKey = getTodoKey(entity, duration);
          if (!startKey) continue;
 
