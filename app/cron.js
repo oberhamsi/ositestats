@@ -34,18 +34,17 @@ exports.updatestats = function() {
          if (!startKey) continue;
 
          var currentKey = startKey;
-         var currentTs = keyToDate(startKey).getTime();
-         var now = dateToKey(new Date(), duration);
+         var currentDate = keyToDate(startKey);
+         var now = dateToKey(date, duration);
          while (currentKey <= now) {
             var item = entity.create(currentKey);
             log.info('[cron] created/updated {}', item);
-            // FIX date calculation
             if (duration === 'day') {
-               currentTs += (1000 * 60 * 60 * 24);
+               currentDate.setDate(currentDate.getDate()+1);
             } else {
-               currentTs += (1000 * 60 * 60 * 24 * 33);
+               currentDate.getMonth(currentDate.getMonth()+1);
             }
-            currentKey = dateToKey(new Date(currentTs), duration);
+            currentKey = dateToKey(currentDate, duration);
          }
       }
    }
