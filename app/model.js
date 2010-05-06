@@ -49,12 +49,12 @@ Distribution.Normalizer = {
       // order is significant
       var oses = ['mac', 'linux', 'blackberry', 'iphone', 'windows'];
       var os = 'windows';
-      for each (o in oses) {
+      for each (var o in oses) {
          if (rawKey.indexOf(o) > -1) os = o;
       }
       var browsers = ['firefox', 'safari', 'opera', 'chrome'];
       var browser = 'ie'
-      for each (b in browsers) {
+      for each (var b in browsers) {
          if (rawKey.indexOf(b) > -1) browser = b;
       }
       return browser + ', ' + os;

@@ -1,4 +1,6 @@
 include('./model');
+module.shared = true;
+
 var {store, log} = require('./config');
 
 /**
@@ -21,7 +23,7 @@ var getTodoKey = exports.getTodoKey = function(entity, duration) {
    return starttime;
 };
 
-exports.createstats = function() {
+exports.updatestats = function() {
    store.beginTransaction();
    log.info('[cron] starting...');
    for each (var entity in [HitAggregate, Distribution]) {

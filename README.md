@@ -9,7 +9,7 @@ You'll have to change the database directory in config.js. Start the app.
 
 All the pages you want tracked must contain this piece of JavaScript:
 
-Replace <URL TO SITESTATS>.
+ * replace <URL TO SITESTATS>.
 
     <script type="text/javascript">
       (function() {

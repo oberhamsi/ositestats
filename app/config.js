@@ -35,9 +35,8 @@ if (!log) {
 }
 
 
-/*if (!crons) {
+if (!crons) {
    var crons = exports.crons = {
-      'aggregator': setInterval(require('./cron').hits, 1000 * 60 * 10),
+      'aggregator': setInterval(require('./cron').updatestats, 1000 * 60 * 30),
    }
 }
-*/
