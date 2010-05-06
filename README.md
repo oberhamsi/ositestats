@@ -1,15 +1,19 @@
 # SiteStats
 Beginnings of a Site Tracker.
 
-What it currently does well is: track. The statistics are rudimentary and their generation must
-be triggered manually.
+What it does well already is track. The generated report is rudimentary and
+only has a month view which displays tables & diagrams for:
 
-# Howto
-You'll have to change the database directory in config.js. Start the app.
+ * Page Impressions and Unique Clients per day
+ * Top 10 Pages, Referrers and User Agent / Browsers per month
 
-All the pages you want tracked must contain this piece of JavaScript:
+# How To
 
- * replace <URL TO SITESTATS>.
+ * install hns/berkeleystore
+ * change the database directory in config.js
+
+All the pages you want tracked must contain this piece of JavaScript. You
+must change <URL TO SITESTATS> to the url where sitestats app is running.
 
     <script type="text/javascript">
       (function() {
@@ -23,6 +27,10 @@ All the pages you want tracked must contain this piece of JavaScript:
       })();
     </script>
 
-# Statistics
-Startup a ringo shell. Import cron.js and run createstats(). You can view
-Access stats under ./stats. More to come...
+# Notes
+This is alpha. Particularly the report generation (cron.js) is very inefficient
+but will greatly and without much effort benefit from improvements in 
+ringojs' berkeley module.
+
+I tested if with a 500MB apache logfile, which takes several minutes and eats
+at least 1/2 gig of RAM.. but worked.

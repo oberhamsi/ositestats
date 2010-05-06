@@ -23,32 +23,44 @@ var renderDistTable = function(data, $table) {
    keys.forEach(function(key) {
       var $row = $("<tr></tr>");
       $row.append("<th>" + key + "</th>");
-      $row.append("<td>" + (dist.distributions[key] || 0) + "</td>");
+      $row.append("<td>" + (dist.distributions[key] || 0)/10 + "</td>");
       $tbody.append($row);
    }, this);
    return;
 };
 
 $(document).ready(function() {
-   $('table#hits').visualize({type: 'line', parseDirection: 'y'});
+   $('table#hits').visualize({
+      type: 'line',
+      parseDirection: 'y',
+      appendTitle: false,
+   });
+   var distOps = {
+      parseDirection: 'x',
+      type: 'pie',
+      width: 400,
+      height: 400,
+   };
 
    $.get('/distributiondata/page', function(data) {
-      renderDistTable(data, $("table#distribution"));
-      $('table#distribution').visualize({type: 'pie', parseDirection: 'x'});
+      renderDistTable(data, $("table#page"));
+      $('table#page').visualize(distOps);
    });
    $.get('/distributiondata/referer', function(data) {
       renderDistTable(data, $("table#referer"));
-      $('table#referer').visualize({type: 'pie', parseDirection: 'x'});
+      $('table#referer').visualize(distOps);
    });
    $.get('/distributiondata/userAgent', function(data) {
       renderDistTable(data, $("table#useragents"));
-      $('table#useragents').visualize({type: 'pie', parseDirection: 'x'});
+      $('table#useragents').visualize(distOps);
    });
    
 });
 </script>
 
 <% subskin 'content' %>
+
+<h1> SiteStats for <% timeKey %></h1>
 
 <table id='hits'>
 	<caption><% duration %> Hits, <% timeKey %></caption>
@@ -64,7 +76,7 @@ $(document).ready(function() {
 	</tbody>
 </table>
 
-<table id='distribution'>
+<table id='page' class='accessHide'>
 	<caption id='sts-tablecaption'></caption>
 	<thead>
 		<tr id='sts-tablehead'>
@@ -75,7 +87,7 @@ $(document).ready(function() {
 	</tbody>
 </table>
 
-<table id='referer'>
+<table id='referer' class='accessHide'>
 	<caption id='sts-tablecaption'></caption>
 	<thead>
 		<tr id='sts-tablehead'>
@@ -86,7 +98,7 @@ $(document).ready(function() {
 	</tbody>
 </table>
 
-<table id='useragents'>
+<table id='useragents' class='accessHide'>
 	<caption id='sts-tablecaption'></caption>
 	<thead>
 		<tr id='sts-tablehead'>

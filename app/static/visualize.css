@@ -65,6 +65,9 @@ width:6px;
 .visualize ul.visualize-key .visualize-key-label {
 color:#000000;
 }
+.visualize-pie {
+   float:left;
+}
 .visualize-pie .visualize-labels {
 list-style:none outside none;
 }
@@ -84,55 +87,55 @@ color:#000000;
 font-weight:normal;
 }
 .visualize-labels-x, .visualize-labels-y {
-left:0;
-list-style:none outside none;
-position:absolute;
-top:0;
+   left:0;
+   list-style:none outside none;
+   position:absolute;
+   top:0;
 }
 .visualize-labels-x li, .visualize-labels-y li {
-bottom:0;
-position:absolute;
+   bottom:0;
+   position:absolute;
 }
 .visualize-labels-x li span.label, .visualize-labels-y li span.label {
-color:#555555;
-position:absolute;
+   color:#555555;
+   position:absolute;
 }
 .visualize-labels-x li span.line, .visualize-labels-y li span.line {
-border:0 solid #CCCCCC;
-position:absolute;
+   border:0 solid #CCCCCC;
+   position:absolute;
 }
 .visualize-labels-x li {
-height:100%;
+   height:100%;
 }
 .visualize-labels-x li span.label {
-margin-top:5px;
-top:100%;
+   margin-top:5px;
+   top:100%;
 }
 .visualize-labels-x li span.line {
-border-left-width:1px;
-display:block;
-height:100%;
+   border-left-width:1px;
+   display:block;
+   height:100%;
 }
 .visualize-labels-x li span.line {
-border:0 none;
+   border:0 none;
 }
 .visualize-labels-y li {
-width:100%;
+   width:100%;
 }
 .visualize-labels-y li span.label {
-display:block;
-margin-right:5px;
-right:100%;
-text-align:right;
-width:100px;
+   display:block;
+   margin-right:5px;
+   right:100%;
+   text-align:right;
+   width:100px;
 }
 .visualize-labels-y li span.line {
-border-top-width:1px;
-width:100%;
+   border-top-width:1px;
+   width:100%;
 }
 .visualize-bar .visualize-labels-x li span.label {
-text-align:center;
-width:100%;
+   text-align:center;
+   width:100%;
 }
 
 
@@ -140,78 +143,80 @@ width:100%;
 font-size:62.5%;
 }
 table {
-height:200px;
-margin-left:30px;
-width:500px;
+   height:200px;
+   margin-left:30px;
+   width:500px;
 }
 table.accessHide {
-left:-999999px;
-position:absolute;
+   left:-999999px;
+   position:absolute;
 }
 td, th {
-font-size:1.2em;
-padding:2px;
-width:13%;
+   font-size:1.2em;
+   padding:2px;
+   width:13%;
 }
 th {
-background-color:#F4F4F4;
+   background-color:#F4F4F4;
 }
 caption {
-font-size:1.5em;
+   color:#333333;
+   font-size:1.5em;
+   font-weight:bold;
 }
 .visualize {
--moz-border-radius:12px 12px 12px 12px;border:1px solid #DDDDDD;
-margin:60px 0 0 30px;
-padding:70px 40px 90px;
+   -moz-border-radius:12px 12px 12px 12px;border:1px solid #DDDDDD;
+   margin:60px 0 0 30px;
+   padding:25px 40px 90px;
 }
 .visualize canvas {
-background:none repeat scroll 0 0 #FFFFFF;
-border:1px solid #AAAAAA;
-margin:-1px;
+   background:none repeat scroll 0 0 #FFFFFF;
+   border:1px solid #AAAAAA;
+   margin:-1px;
 }
 .visualize-labels-x, .visualize-labels-y {
-left:40px;
-top:70px;
-z-index:100;
+   left:40px;
+   top:25px;
+   z-index:100;
 }
 .visualize-pie .visualize-labels {
-left:40px;
-position:absolute;
-top:70px;
+   left:40px;
+   position:absolute;
+   top:25px;
 }
 .visualize-labels-x li span.label, .visualize-labels-y li span.label {
-color:#444444;
-font-size:1.3em;
-padding-right:5px;
+   color:#444444;
+   font-size:1.3em;
+   padding-right:5px;
 }
 .visualize-labels-y li span.line {
-border-style:solid;
-opacity:0.7;
+   border-style:solid;
+   opacity:0.7;
 }
 .visualize .visualize-info {
-background:none repeat scroll 0 0 transparent;
-border:0 none;
-opacity:1;
-position:static;
+   background:none repeat scroll 0 0 transparent;
+   border:0 none;
+   opacity:1;
+   position:static;
 }
 .visualize .visualize-title {
-color:#333333;
-font-size:2.1em;
-font-weight:bold;
-left:20px;
-margin-bottom:0;
-position:absolute;
-top:20px;
+   color:#333333;
+   font-size:1.5em;
+   font-weight:bold;
+   left:20px;
+   margin-bottom:0;
+   position:absolute;
+   top:0px;
 }
 .visualize ul.visualize-key {
-background:none repeat scroll 0 0 #EEEEEE;
-bottom:15px;
-color:#AAAAAA;
-left:0;
-padding:10px 0;
-position:absolute;
-width:100%;
-z-index:10;
+   background:none repeat scroll 0 0 #EEEEEE;
+   bottom:15px;
+   color:#AAAAAA;
+   left:0;
+   padding:10px 0;
+   position:absolute;
+   width:100%;
+   z-index:10;
 }
 .visualize ul.visualize-key li {
 font-size:1.2em;

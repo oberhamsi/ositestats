@@ -35,14 +35,14 @@ exports.updatestats = function() {
 
          var currentKey = startKey;
          var currentDate = keyToDate(startKey);
-         var now = dateToKey(date, duration);
+         var now = dateToKey(new Date(), duration);
          while (currentKey <= now) {
             var item = entity.create(currentKey);
             log.info('[cron] created/updated {}', item);
             if (duration === 'day') {
                currentDate.setDate(currentDate.getDate()+1);
             } else {
-               currentDate.getMonth(currentDate.getMonth()+1);
+               currentDate.setMonth(currentDate.getMonth()+1);
             }
             currentKey = dateToKey(currentDate, duration);
          }
