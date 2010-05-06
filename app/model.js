@@ -101,7 +101,7 @@ Distribution.create = function(monthKey) {
       distribution.month = monthKey;
       distribution.year = dateToKey(date, 'year');
       distribution.save();
-      newDistributions.push(distribution.serialize());
+      newDistributions.push(distribution.toString());
    };
    return newDistributions;
 }
