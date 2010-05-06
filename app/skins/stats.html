@@ -31,9 +31,10 @@ var renderDistTable = function(data, $table) {
 
 $(document).ready(function() {
    $('table#hits').visualize({
-      type: 'line',
+      type: 'area',
       parseDirection: 'y',
       appendTitle: false,
+      width: 900,
    });
    var distOps = {
       parseDirection: 'x',
