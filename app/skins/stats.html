@@ -19,7 +19,7 @@ var renderDistTable = function(data, $table) {
    keys.sort(function(a, b) {
       return ( (dist.distributions[b] || 0) - (dist.distributions[a] || 0));
    });
-   
+   if (keys.length > 10) keys = keys.splice(0, 10);
    keys.forEach(function(key) {
       var $row = $("<tr></tr>");
       $row.append("<th>" + key + "</th>");

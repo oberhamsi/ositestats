@@ -18,6 +18,11 @@ var importLog = function(logfile) {
       if (!time) continue;
       var tparts = time.split(':')
       var date = new Date();
+      if (tparts[0].slice(4,6) === 'Ap') {
+         date.setMonth(3);
+      } else {
+         date.setMonth(4);
+      }
       date.setDate(parseInt(tparts[0].slice(1,3), 10));
       date.setHours(parseInt(tparts[1], 10));
       date.setMinutes(parseInt(tparts[2], 10));
@@ -38,7 +43,7 @@ var importLog = function(logfile) {
    }
 }
 
-for (var i=1;i<=22;i++) {
+for (var i=16;i>=1;i--) {
    print (' >' + i);
    importLog('/home/simon/access_log.' + i);
 }
