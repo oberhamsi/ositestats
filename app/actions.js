@@ -4,6 +4,11 @@ var {Response, jsonResponse, skinResponse} = require('ringo/webapp/response');
 var {Hit, HitAggregate, Distribution, dateToKey} = require('./model');
 var {log} = require('./config');
 
+/**
+ * Main action logging a Hit.
+ * req.params.referer the referer of the page this Hit comes from
+ * req.params.site the site for which this Hit will be logged
+ */
 exports.index = function(req) {
    var userAgent = req.getHeader("User-Agent").toLowerCase();
    if (userAgent.contains("bot") || userAgent.contains("spider")) {
@@ -46,9 +51,8 @@ exports.index = function(req) {
 
 
 /**
- * ?duration = day
- * &starttime = startdate
- * // optional: endtime, wenn nicht angegeben nur 1 obj zurückgeben
+ * Show statistic overview
+ * @param {String} timeKey the month timekey for which to show statistics
  */
 exports.stats = function(req, timeKey) {
    var timeKey = timeKey || req.params.timeKey;  
@@ -79,16 +83,14 @@ exports.stats = function(req, timeKey) {
    });
 };
 
-
 exports.distributions = function(req) {
    return skinResponse('./skins/distributions.html');
 };
 
 /**
- * ?key = 
- * &duration = day
- * &starttime =
- * // optiona; endtime, wenn nicht: dann nur 1 zurückgeben
+ * Returns distribution data for the given key and month. Use by
+ * stats skin to load distribution via ajax.
+ *
  */
 exports.distributiondata = function(req, distributionKey, timeKey) {
    var distributionKey = distributionKey || req.params.distributionKey || 'userAgent';

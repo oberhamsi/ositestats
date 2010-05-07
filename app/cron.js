@@ -4,7 +4,11 @@ module.shared = true;
 var {store, log} = require('./config');
 
 /**
- * entity either Distribution or HitAggregate
+ * Returns the first timeKey for which the given entity has
+ * Hits to process. This is used by updatestats() to determine
+ * which Hits need processing.
+ * @param {Prototype} entity either Distribution or HitAggregate
+ * @param {String} duration 'hour' or 'month'
  */
 var getTodoKey = exports.getTodoKey = function(entity, duration) {
    var item = getLast(entity, duration);
@@ -23,6 +27,9 @@ var getTodoKey = exports.getTodoKey = function(entity, duration) {
    return starttime;
 };
 
+/**
+ * create HitAggregations and Distributions.
+ */
 exports.updatestats = function() {
    store.beginTransaction();
    log.info('[cron] starting...');

@@ -29,10 +29,14 @@ var getFirst = exports.getFirst = function(entity, duration) {
 };
 
 /**
- * Distribution
+ * A Distribution stores the monthly distribution of a Hit attribute. For example
+ * we create a Distribution for the attribute userAgent.
  */
 var Distribution = store.defineClass('Distribution');
 
+/**
+ * String rep
+ */
 Distribution.prototype.toString = function() {
 
    return $f("[Distribution: {}, {} - {}", 
@@ -40,7 +44,9 @@ Distribution.prototype.toString = function() {
 };
 
 /**
- * normalizer values before calculation distribution
+ * Hit attributes should be normalized before we calculate their distribution to
+ * keep the amount of different values sane (e.g. we only differentiate between
+ * IE, FF, safari but not their versions).
  */
 Distribution.Normalizer = {
    'userAgent': function(rawKey) {
@@ -67,6 +73,11 @@ Distribution.Normalizer = {
    },
 };
 
+/**
+ * Creates or updates several Distributions for the given month.
+ * @param {String} montKey
+ * @returns {Array} array of serialized distributions created/updated
+ */
 Distribution.create = function(monthKey) {
    
    var hits = Hit.query().
@@ -107,7 +118,8 @@ Distribution.create = function(monthKey) {
 }
 
 /**
- * HitAggregate
+ * HitAggregates exist for days and months. They hold the amount of uniques
+ * and hits for their duration.
  */
 var HitAggregate = store.defineClass('HitAggregate');
 
@@ -118,11 +130,17 @@ Object.defineProperty(HitAggregate.prototype, 'starttime', {
    configurable: true,
 });
 
+/**
+ * String rep
+ */
 HitAggregate.prototype.toString = function() {
    return $f('[HitAggregate: {} {} , hits: {}, uniques: {}]', 
          this.duration, this[this.duration], this.hits, this.uniques);
 };
 
+/**
+ * Serialize the HitAggregate so it can be stringified.
+ */
 HitAggregate.prototype.serialize = function() {
    return {
       'duration': this.duration,
@@ -134,28 +152,8 @@ HitAggregate.prototype.serialize = function() {
 };
 
 /**
- * @returns the latest starttime for a duration aggregate
- * which is not yet created. or null if all have been created.
- */
-HitAggregate.getTodoKey = function(duration) {
-   var ha = getLast(HitAggregate, duration);
-   var starttime = null;
-   
-   if (ha) {
-      var hit = getLast(Hit, duration);
-      if (hit[duration] >= ha[duration]) {
-         starttime = ha[duration];
-      }
-   } else { 
-      hit = getFirst(Hit, duration);
-      if (hit) starttime = hit[duration];
-   }
-   
-   return starttime;
-}
-
-/**
- * create or update the HitAggregate for the given timeKey
+ * Creates or updates the HitAggregate for the given timeKey.
+ * @param {String} dayOrMonth a timeKey string, e.g. '201004', '20100405'
  */
 HitAggregate.create = function(dayOrMonth) {
    var keyDayOrMonth = dayOrMonth.length === 6 ? 'month' : 'day';
@@ -189,18 +187,24 @@ HitAggregate.create = function(dayOrMonth) {
 }
 
 /**
- * Hit
+ * Hit. A single PageView by a client.
  */
 var Hit = store.defineClass('Hit');
 
+/**
+ * String rep
+ */
 Hit.prototype.toString = function() {
    return $f('[{} - {} - {} - {}]', this.ip, new Date(this.timestamp), this.page, this.userAgent);
 };
 
 /**
- * `key` helpers
+ * Converts a Date to a timeKey.
+ * @param {Date} date the date to convert
+ * @param {String} duration the kind of key we want: 'day', 'month', or 'year'.
+ * @returns {String} the key for the given date and duration
+ *
  */
-
 var dateToKey = exports.dateToKey = function(date, duration) {
    if (duration === 'day') {
       return [date.getFullYear(), date.getMonth().format("00"), date.getDate().format("00")].join('');
@@ -208,9 +212,16 @@ var dateToKey = exports.dateToKey = function(date, duration) {
       return [date.getFullYear(), date.getMonth().format("00")].join('');
    } else if (duration === 'year') {
       return ""+date.getFullYear();
+   } else {
+      throw new Error('unknown duration');
    }
 }
 
+/**
+ * Converts a timeKey to a Date
+ * @param {String} key the key to convert
+ * @return {Date} date for the key
+ */
 var keyToDate = exports.keyToDate = function(key) {
    var date = new Date();
    var year = parseInt(key.substr(0,4), 10);

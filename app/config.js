@@ -24,7 +24,6 @@ exports.store = new Store('/home/simon/db.sitestats/', {enableTransactions: fals
 exports.macros = [
     'ringo/skin/macros',
     'ringo/skin/filters',
-    './macros',
 ];
 
 exports.charset = 'UTF-8';
@@ -34,7 +33,9 @@ if (!log) {
    var log = exports.log = require('ringo/logging').getLogger('sitestats');
 }
 
-
+/**
+ * cronjob creating the statistics
+ */
 if (!crons) {
    var crons = exports.crons = {
       'aggregator': setInterval(require('./cron').updatestats, 1000 * 60 * 30),
