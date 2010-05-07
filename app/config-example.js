@@ -32,11 +32,11 @@ exports.contentType = 'text/html';
 /**
  * base url of app, no trailing slash
  */
-exports.baseUri = 'http://nekapuzer.at';
+exports.baseUri = 'http://example.org';
 /**
  * default site to count if not extra site argument given
  */
-exports.defaultSite = 'nekapuzer';
+exports.defaultSite = 'example';
 
 if (!log) {
    var log = exports.log = require('ringo/logging').getLogger('sitestats');
