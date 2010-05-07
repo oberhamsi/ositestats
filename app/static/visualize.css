@@ -72,19 +72,19 @@ color:#000000;
 list-style:none outside none;
 }
 .visualize-pie .visualize-label-pos, .visualize-pie .visualize-label {
-margin:0;
-padding:0;
-position:absolute;
+   margin:0;
+   padding:0;
+   position:absolute;
 }
 .visualize-pie .visualize-label {
-color:#FFFFFF;
-display:block;
-font-size:1em;
-font-weight:bold;
+   color:#FFFFFF;
+   display:block;
+   font-size:1em;
+   font-weight:bold;
 }
 .visualize-pie-outside .visualize-label {
-color:#000000;
-font-weight:normal;
+   color:#000000;
+   font-weight:normal;
 }
 .visualize-labels-x, .visualize-labels-y {
    left:0;
@@ -186,7 +186,7 @@ caption {
 }
 .visualize-labels-x li span.label, .visualize-labels-y li span.label {
    color:#444444;
-   font-size:1.3em;
+   font-size:0.8em;
    padding-right:5px;
 }
 .visualize-labels-y li span.line {
@@ -219,15 +219,15 @@ caption {
    z-index:10;
 }
 .visualize ul.visualize-key li {
-font-size:1.2em;
-margin-left:20px;
-padding-left:18px;
+   font-size:1.2em;
+   margin-left:20px;
+   padding-left:18px;
 }
 .visualize ul.visualize-key .visualize-key-color {
-height:10px;
-margin-top:-4px;
-width:10px;
+   height:10px;
+   margin-top:-4px;
+   width:10px;
 }
 .visualize ul.visualize-key .visualize-key-label {
-color:#333333;
+   color:#333333;
 }

@@ -92,7 +92,7 @@ Distribution.create = function(monthKey) {
       for (var i=0; i<hitsCount; i++) {
          var hit = hits[i];
          var distributionKey = normalize(hit[key]);
-         if (counter[distributionKey] === undefined) counter[distributionKey] = 0;
+         if (counter[distributionKey] === undefined) counter[distributionKey] = 1;
          counter[distributionKey]++;
       }
 
