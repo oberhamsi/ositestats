@@ -29,6 +29,8 @@ exports.macros = [
 exports.charset = 'UTF-8';
 exports.contentType = 'text/html';
 
+exports.defaultSite = 'nekapuzer';
+
 if (!log) {
    var log = exports.log = require('ringo/logging').getLogger('sitestats');
 }

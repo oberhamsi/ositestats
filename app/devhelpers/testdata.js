@@ -53,7 +53,5 @@ for (var i=0;i<1000;i++) {
    timestamp += parseInt((1000 * 60 * (Math.random() * 600)));
 }
 
-(new HitAggregate({'duration': 'noop', 'day': 'noop', 'month': 'noop'})).save()
-(new Distribution({duration: 'noop', key: 'noop', month: 'noop', day: 'noop', year: 'noop'})).save()
 include('cron')
-hits()
+updatestats()

@@ -32,6 +32,7 @@ var importLog = function(logfile) {
       (new Hit({
          timestamp: date.getTime(),
          ip: ip,
+         site: 'iptv',
          userAgent: ua,
          unique: ip,
          referer: ref,

@@ -2,7 +2,7 @@ include('core/string');
 
 var {Response, jsonResponse, skinResponse} = require('ringo/webapp/response');
 var {Hit, HitAggregate, Distribution, dateToKey} = require('./model');
-var {log} = require('./config');
+var config = require('./config');
 
 /**
  * Main action logging a Hit.
@@ -16,7 +16,6 @@ exports.index = function(req) {
    }
    
    var response = new Response('');
-   var unique;
    var ip = req.env.REMOTE_HOST;
    var forwardedFor = req.getHeader("X-Forwarded-For");
    if (forwardedFor != null && typeof(forwardedFor) === "string") {
@@ -25,24 +24,27 @@ exports.index = function(req) {
       } else {
          ip = forwardedFor;
       }
-   }   
+   }
+   
+   var unique;
    if (!req.cookies.stss) {
       unique = (ip + "/" +  Math.random() + "/" + userAgent).digest();
       response.setCookie('stss', unique);
+   } else {
+      unique = req.cookies.stss;
    }
    var now = new Date();
-   var day = dateToKey(now, 'day');
-   var month = dateToKey(now, 'month');
    (new Hit({
       timestamp: now.getTime(),
+      site: unescape(req.params.site) || config.defaultSite,
       ip: ip,
       userAgent: userAgent,
-      unique: unique || req.cookies.stss || null,
+      unique: unique || null,
       referer: unescape(req.params.referer) || null,
       page: req.getHeader('Referer') || null,
 
-      day: day,
-      month: month,
+      day: dateToKey(now, 'day'),
+      month: dateToKey(now, 'month'),
    })).save();
 
    return response;
@@ -54,7 +56,8 @@ exports.index = function(req) {
  * Show statistic overview
  * @param {String} timeKey the month timekey for which to show statistics
  */
-exports.stats = function(req, timeKey) {
+exports.stats = function(req, siteKey, timeKey) {
+   var siteKey = siteKey || req.params.siteKey || config.defaultSite;
    var timeKey = timeKey || req.params.timeKey;  
    var duration;
    var aggregateDuration;
@@ -71,12 +74,15 @@ exports.stats = function(req, timeKey) {
    }
    var hitAggregates = HitAggregate.query().
          equals('duration', aggregateDuration).
-         equals(duration, timeKey).select();
+         equals(duration, timeKey).
+         equals('site', siteKey).
+         select();
    
    hitAggregates.sort(function(a, b) {
       return a[aggregateDuration] - b[aggregateDuration];
    });
    return skinResponse('./skins/stats.html', {
+      site: siteKey,
       duration: duration,
       timeKey: timeKey,
       hitAggregates: [ha.serialize() for each (ha in hitAggregates)],
@@ -92,7 +98,8 @@ exports.distributions = function(req) {
  * stats skin to load distribution via ajax.
  *
  */
-exports.distributiondata = function(req, distributionKey, timeKey) {
+exports.distributiondata = function(req, siteKey, distributionKey, timeKey) {
+   var siteKey = siteKey || req.params.site || config.defaultSite;
    var distributionKey = distributionKey || req.params.distributionKey || 'userAgent';
    var timeKey = timeKey || req.params.timeKey;  
    if (!timeKey) {
@@ -103,7 +110,9 @@ exports.distributiondata = function(req, distributionKey, timeKey) {
    var distributions = Distribution.query().
       equals('duration', 'month').
       equals('key', distributionKey).
-      equals('month', timeKey).select();
+      equals('month', timeKey).
+      equals('site', siteKey).
+      select();
 
    distributions.sort(function(a, b) {
       if (a.day < b.day) return 1;
@@ -111,6 +120,7 @@ exports.distributiondata = function(req, distributionKey, timeKey) {
    });
  
    return jsonResponse({
+      site: siteKey,
       timeKey: timeKey,
       distributionKey: distributionKey,
       distributions: distributions,

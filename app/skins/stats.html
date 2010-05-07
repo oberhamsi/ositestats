@@ -2,6 +2,7 @@
 
 <% subskin 'head' %>
 <script type="text/javascript">
+var site = "<%site%>";
 
 var renderDistTable = function(data, $table) {
    $("#sts-tablecaption", $table).html(data.distributionKey + "s, " + data.timeKey);
@@ -43,15 +44,15 @@ $(document).ready(function() {
       height: 400,
    };
 
-   $.get('/distributiondata/page', function(data) {
+   $.get('/distributiondata/<%site%>/page', function(data) {
       renderDistTable(data, $("table#page"));
       $('table#page').visualize(distOps);
    });
-   $.get('/distributiondata/referer', function(data) {
+   $.get('/distributiondata/<%site%>/referer', function(data) {
       renderDistTable(data, $("table#referer"));
       $('table#referer').visualize(distOps);
    });
-   $.get('/distributiondata/userAgent', function(data) {
+   $.get('/distributiondata/<%site%>/userAgent', function(data) {
       renderDistTable(data, $("table#useragents"));
       $('table#useragents').visualize(distOps);
    });
@@ -61,7 +62,7 @@ $(document).ready(function() {
 
 <% subskin 'content' %>
 
-<h1> SiteStats for <% timeKey %></h1>
+<h1> SiteStats for <%site%>, <% timeKey %></h1>
 
 <table id='hits'>
 	<caption><% duration %> Hits, <% timeKey %></caption>
