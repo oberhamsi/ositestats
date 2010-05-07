@@ -1,31 +1,28 @@
 # SiteStats
-Beginnings of a Site Tracker.
+A simple site tracker.
 
-What it does well already is track. The generated report is rudimentary and
-only has a month view which displays tables & diagrams for:
+The generated report is simple: you get a dashboard with sparklines for all sites and montly views. monthly views displays tables & diagrams for:
 
  * Page Impressions and Unique Clients per day
  * Top 10 Pages, Referrers and User Agent / Browsers per month
 
-# How To
+# Install Tracking Server
+We need RingoJs and its berkeleystore module.
 
- * install hns/berkeleystore
- * change the database directory in config.js
+    $ cd ~
+    $ git clone git://github.com/ringo/ringojs.git
+    $ cd ringojs
+    $ ant jar
+    $ ./bin/ringo 'ringo/unittest' test/all
+    $ ./bin/ringo-admin install hns/berkeleystore
+    $ ./bin/ringo-admin install bitbucket/oberhamsi/sitestats
 
-All the pages you want tracked must contain this piece of JavaScript. You
-must change <URL TO SITESTATS> to the url where sitestats app is running
+Now create a config.js using the config-example.js. Change the database
+path and your default site. Then start the app with:
 
-    <script type="text/javascript">
-      (function() {
-        var stss = document.createElement('script');
-        stss.type = 'text/javascript';
-        stss.async = true;
-        stss.src = 'http://<URL TO SITESTATS>/?referer' + escape(document.referrer) +
-             '&random=' + (new Date()).getTime();
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(stss, s);
-      })();
-    </script>
+    $ ./bin/ringo packages/sitestats/app/main.js
+
+Visit http://127.0.0.1:8080 and create a new Site. Once you have the site you can get the Tracking Javascript Code from the Dashboard. You will have to put that Javascript into every page you want tracked.
 
 # Notes
 This is alpha. Particularly the report generation (cron.js) is very inefficient
