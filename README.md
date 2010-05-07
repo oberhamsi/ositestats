@@ -13,7 +13,7 @@ only has a month view which displays tables & diagrams for:
  * change the database directory in config.js
 
 All the pages you want tracked must contain this piece of JavaScript. You
-must change <URL TO SITESTATS> to the url where sitestats app is running.
+must change <URL TO SITESTATS> to the url where sitestats app is running
 
     <script type="text/javascript">
       (function() {

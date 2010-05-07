@@ -1,0 +1,56 @@
+<% extends 'skins/base.html' %>
+
+<% subskin 'head' %>
+<script type="text/javascript" src="<% href ./static/jquery.sparkline.js %>"></script>
+<script>
+   $(document).ready(function() {
+      $('.sparkline').sparkline();
+      $('.counterlink').click(function() {
+         var $link = $(this);
+         $('textarea[site=' + $link.attr('site') + ']').toggle();
+      });
+   });
+</script>
+
+<% subskin 'content' %>
+
+<h1> Welcome to SiteStats</h1>
+
+<% for site in <% sites %> render siteInfo %>
+
+<hr/>
+<h2> New Site </h2>
+<form method="POST">
+   Site Name<br/>
+   <input name="newSiteTitle" type="text"><br/>
+   Domains (one per line)<br/>
+   <textarea name="newSiteDomains" rows=5 cols=30></textarea><br/>
+   <input value="create" type="submit"/>
+</form>
+
+<% subskin 'siteInfo' %>
+<div>
+   <span class='sparkline'> <% site.sparkValues %> </span>
+   <!-- FIXME <% href %> once macros are resovled in macros --->
+   <a href="./stats/<% site.title %>"><% site.title %></a> 
+   &nbsp;
+   <a href="#" class="counterlink" site="<% site.title | escapeHtml %>">show counter code</a>
+   <br/>
+   <% render counterCode %>
+</div>
+
+<% subskin 'counterCode' %>
+<textarea id="code" site="<% site.title | escapeHtml %>" style="display:none" cols=80 rows=12>
+ <script type="text/javascript">
+   (function() {
+     var stss = document.createElement('script');
+     stss.type = 'text/javascript';
+     stss.async = true;
+     stss.src = '<% rootUrl %>/hit/?referer' + escape(document.referrer) +
+          '&site=' + escape(<% site.title %>) +
+          '&random=' + (new Date()).getTime();
+     var s = document.getElementsByTagName('script')[0];
+     s.parentNode.insertBefore(stss, s);
+   })();
+ </script>
+</textarea>

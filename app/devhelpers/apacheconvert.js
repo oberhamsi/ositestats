@@ -32,7 +32,7 @@ var importLog = function(logfile) {
       (new Hit({
          timestamp: date.getTime(),
          ip: ip,
-         site: 'iptv',
+         site: 'nekapuzer',
          userAgent: ua,
          unique: ip,
          referer: ref,
@@ -44,7 +44,7 @@ var importLog = function(logfile) {
    }
 }
 
-for (var i=16;i>=1;i--) {
+for (var i=16;i>=10;i--) {
    print (' >' + i);
    importLog('/home/simon/access_log.' + i);
 }

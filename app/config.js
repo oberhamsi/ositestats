@@ -29,6 +29,13 @@ exports.macros = [
 exports.charset = 'UTF-8';
 exports.contentType = 'text/html';
 
+/**
+ * base url of app, no trailing slash
+ */
+exports.baseUri = 'http://nekapuzer.at';
+/**
+ * default site to count if not extra site argument given
+ */
 exports.defaultSite = 'nekapuzer';
 
 if (!log) {

@@ -1,7 +1,7 @@
 include('core/string');
 
 var {Response, jsonResponse, skinResponse} = require('ringo/webapp/response');
-var {Hit, HitAggregate, Distribution, dateToKey} = require('./model');
+var {Site, Hit, HitAggregate, Distribution, dateToKey} = require('./model');
 var config = require('./config');
 
 /**
@@ -9,7 +9,7 @@ var config = require('./config');
  * req.params.referer the referer of the page this Hit comes from
  * req.params.site the site for which this Hit will be logged
  */
-exports.index = function(req) {
+exports.hit = function(req) {
    var userAgent = req.getHeader("User-Agent").toLowerCase();
    if (userAgent.contains("bot") || userAgent.contains("spider")) {
       return new Response();
@@ -49,6 +49,39 @@ exports.index = function(req) {
 
    return response;
    
+};
+
+exports.index = function(req) {
+
+   if (req.isPost) {
+      // FIXME error handling
+      var title = req.params.newSiteTitle || "";
+      title = title.trim();
+      var domains = req.params.newSiteDomains || "";
+      domains = domains.split(/[\n\r]/);
+      (new Site({
+         title: title,
+         domains: domains,
+      })).save();
+   }
+
+   var sites = Site.query().select();
+   sites = sites.map(function(site) {
+      var aggs = HitAggregate.query().
+            equals('duration', 'day').
+            equals('site', site.title).
+            select().slice(0, 20);
+      var sparkValues = [agg.hits for each (agg in aggs)];
+      return {
+         title: site.title,
+         sparkValues: sparkValues.join(','),
+      };
+   });
+
+   return skinResponse('./skins/dashboard.html', {
+      rootUrl: config.baseUri,
+      sites: sites,
+   });
 };
 
 
