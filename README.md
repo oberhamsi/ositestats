@@ -1,7 +1,7 @@
 # SiteStats
 A simple site tracker.
 
-The generated report is simple: you get a dashboard with sparklines for all sites and montly views. monthly views displays tables & diagrams for:
+The generated report is simple: you get a dashboard with sparklines for all sites and montly views. Monthly views displays tables & diagrams for:
 
  * Page Impressions and Unique Clients per day
  * Top 10 Pages, Referrers and User Agent / Browsers per month
@@ -17,8 +17,9 @@ We need RingoJs and its berkeleystore module.
     $ ./bin/ringo-admin install hns/berkeleystore
     $ ./bin/ringo-admin install bitbucket/oberhamsi/sitestats
 
-Now create a config.js using the config-example.js. Change the database
-path and your default site. Then start the app with:
+Now create a config.js using the config-example.js. You will have to at least fix the databasePath to an existing path we can write to.
+
+Then start the app with:
 
     $ ./bin/ringo packages/sitestats/app/main.js
 

@@ -4,6 +4,7 @@ module.shared = true
 
 exports.httpConfig = {
   staticDir: './static',
+  host: "127.0.0.1"
   port: 8787,
 };
 
@@ -19,7 +20,11 @@ exports.middleware = [
 ];
 
 var Store = require('ringo/storage/berkeleystore').Store;
-exports.store = new Store('/home/simon/db.sitestats/', {enableTransactions: false});
+
+/**
+ * Path to database directory
+var databasePath = "/usr/local/db.sitestats/
+exports.store = new Store(databasePath, {enableTransactions: false});
 
 exports.macros = [
     'ringo/skin/macros',
@@ -32,7 +37,7 @@ exports.contentType = 'text/html';
 /**
  * base url of app, no trailing slash
  */
-exports.baseUri = 'http://example.org';
+exports.baseUri = 'http://127.0.0.1:8787';
 /**
  * default site to count if not extra site argument given
  */
