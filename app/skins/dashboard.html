@@ -46,8 +46,8 @@
      var stss = document.createElement('script');
      stss.type = 'text/javascript';
      stss.async = true;
-     stss.src = '<% rootUrl %>/hit/?referer' + escape(document.referrer) +
-          '&site=' + escape(<% site.title %>) +
+     stss.src = '<% rootUrl %>/hit/?referer=' + escape(document.referrer) +
+          '&site=<% site.title | escapeHtml %>' +
           '&random=' + (new Date()).getTime();
      var s = document.getElementsByTagName('script')[0];
      s.parentNode.insertBefore(stss, s);
