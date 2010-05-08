@@ -10,7 +10,10 @@ var site = "<%site%>";
 var renderDistTable = function(data, $table) {
    $("#sts-tablecaption", $table).html(data.distributionKey + "s, " + data.timeKey);
    var dist = data.distributions[0];
-   var keys = [key for (key in dist && dist.distributions || {})];
+   var keys = [];
+   for (var key in dist.distributions) {
+      keys.push(key);
+   };
    var thead = $("#sts-tablehead", $table);
    thead.append("<td>&nbsp;</td>");
    thead.append("<th scope='row'>" + dist.month + "</th>");

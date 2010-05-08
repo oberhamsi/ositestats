@@ -31,13 +31,13 @@ var getFirst = function(entity, duration, siteKey) {
 /**
  * A Site: title, domains
  */
-var Site = store.defineClass('Site');
+var Site = store.defineEntity('Site');
 
 /**
  * A Distribution stores the monthly distribution of a Hit attribute. For example
  * we create a Distribution for the attribute userAgent.
  */
-var Distribution = store.defineClass('Distribution');
+var Distribution = store.defineEntity('Distribution');
 
 /**
  * String rep
@@ -135,7 +135,7 @@ Distribution.create = function(monthKey, siteKey) {
  * HitAggregates exist for days and months. They hold the amount of uniques
  * and hits for their duration.
  */
-var HitAggregate = store.defineClass('HitAggregate');
+var HitAggregate = store.defineEntity('HitAggregate');
 
 Object.defineProperty(HitAggregate.prototype, 'starttime', {
    get: function() {
@@ -210,7 +210,7 @@ HitAggregate.create = function(dayOrMonth, siteKey) {
 /**
  * Hit. A single PageView by a client.
  */
-var Hit = store.defineClass('Hit');
+var Hit = store.defineEntity('Hit');
 
 /**
  * String rep

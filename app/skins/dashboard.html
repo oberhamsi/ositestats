@@ -4,7 +4,10 @@
 <script type="text/javascript" src="<% href ./static/jquery.sparkline.js %>"></script>
 <script>
    $(document).ready(function() {
-      $('.sparkline').sparkline();
+      $('.sparkline').sparkline('html', {
+	defaultPixelsPerValue: 5,
+	minSpotColor: false,
+	spotColor: false,});
       $('.counterlink').click(function() {
          var $link = $(this);
          $('textarea[site=' + $link.attr('site') + ']').toggle();
