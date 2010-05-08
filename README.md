@@ -7,7 +7,7 @@ The generated report is simple: you get a dashboard with sparklines for all site
  * Top 10 Pages, Referrers and User Agent / Browsers per month
 
 # Install Tracking Server
-We need RingoJs and its berkeleystore module.
+We need RingoJs and its berkeleystore module. Once we have RingoJs additional modules can be installed with its ringo-admin command.
 
     $ cd ~
     $ git clone git://github.com/ringo/ringojs.git
@@ -17,7 +17,7 @@ We need RingoJs and its berkeleystore module.
     $ ./bin/ringo-admin install hns/berkeleystore
     $ ./bin/ringo-admin install bitbucket/oberhamsi/sitestats
 
-Now create a config.js using the config-example.js. You will have to at least fix the databasePath to an existing path we can write to.
+Create a config.js using the config-example.js. You will have to at least fix the databasePath to an existing path we can write to.
 
 Then start the app with:
 
@@ -28,7 +28,7 @@ Visit http://127.0.0.1:8080 and create a new Site. Once you have the site you ca
 # Notes
 This is alpha. Particularly the report generation (cron.js) is very inefficient
 but will greatly and without much effort benefit from improvements in 
-ringojs' berkeley module.
+RingoJs' berkeley module.
 
 I tested if with a 500MB apache logfile, which takes several minutes and eats
 at least 1/2 gig of RAM.. but worked.
