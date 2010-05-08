@@ -48,11 +48,17 @@ if (!log) {
    var log = exports.log = require('ringo/logging').getLogger('sitestats');
 }
 
+
+/**
+ * stats update interval in minutes
+ */
+var statsUpdateInterval = 30;
+
 /**
  * cronjob creating the statistics
  */
 if (!crons) {
    var crons = exports.crons = {
-      'aggregator': setInterval(require('./cron').updatestats, 1000 * 60 * 30),
+      'aggregator': setInterval(require('./cron').updatestats, 1000 * 60 * statsUpdateInterval),
    }
 }

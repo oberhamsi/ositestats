@@ -41,6 +41,9 @@ Visit http://127.0.0.1:8787 and create a new Site. Once you have the site you
 can get the Tracking Javascript Code from the Dashboard. You will have to put
 that Javascript into every page you want tracked.
 
+The stats update every 30 minutes, this is controlled by the `statsUpdateInterval`
+setting in config.js
+
 # Notes
 This is alpha. Particularly the report generation (cron.js) is very inefficient
 but will greatly and without much effort benefit from improvements in 
