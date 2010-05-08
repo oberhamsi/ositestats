@@ -4,7 +4,7 @@ module.shared = true
 
 exports.httpConfig = {
   staticDir: './static',
-  host: "127.0.0.1"
+  host: "127.0.0.1",
   port: 8787,
 };
 
@@ -23,7 +23,8 @@ var Store = require('ringo/storage/berkeleystore').Store;
 
 /**
  * Path to database directory
-var databasePath = "/usr/local/db.sitestats/
+ */
+var databasePath = "/usr/local/db.sitestats/";
 exports.store = new Store(databasePath, {enableTransactions: false});
 
 exports.macros = [
