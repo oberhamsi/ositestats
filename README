@@ -28,6 +28,11 @@ Create a config.js using the config-example.js in
 `./ringojs/packages/sitestats/app/`. You will have to at least fix the
 `databasePath` to an existing path we can write to.
 
+We must prefill the database with some basic values - this is a current
+issue with berkeleystore. Will be fixed:
+
+   $ ./bin/ringo -e "require.paths.push('./packages/sitestats/app/');include('model'); workaroundBugOne()"
+
 Then start the app with:
 
     $ ./bin/ringo packages/sitestats/app/main.js
