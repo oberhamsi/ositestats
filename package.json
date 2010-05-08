@@ -1,7 +1,7 @@
 {
     "name": "sitestats",
     "version": "0.1.0",
-    "description": "Website Visitor Statistics",
-    "keywords": ["internet", "website", "statistics"],
+    "description": "Web analytics server",
+    "keywords": ["internet", "statistics"],
     "author": "Simon Oberhammer <simon@nekapuzer.at>"
 }
