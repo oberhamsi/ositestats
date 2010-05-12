@@ -72,7 +72,7 @@ Distribution.Normalizer = {
    },
    'referer': function(rawKey) {
       // FIXME exclude pages that have domain in current site's domain list
-      return rawKey.split('/').slice(0,3).join('/')
+      return rawKey && rawKey.split('/').slice(0,3).join('/')
    },
    'page': function(rawKey) {
       return rawKey;
