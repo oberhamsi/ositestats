@@ -117,10 +117,10 @@ Distribution.create = function(monthKey, siteKey) {
    var site = Site.query().equals('title', siteKey).select()[0];
    var date = keyToDate(monthKey);
    var newDistributions = [];
+   var hitsCount = hits.length;
    for each (var key in ['userAgent', 'referer', 'page']) {
       // hits that have the site itself as referrer won't be counted
       // for refererr stats
-      var hitsCount = hits.length;
       var counter = {};
       var normalize = Distribution.Normalizer[key];
       // FIXME smarter sample taking, don't check them all
@@ -128,12 +128,8 @@ Distribution.create = function(monthKey, siteKey) {
          var hit = hits[i];
          // site.domains only used by Normalizer.referer
          var distributionKey = normalize(hit[key], site.domains);
-         if (key == 'referer' && distributionKey == 'localDomain') {
-            hitsCount--;
-         } else {
-            if (counter[distributionKey] === undefined) counter[distributionKey] = 1;
-            counter[distributionKey]++;
-         }
+         if (counter[distributionKey] === undefined) counter[distributionKey] = 1;
+         counter[distributionKey]++;
       }
 
       // calc distributions

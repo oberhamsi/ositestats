@@ -6,7 +6,9 @@ var config = require('./config');
 
 /**
  * Main action logging a Hit.
+ *
  * req.params.referer the referer of the page this Hit comes from
+ *
  * req.params.site the site for which this Hit will be logged
  */
 exports.hit = function(req) {
