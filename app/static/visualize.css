@@ -4,6 +4,7 @@ font-family:"Segoe UI",Frutiger,Tahoma,Helvetica,"Helvetica Neue",Arial,sans-ser
 }
 table {
 border-collapse:collapse;
+max-width:500px;
 }
 td, th {
 border:1px solid #DDDDDD;
@@ -166,7 +167,7 @@ caption {
 }
 .visualize {
    -moz-border-radius:12px 12px 12px 12px;border:1px solid #DDDDDD;
-   margin:60px 0 0 30px;
+   margin:5px 0 0 30px;
    padding:25px 40px 90px;
 }
 .visualize canvas {

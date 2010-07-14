@@ -139,9 +139,10 @@ Distribution.create = function(monthKey, siteKey) {
       // calc distributions
       var distributions = {};
       for (let cKey in counter) {
+         // drop very low percent values for prettier stats
          let percent = parseInt((counter[cKey] / hitsCount) * 1000, 10);
-         if (percent > 0.01) {
-            distributions[cKey] = percent;
+         if (percent > 0.001) {
+            distributions[cKey] = counter[cKey];
          }
       }
       var distribution = Distribution.query().

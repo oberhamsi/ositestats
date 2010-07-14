@@ -30,7 +30,7 @@ var renderDistTable = function(data, $table) {
    keys.forEach(function(key) {
       var $row = $("<tr></tr>");
       $row.append("<th>" + key + "</th>");
-      $row.append("<td>" + (dist.distributions[key] || 0)/10 + "</td>");
+      $row.append("<td>" + (dist.distributions[key] || 0) + "</td>");
       $tbody.append($row);
    }, this);
    return;
@@ -45,6 +45,7 @@ $(document).ready(function() {
    });
    var distOps = {
       parseDirection: 'x',
+      appendTitle: false,
       type: 'pie',
       width: 400,
       height: 400,
@@ -52,15 +53,15 @@ $(document).ready(function() {
 
    $.get('/distributiondata/<%site%>/page', function(data) {
       renderDistTable(data, $("table#page"));
-      $('table#page').visualize(distOps);
+      $('table#page').visualize(distOps, $("div#vispage"));
    });
    $.get('/distributiondata/<%site%>/referer', function(data) {
       renderDistTable(data, $("table#referer"));
-      $('table#referer').visualize(distOps);
+      $('table#referer').visualize(distOps, $("div#visreferer"));
    });
    $.get('/distributiondata/<%site%>/userAgent', function(data) {
       renderDistTable(data, $("table#useragents"));
-      $('table#useragents').visualize(distOps);
+      $('table#useragents').visualize(distOps, $("div#visagents"));
    });
    
 });
@@ -84,38 +85,56 @@ $(document).ready(function() {
 	</tbody>
 </table>
 
-<table id='page' class='accessHide'>
-	<caption id='sts-tablecaption'></caption>
-	<thead>
-		<tr id='sts-tablehead'>
-		</tr>
-	</thead>
-	<tbody id='sts-tablebody'>
+<br style="clear:both"/>
 
-	</tbody>
-</table>
+<div>
+   <table id='page' style="float:left">
+	   <caption id='sts-tablecaption'></caption>
+	   <thead>
+		   <tr id='sts-tablehead'>
+		   </tr>
+	   </thead>
+	   <tbody id='sts-tablebody'>
 
-<table id='referer' class='accessHide'>
-	<caption id='sts-tablecaption'></caption>
-	<thead>
-		<tr id='sts-tablehead'>
-		</tr>
-	</thead>
-	<tbody id='sts-tablebody'>
+	   </tbody>
+   </table>
+   <div id="vispage" class="visualize" style="float:left">
+   </div>
 
-	</tbody>
-</table>
+</div>
 
-<table id='useragents' class='accessHide'>
-	<caption id='sts-tablecaption'></caption>
-	<thead>
-		<tr id='sts-tablehead'>
-		</tr>
-	</thead>
-	<tbody id='sts-tablebody'>
+<br style="clear:both"/>
 
-	</tbody>
-</table>
+<div>
+   <table id='referer' style="float:left">
+	   <caption id='sts-tablecaption'></caption>
+	   <thead>
+		   <tr id='sts-tablehead'>
+		   </tr>
+	   </thead>
+	   <tbody id='sts-tablebody'>
+
+	   </tbody>
+   </table>
+   <div id="visreferer" class="visualize">
+   </div>
+</div>
+
+<br style="clear:both"/>
+
+<div>
+   <table id='useragents' style="float:left">
+	   <caption id='sts-tablecaption'></caption>
+	   <thead>
+		   <tr id='sts-tablehead'>
+		   </tr>
+	   </thead>
+	   <tbody id='sts-tablebody'>
+	   </tbody>
+   </table>
+   <div id="visagents" class="visualize">
+   </div>
+</div>
 
 <% subskin 'aggregateRow' %>
 <tr>
