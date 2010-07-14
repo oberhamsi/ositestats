@@ -5,6 +5,7 @@ font-family:"Segoe UI",Frutiger,Tahoma,Helvetica,"Helvetica Neue",Arial,sans-ser
 table {
 border-collapse:collapse;
 max-width:500px;
+width:500px;
 }
 td, th {
 border:1px solid #DDDDDD;
