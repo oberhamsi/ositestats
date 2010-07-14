@@ -32,6 +32,9 @@ var getFirst = function(entity, duration, siteKey) {
  * A Site: title, domains
  */
 var Site = store.defineEntity('Site');
+Site.prototype.toString = function() {
+   return '[Site] ' + this.title + ' (' + this.domains.join(',') + ')';
+};
 
 /**
  * A Distribution stores the monthly distribution of a Hit attribute. For example
