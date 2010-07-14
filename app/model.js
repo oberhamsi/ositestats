@@ -74,7 +74,6 @@ Distribution.Normalizer = {
       return browser + ', ' + os;
    },
    'referer': function(rawKey, localDomains) {
-      // FIXME exclude pages that have domain in current site's domain list
       var normalKey = rawKey && rawKey.split('/').slice(0,3).join('/');
       // if it's null or undef its certainly no localdomain
       var isLocalDomain = normalKey && localDomains.some(function(ld) {
@@ -85,8 +84,22 @@ Distribution.Normalizer = {
       return normalKey;
       
    },
-   'page': function(rawKey) {
-      return rawKey;
+   'page': function(rawKey, localDomains) {
+      // drop local domain part
+      var normalKey = rawKey;
+      if (rawKey && rawKey.length) {
+         var idx = 0;
+         localDomains.some(function(ld) {
+            if (rawKey.indexOf(ld) > -1) {
+               idx = rawKey.indexOf(ld) + ld.length
+               return true;
+            }
+         });
+         if (idx > 0) {
+            normalKey = rawKey.slice(idx);
+         }
+      }
+      return normalKey;
    },
 };
 
