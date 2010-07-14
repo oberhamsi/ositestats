@@ -73,9 +73,17 @@ Distribution.Normalizer = {
       }
       return browser + ', ' + os;
    },
-   'referer': function(rawKey) {
+   'referer': function(rawKey, localDomains) {
       // FIXME exclude pages that have domain in current site's domain list
-      return rawKey && rawKey.split('/').slice(0,3).join('/')
+      var normalKey = rawKey && rawKey.split('/').slice(0,3).join('/');
+      // if it's null or undef its certainly no localdomain
+      var isLocalDomain = normalKey && localDomains.some(function(ld) {
+         return normalKey.indexOf(ld) > -1;
+      });
+      if (isLocalDomain) return 'localDomain';
+      
+      return normalKey;
+      
    },
    'page': function(rawKey) {
       return rawKey;
@@ -93,18 +101,26 @@ Distribution.create = function(monthKey, siteKey) {
       equals('month', monthKey).
       equals('site', siteKey).
       select();
-   var hitsCount = hits.length;
+   var site = Site.query().equals('title', siteKey).select()[0];
    var date = keyToDate(monthKey);
    var newDistributions = [];
    for each (var key in ['userAgent', 'referer', 'page']) {
+      // hits that have the site itself as referrer won't be counted
+      // for refererr stats
+      var hitsCount = hits.length;
       var counter = {};
       var normalize = Distribution.Normalizer[key];
       // FIXME smarter sample taking, don't check them all
       for (var i=0; i<hitsCount; i++) {
          var hit = hits[i];
-         var distributionKey = normalize(hit[key]);
-         if (counter[distributionKey] === undefined) counter[distributionKey] = 1;
-         counter[distributionKey]++;
+         // site.domains only used by Normalizer.referer
+         var distributionKey = normalize(hit[key], site.domains);
+         if (key == 'referer' && distributionKey == 'localDomain') {
+            hitsCount--;
+         } else {
+            if (counter[distributionKey] === undefined) counter[distributionKey] = 1;
+            counter[distributionKey]++;
+         }
       }
 
       // calc distributions
