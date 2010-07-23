@@ -19,18 +19,20 @@ function clickGraph(dayOrMonth, siteKey) {
    var site = Site.query().equals('title', siteKey).select()[0];
 	
 	var graph = {}; // {page: 'xy', hits: 4, referers: ['abc': 5, 'def': 7]}
+	var maxRefs = 0;
 	hits.forEach(function(hit) {
 		var page = Distribution.Normalizer.page(hit.page, site.domains);
 		var referer = Distribution.Normalizer.referer(hit.referer, site.domains);
-		// it's a local page, make it pretty
-		if (referer == 'localDomain') {
-			referer = Distribution.Normalizer.page(hit.referer, site.domains);
-		}
+		if (referer !== 'localDomain') return;
+		
+		referer = Distribution.Normalizer.page(hit.referer, site.domains);
 		var node = graph[page] || {hits: 0, referers: {}};
 		node.hits++;
 		node.referers[referer] = (node.referers[referer] || 0 ) + 1;
+		if (maxRefs < node.referers[referer]) maxRefs = node.referers[referer];
 		graph[page] = node;
 	});
+	maxRefs = maxRefs / 2;
 	
 	var dot = ['digraph "' + siteKey + '" {'];
 	//var externals = [];
@@ -43,7 +45,7 @@ function clickGraph(dayOrMonth, siteKey) {
 			//if (refKey.substr(0,4) === 'http') {
 			//	externals.push('"' + refKey + '"');
 			//}
-			dot.push('"' + refKey + '" -> "' + pageKey + '" [weight=' + weight + ', label=' + weight + ']');
+			dot.push('"' + refKey + '" -> "' + pageKey + '" [style="setlinewidth(' + parseInt(10*(weight/maxRefs)) + ')", label=' + weight + ']');
 		};
 	}
 	//externals.push(' '); // so last node gets attributes when joined
