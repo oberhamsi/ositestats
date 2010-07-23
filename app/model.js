@@ -51,13 +51,30 @@ Distribution.prototype.toString = function() {
          this.key, this[this.duration], this.site, this.distributions && this.distributions.toSource());
 };
 
+// helper for normalizers, removes ?, & parts of url
+function removeQueryParams(rawKey) {
+	if (!rawKey) return rawKey;
+
+   var idx = 0;
+   ['?', '&'].some(function(qp) {
+   	if (rawKey.indexOf(qp) > -1) {
+   		idx = rawKey.indexOf(qp);
+   		return true;
+   	}
+   });
+   if (idx > 0) {
+   	rawKey = rawKey.slice(0, idx);
+   }
+   return rawKey;
+};
+
 /**
  * Hit attributes should be normalized before we calculate their distribution to
  * keep the amount of different values sane (e.g. we only differentiate between
  * IE, FF, safari but not their versions).
  */
 Distribution.Normalizer = {
-   'userAgent': function(rawKey) {
+   userAgent: function(rawKey) {
       rawKey = rawKey.toLowerCase();
       var os;
       // order is significant
@@ -73,7 +90,7 @@ Distribution.Normalizer = {
       }
       return browser + ', ' + os;
    },
-   'referer': function(rawKey, localDomains) {
+   referer: function(rawKey, localDomains) {
       var normalKey = rawKey && rawKey.split('/').slice(0,3).join('/');
       // if it's null or undef its certainly no localdomain
       var isLocalDomain = normalKey && localDomains.some(function(ld) {
@@ -81,10 +98,10 @@ Distribution.Normalizer = {
       });
       if (isLocalDomain) return 'localDomain';
       
-      return normalKey;
+      return removeQueryParams(normalKey);
       
    },
-   'page': function(rawKey, localDomains) {
+   page: function(rawKey, localDomains) {
       // drop local domain part
       var normalKey = rawKey;
       if (rawKey && rawKey.length) {
@@ -99,10 +116,9 @@ Distribution.Normalizer = {
             normalKey = rawKey.slice(idx);
          }
       }
-      return normalKey;
+      return removeQueryParams(normalKey);
    },
 };
-
 /**
  * Creates or updates several Distributions for the given month.
  * @param {String} montKey

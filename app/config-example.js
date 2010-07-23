@@ -54,6 +54,13 @@ if (!log) {
  */
 var statsUpdateInterval = 30;
 
+var siteGraph = {
+	sites: ['ringojs'],
+	minHits: 10,
+	directory: './static/dotfiles/',
+	url: './static/dotfiles/',
+};
+
 /**
  * cronjob creating the statistics
  */
