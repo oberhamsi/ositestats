@@ -1,7 +1,7 @@
 include('./model');
-module.shared = true;
 
-var {store, log} = require('./config');
+var {clickGraph} = require('./clickgraph');
+var {store, log, clickGraphSettings} = require('./config');
 
 /**
  * Returns the first timeKey for which the given entity has
@@ -35,7 +35,7 @@ exports.updatestats = function() {
    log.info('[cron] starting...');
    for each (var site in Site.query().select()) {
       var siteKey = site.title;
-      var siteDomains = site.domains;
+      var siteDomains = site.domains;      
       for each (var entity in [HitAggregate, Distribution]) {
          for each (var duration in ['day', 'month']) {
             if (entity == Distribution && duration === 'day') continue;
@@ -63,3 +63,16 @@ exports.updatestats = function() {
    log.info('[cron] >done');
    return;
 };
+
+exports.updateClickGraph = function() {
+	log.info('[cron] updating clickgraphs');
+   for each (var site in Site.query().select()) {
+      var siteKey = site.title;
+		if (clickGraphSettings.sites[siteKey]) {
+			clickGraph(dateToKey(new Date(), 'month'), siteKey);
+			log.info('[cron] clickgraph written for ' + siteKey);
+		}
+	}
+	log.info('[cron] > done');
+	return;
+}

@@ -30,6 +30,7 @@ exports.store = new Store(databasePath, {enableTransactions: false});
 exports.macros = [
     'ringo/skin/macros',
     'ringo/skin/filters',
+    './macros',
 ];
 
 exports.charset = 'UTF-8';
@@ -49,16 +50,23 @@ if (!log) {
 }
 
 
+var statsUpdateInterval = 30; // in minutes
+var clickGraphUpdateInterval = 6 * 60;
 /**
- * stats update interval in minutes
+ * generates site click graphs
  */
-var statsUpdateInterval = 30;
-
-var siteGraph = {
-	sites: ['ringojs'],
-	minHits: 10,
-	directory: './static/dotfiles/',
-	url: './static/dotfiles/',
+var {join} = require('fs');
+exports.clickGraphSettings = {
+	// where to store png & dot files, and under which url they are reachable
+	directory: join(module.directory, './static/clickgraphs/'),
+	url: './static/clickgraphs/',
+	
+	// per site config, sites not mentioned here don't get a sitegraph
+	sites: {
+		'example': {
+			minHits: 10,
+		},
+	}
 };
 
 /**
@@ -66,6 +74,7 @@ var siteGraph = {
  */
 if (!crons) {
    var crons = exports.crons = {
-      'aggregator': setInterval(require('./cron').updatestats, 1000 * 60 * statsUpdateInterval),
+      aggregator: setInterval(require('./cron').updatestats, 1000 * 60 * statsUpdateInterval),
+      clickGraphUpdater: setInterval(require('./cron').updateClickGraph, 1000 * 60 * clickGraphUpdateInterval),
    }
 }
