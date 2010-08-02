@@ -1,6 +1,7 @@
-include('core/array');
-include('core/number');
+var ARRAY = require('ringo/utils/array');
+var NUMBER = require('ringo/utils/number');
 var $f = require('ringo/utils').format;
+
 export('Hit', 'HitAggregate', 'Distribution', 'Site',
       'dateToKey', 'keyToDate', 'getFirst', 'getLast');
 module.shared = true;
@@ -273,9 +274,14 @@ Hit.prototype.toString = function() {
  */
 var dateToKey = function(date, duration) {
    if (duration === 'day') {
-      return [date.getFullYear(), date.getMonth().format("00"), date.getDate().format("00")].join('');
+      return [date.getFullYear(), 
+              NUMBER.format(date.getMonth(), "00"), 
+              NUMBER.format(date.getDate(), "00")
+             ].join('');
    } else if (duration === 'month') {
-      return [date.getFullYear(), date.getMonth().format("00")].join('');
+      return [date.getFullYear(),
+              NUMBER.format(date.getMonth(), "00")
+             ].join('');
    } else if (duration === 'year') {
       return ""+date.getFullYear();
    } else {

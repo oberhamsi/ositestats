@@ -1,4 +1,4 @@
-include('core/string');
+var STRING = require('ringo/utils/string');
 
 var {Response, jsonResponse, skinResponse} = require('ringo/webapp/response');
 var {Site, Hit, HitAggregate, Distribution, dateToKey} = require('./model');
@@ -13,7 +13,7 @@ var config = require('./config');
  */
 exports.hit = function(req) {
    var userAgent = req.getHeader("User-Agent").toLowerCase();
-   if (userAgent.contains("bot") || userAgent.contains("spider")) {
+   if (STRING.contains(userAgent, "bot") || STRING.contains(userAgent, "spider")) {
       return new Response();
    }
    
@@ -21,7 +21,7 @@ exports.hit = function(req) {
    var ip = req.env.REMOTE_HOST;
    var forwardedFor = req.getHeader("X-Forwarded-For");
    if (forwardedFor != null && typeof(forwardedFor) === "string") {
-      if (forwardedFor.contains(",") === true) {
+      if (STRING.contains(forwardedFor, ",") === true) {
          ip = forwardedFor.trim().split(/\s*,\s*/)[0];
       } else {
          ip = forwardedFor;
@@ -30,7 +30,7 @@ exports.hit = function(req) {
    
    var unique;
    if (!req.cookies.stss) {
-      unique = (ip + "/" +  Math.random() + "/" + userAgent).digest();
+      unique = STRING.digest(ip + "/" +  Math.random() + "/" + userAgent);
       response.setCookie('stss', unique);
    } else {
       unique = req.cookies.stss;
