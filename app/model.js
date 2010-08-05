@@ -1,5 +1,5 @@
-var ARRAY = require('ringo/utils/array');
-var NUMBER = require('ringo/utils/number');
+var ARRAY = require('ringo/utils/arrays');
+var NUMBER = require('ringo/utils/numbers');
 var $f = require('ringo/utils').format;
 
 export('Hit', 'HitAggregate', 'Distribution', 'Site',
@@ -154,7 +154,7 @@ Distribution.create = function(monthKey, siteKey) {
       for (let cKey in counter) {
          // drop very low percent values for prettier stats
          let percent = parseInt((counter[cKey] / hitsCount) * 1000, 10);
-         if (percent > 0.001) {
+         if (percent > 0.001 && cKey !== 'localDomain') {
             distributions[cKey] = counter[cKey];
          }
       }

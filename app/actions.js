@@ -1,4 +1,4 @@
-var STRING = require('ringo/utils/string');
+var STRING = require('ringo/utils/strings');
 
 var {Response, jsonResponse, skinResponse} = require('ringo/webapp/response');
 var {Site, Hit, HitAggregate, Distribution, dateToKey} = require('./model');
