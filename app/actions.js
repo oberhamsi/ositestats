@@ -95,6 +95,34 @@ exports.stats = function(req, siteKey, timeKey) {
    var siteKey = siteKey || req.params.siteKey || config.defaultSite;
    var timeKey = timeKey || req.params.timeKey;  
    var duration;
+   if (!timeKey) {
+      var now = new Date();
+      timeKey = dateToKey(now, 'month');
+   }
+   if (timeKey.length === 6) {
+      duration = 'month';
+   } else if (timeKey.length == 4){
+      duration == 'year'
+   }
+   
+   var aggregateTimeKeys = HitAggregate.query().
+      equals('site', siteKey).
+      equals('duration', duration).
+      select(duration);
+   
+   return skinResponse('./skins/stats.html', {
+      site: siteKey,
+      duration: duration,
+      timeKey: timeKey,
+      timeKeys: aggregateTimeKeys
+   });
+};
+
+
+exports.aggregatedata = function(req, siteKey, timeKey) {
+   var siteKey = siteKey || req.params.siteKey || config.defaultSite;
+   var timeKey = timeKey || req.params.timeKey;  
+   var duration;
    var aggregateDuration;
    if (!timeKey) {
       var now = new Date();
@@ -107,6 +135,7 @@ exports.stats = function(req, siteKey, timeKey) {
       aggregateDuration = "month";
       duration == 'year'
    }
+
    var hitAggregates = HitAggregate.query().
          equals('duration', aggregateDuration).
          equals(duration, timeKey).
@@ -116,17 +145,13 @@ exports.stats = function(req, siteKey, timeKey) {
    hitAggregates.sort(function(a, b) {
       return a[aggregateDuration] - b[aggregateDuration];
    });
-   return skinResponse('./skins/stats.html', {
-      site: siteKey,
-      duration: duration,
-      timeKey: timeKey,
-      hitAggregates: [ha.serialize() for each (ha in hitAggregates)],
-   });
-};
 
-exports.distributions = function(req) {
-   return skinResponse('./skins/distributions.html');
-};
+   return jsonResponse({
+      site: siteKey,
+      timeKey: timeKey,
+      aggregates: [ha.serialize() for each (ha in hitAggregates)],
+   });
+}
 
 /**
  * Returns distribution data for the given key and month. Use by

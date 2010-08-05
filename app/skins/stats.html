@@ -7,19 +7,18 @@
 <script type="text/javascript">
 var site = "<%site%>";
 
-var renderDistTable = function(data, $table) {
-   $("#sts-tablecaption", $table).html(data.distributionKey + "s, " + data.timeKey);
+function renderDistTable(data, $table) {
+   $("#sts-tablecaption", $table).html(data.distributionKey + "s");
    var dist = data.distributions[0];
    var keys = [];
    for (var key in dist.distributions) {
       keys.push(key);
    };
-   var thead = $("#sts-tablehead", $table);
-   thead.append("<td>&nbsp;</td>");
-   thead.append("<th scope='row'>" + dist.month + "</th>");
-
-   var $tbody = $("#sts-tablebody", $table);
-
+   var $tbody = $(".sts-tablebody", $table);
+   var $thead = $(".sts-tablehead", $table);
+   $thead.append("<td>&nbsp;</td>");
+   $thead.append("<th scope='row'>" + dist.month + "</th>");
+   
    keys = keys.filter(function(k) {
       return dist.distributions[k];
    });
@@ -36,13 +35,25 @@ var renderDistTable = function(data, $table) {
    return;
 };
 
-$(document).ready(function() {
-   $('table#hits').visualize({
-      type: 'bar',
-      parseDirection: 'y',
-      appendTitle: false,
-      width: 900,
+function renderAggregateTable(data, $table) {
+   var $tbody = $(".sts-tablebody", $table);
+   data.aggregates.forEach(function(aggregate) {
+      var $row = $("<tr></tr>");
+      $row.append("<th>" + aggregate.day + "</th>");
+      $row.append("<td>" + aggregate.hits + "</td>");
+      $row.append("<td>" + aggregate.uniques + "</td>");
+      $tbody.append($row);
    });
+   return;
+};
+
+function onTimeKeyChange() {
+   var timeKey = $(this).val();
+   // clear old data
+   $(".visualize").empty();
+   $(".sts-tablebody").empty();
+   $(".sts-tablehead").empty();
+   
    var distOps = {
       parseDirection: 'x',
       appendTitle: false,
@@ -50,69 +61,86 @@ $(document).ready(function() {
       width: 400,
       height: 400,
    };
+      
+   $.get('/aggregatedata/<%site%>/' + timeKey, function(data) {
+      renderAggregateTable(data, $('table#hits'));
+      $('table#hits').visualize({
+         type: 'bar',
+         parseDirection: 'y',
+         appendTitle: false,
+         width: 900,
+      }, $("div#vishits"));
+   });
 
-   $.get('/distributiondata/<%site%>/page', function(data) {
+   $.get('/distributiondata/<%site%>/page/' + timeKey, function(data) {
       renderDistTable(data, $("table#page"));
       $('table#page').visualize(distOps, $("div#vispage"));
    });
-   $.get('/distributiondata/<%site%>/referer', function(data) {
+   $.get('/distributiondata/<%site%>/referer/' + timeKey, function(data) {
       renderDistTable(data, $("table#referer"));
       $('table#referer').visualize(distOps, $("div#visreferer"));
    });
-   $.get('/distributiondata/<%site%>/userAgent', function(data) {
+   $.get('/distributiondata/<%site%>/userAgent/' + timeKey, function(data) {
       renderDistTable(data, $("table#useragents"));
       $('table#useragents').visualize(distOps, $("div#visagents"));
    });
-   
+};
+
+$(document).ready(function() {
+   $('#timeKey').change(onTimeKeyChange);
+   $('#timeKey').val("<% timeKey %>");
+   $('#timeKey').trigger('change');
+   return;
 });
 </script>
 
 <% subskin 'content' %>
 
-<h1> SiteStats for <%site%>, <% timeKey %></h1>
+<h1> <%site%>, <select id="timeKey"><% for timeKey in <% timeKeys %> render timeKeyOption %></select></h1>
+
+<div>
 
 <table id='hits'>
-	<caption><% duration %> Hits, <% timeKey %></caption>
+	<caption></caption>
 	<thead>
-		<tr>
+		<tr class="sts-tablehead">
 		   <td></td>
 			<th scope="row">Hits</th>
 			<th scope="row">Uniques</th>
 		</tr>
 	</thead>
-	<tbody>
-      <% for ag in <% hitAggregates %> render aggregateRow %>      
+	<tbody class="sts-tablebody">
 	</tbody>
-</table>
+   </table>
+   <div id="vishits" class="visualize" style="float:left">
+   </div>
+</div>
 
 <br style="clear:both"/>
-
 <div>
    <table id='page' style="float:left">
 	   <caption id='sts-tablecaption'></caption>
 	   <thead>
-		   <tr id='sts-tablehead'>
+		   <tr class='sts-tablehead'>
 		   </tr>
 	   </thead>
-	   <tbody id='sts-tablebody'>
+	   <tbody class='sts-tablebody'>
 
 	   </tbody>
    </table>
    <div id="vispage" class="visualize" style="float:left">
    </div>
-
 </div>
 
 <br style="clear:both"/>
-
 <div>
    <table id='referer' style="float:left">
 	   <caption id='sts-tablecaption'></caption>
 	   <thead>
-		   <tr id='sts-tablehead'>
+		   <tr class="sts-tablehead">
 		   </tr>
 	   </thead>
-	   <tbody id='sts-tablebody'>
+	   <tbody class='sts-tablebody'>
 
 	   </tbody>
    </table>
@@ -123,14 +151,13 @@ $(document).ready(function() {
 <br style="clear:both"/>
 
 <div>
-<h3> User Agents </h3>
    <table id='useragents' style="float:left;display:none;">
 	   <caption id='sts-tablecaption'></caption>
 	   <thead>
-		   <tr id='sts-tablehead'>
+		   <tr class='sts-tablehead'>
 		   </tr>
 	   </thead>
-	   <tbody id='sts-tablebody'>
+	   <tbody class='sts-tablebody'>
 	   </tbody>
    </table>
    <div id="visagents" class="visualize">
@@ -144,10 +171,12 @@ $(document).ready(function() {
 	<img src="<% clickGraphImgUrl <% site %> <% timeKey %> %>"/>
 </div>
 
-
 <% subskin 'aggregateRow' %>
 <tr>
    <th><% ag.day %></th>
    <td><% ag.hits %></td>
    <td><% ag.uniques %></td>
 </tr>
+
+<% subskin timeKeyOption %>
+<option value="<% timeKey %>"> <% timeKey %>
