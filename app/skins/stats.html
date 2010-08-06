@@ -65,10 +65,13 @@ function onTimeKeyChange() {
    $.get('/aggregatedata/<%site%>/' + timeKey, function(data) {
       renderAggregateTable(data, $('table#hits'));
       $('table#hits').visualize({
-         type: 'bar',
+         type: 'line',
+         
          parseDirection: 'y',
          appendTitle: false,
+         lineWeight: 10,
          width: 900,
+         height: 400,
       }, $("div#vishits"));
    });
 
