@@ -32,7 +32,14 @@ td {
    text-align:right;
 }
 
+img#clickgraph {
+   height: 800px;
+}
+
 /** visualize **/
+
+
+
 .visualize {
 background:none repeat scroll 0 0 #FAFAFA;
 border:1px solid #888888;

@@ -112,7 +112,9 @@ $(document).ready(function() {
 <h1> <%site%>, <select id="timeKey"><% for timeKey in <% timeKeys %> render timeKeyOption %></select></h1>
 
 <div>
-
+   <div id="vishits" class="visualize" style="float:left">
+   </div>
+<br style="clear:both"/>
 <table id='hits'>
 	<caption></caption>
 	<thead>
@@ -125,7 +127,27 @@ $(document).ready(function() {
 	<tbody class="sts-tablebody">
 	</tbody>
    </table>
-   <div id="vishits" class="visualize" style="float:left">
+</div>
+
+
+<div class="distributioncontainer">
+   <h3> Clickgraph </h3>
+
+<a href="<% clickGraphPath <% site %> %><% timeKey %>.png">	<img id="clickgraph" clickGraphPath="<% clickGraphPath <% site %> %>" src="<% clickGraphPath <% site %> %><% timeKey %>.png"/></a>
+</div>
+
+<div class="distributioncontainer">
+   <table id='referer' style="float:left">
+	   <caption id='sts-tablecaption'></caption>
+	   <thead>
+		   <tr class="sts-tablehead">
+		   </tr>
+	   </thead>
+	   <tbody class='sts-tablebody'>
+
+	   </tbody>
+   </table>
+   <div id="visreferer" class="visualize">
    </div>
 </div>
 
@@ -145,21 +167,6 @@ $(document).ready(function() {
 </div>
 
 <div class="distributioncontainer">
-   <table id='referer' style="float:left">
-	   <caption id='sts-tablecaption'></caption>
-	   <thead>
-		   <tr class="sts-tablehead">
-		   </tr>
-	   </thead>
-	   <tbody class='sts-tablebody'>
-
-	   </tbody>
-   </table>
-   <div id="visreferer" class="visualize">
-   </div>
-</div>
-
-<div class="distributioncontainer">
    <table id='useragents' style="float:left;display:none;">
 	   <caption id='sts-tablecaption'></caption>
 	   <thead>
@@ -169,14 +176,11 @@ $(document).ready(function() {
 	   <tbody class='sts-tablebody'>
 	   </tbody>
    </table>
+
    <div id="visagents" class="visualize">
    </div>
 </div>
 
-<div class="distributioncontainer">
-   <h3> Clickgraph </h3>
-	<img id="clickgraph" clickGraphPath="<% clickGraphPath <% site %> %>" src="<% clickGraphPath <% site %> %><% timeKey %>.png"/>
-</div>
 
 <% subskin 'aggregateRow' %>
 <tr>

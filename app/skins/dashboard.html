@@ -1,6 +1,7 @@
 <% extends 'skins/base.html' %>
 
 <% subskin 'head' %>
+<link rel="stylesheet" href="<% href /static/dashboard.css %>" />
 <script type="text/javascript" src="<% href ./static/jquery.sparkline.js %>"></script>
 <script>
    $(document).ready(function() {
@@ -21,7 +22,9 @@
 
 <% for site in <% sites %> render siteInfo %>
 
-<hr/>
+
+
+<div class="siteinfo">
 <h2> New Site </h2>
 <form method="POST">
    Site Name<br/>
@@ -30,15 +33,15 @@
    <textarea name="newSiteDomains" rows=5 cols=30></textarea><br/>
    <input value="create" type="submit"/>
 </form>
-
+</div>
 <% subskin 'siteInfo' %>
-<div>
-   <span class='sparkline'> <% site.sparkValues %> </span>
+<div class="siteinfo">
    <!-- FIXME <% href %> once macros are resovled in macros --->
-   <a href="./stats/<% site.title %>"><% site.title %></a> 
-   &nbsp;
-   <a href="#" class="counterlink" site="<% site.title | escapeHtml %>">show counter code</a>
+   <a class="sitetitle" href="./stats/<% site.title %>"><% site.title %></a> 
+
+   <span class='sparkline'> <% site.sparkValues %> </span>
    <br/>
+   <a href="#" class="counterlink" site="<% site.title | escapeHtml %>">show counter code</a>
    <% render counterCode %>
 </div>
 
