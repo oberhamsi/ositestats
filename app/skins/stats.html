@@ -44,6 +44,14 @@ function renderAggregateTable(data, $table) {
    return;
 };
 
+function updateClickGraph(timeKey) {
+   $clickgraph = $("#clickgraph");
+   var url = $clickgraph.attr("clickGraphPath") + "/" + timeKey + ".png";
+   console.log(url);
+   $clickgraph.attr("src", url);
+   return;
+};
+
 function onTimeKeyChange() {
    var timeKey = $(this).val();
    document.location.hash = timeKey;
@@ -51,14 +59,10 @@ function onTimeKeyChange() {
    $(".visualize").empty();
    $(".sts-tablebody").empty();
    
-   var distOps = {
-      parseDirection: 'x',
-      appendTitle: false,
-      type: 'pie',
-      width: 400,
-      height: 400,
-   };
-      
+   // clickgraph img src update
+   updateClickGraph(timeKey);
+   
+   // aggregates hits, uniques
    $.get('/aggregatedata/<%site%>/' + timeKey, function(data) {
       renderAggregateTable(data, $('table#hits'));
       $('table#hits').visualize({
@@ -71,6 +75,15 @@ function onTimeKeyChange() {
          height: 400,
       }, $("div#vishits"));
    });
+
+   // render distributions, pages, referers, useragents
+   var distOps = {
+      parseDirection: 'x',
+      appendTitle: false,
+      type: 'pie',
+      width: 400,
+      height: 400,
+   };
 
    $.get('/distributiondata/<%site%>/page/' + timeKey, function(data) {
       renderDistTable(data, $("table#page"));
@@ -163,7 +176,7 @@ $(document).ready(function() {
 
 <div class="distributioncontainer">
    <h3> Clickgraph </h3>
-	<img src="<% clickGraphImgUrl <% site %> <% timeKey %> %>"/>
+	<img id="clickgraph" clickGraphPath="<% clickGraphPath <% site %> %>" src="<% clickGraphPath <% site %> %><% timeKey %>.png"/>
 </div>
 
 <% subskin 'aggregateRow' %>

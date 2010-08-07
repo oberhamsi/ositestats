@@ -54,8 +54,8 @@ function clickGraph(dayOrMonth, siteKey) {
 	//dot.push('}');
 	dot.push('}');
 	// FIXME do this with streams, no need to write .dot file
-	var dotFile = join(clickGraphSettings.directory, siteKey + '_' + dayOrMonth + '.dot');
-	var imgFile = join(clickGraphSettings.directory, siteKey + '_' + dayOrMonth + '.png');
+	var dotFile = join(clickGraphSettings.directory, siteKey, dayOrMonth + '.dot');
+	var imgFile = join(clickGraphSettings.directory, siteKey, dayOrMonth + '.png');
 	try {
 		write(dotFile, dot.join('\n'));
 		write(imgFile, command('/usr/bin/dot', '-Tpng', dotFile), 'wb');
