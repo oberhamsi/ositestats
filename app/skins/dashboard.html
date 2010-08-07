@@ -25,24 +25,30 @@
 
 
 <div class="siteinfo">
-<h2> New Site </h2>
-<form method="POST">
-   Site Name<br/>
-   <input name="newSiteTitle" type="text"><br/>
-   Domains (one per line)<br/>
-   <textarea name="newSiteDomains" rows=5 cols=30></textarea><br/>
-   <input value="create" type="submit"/>
-</form>
+   <h2> New Site </h2>
+   <form method="POST">
+      Site Name<br/>
+      <input name="newSiteTitle" type="text"><br/>
+      Domains (one per line)<br/>
+      <textarea name="newSiteDomains" rows=5 cols=30></textarea><br/>
+      <input value="create" type="submit"/>
+   </form>
 </div>
+
+
 <% subskin 'siteInfo' %>
 <div class="siteinfo">
-   <!-- FIXME <% href %> once macros are resovled in macros --->
-   <a class="sitetitle" href="./stats/<% site.title %>"><% site.title %></a> 
-
    <span class='sparkline'> <% site.sparkValues %> </span>
-   <br/>
+
+   <!-- FIXME <% href %> once macros are resovled in macros --->
+   <span class="sitetitle">
+      <a href="./stats/<% site.title %>"><% site.title %></a> 
+   </span>
+<!--   <br/>
    <a href="#" class="counterlink" site="<% site.title | escapeHtml %>">show counter code</a>
+   <br/>
    <% render counterCode %>
+-->
 </div>
 
 <% subskin 'counterCode' %>

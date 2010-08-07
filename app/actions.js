@@ -67,14 +67,14 @@ exports.index = function(req) {
       })).save();
    }
 
-   var sites = Site.query().select();
+   var sites = Site.query().equals('title', 'ringojs').select();
    sites = sites.map(function(site) {
       var aggs = HitAggregate.query().
             equals('duration', 'day').
             equals('site', site.title).
             select().slice(0, 14);
       aggs.reverse();
-      var sparkValues = [agg.hits for each (agg in aggs)];
+      var sparkValues = [agg.uniques for each (agg in aggs)];
       return {
          title: site.title,
          sparkValues: sparkValues.join(','),
