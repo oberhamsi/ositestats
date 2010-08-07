@@ -46,6 +46,7 @@ function renderAggregateTable(data, $table) {
 
 function onTimeKeyChange() {
    var timeKey = $(this).val();
+   document.location.hash = timeKey;
    // clear old data
    $(".visualize").empty();
    $(".sts-tablebody").empty();
@@ -87,7 +88,8 @@ function onTimeKeyChange() {
 
 $(document).ready(function() {
    $('#timeKey').change(onTimeKeyChange);
-   $('#timeKey').val("<% timeKey %>");
+   var timeKey = document.location.hash || "<% timeKey %>";
+   $('#timeKey').val(timeKey);
    $('#timeKey').trigger('change');
    return;
 });
