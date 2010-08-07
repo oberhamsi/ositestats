@@ -47,7 +47,6 @@ function renderAggregateTable(data, $table) {
 function updateClickGraph(timeKey) {
    $clickgraph = $("#clickgraph");
    var url = $clickgraph.attr("clickGraphPath") + "/" + timeKey + ".png";
-   console.log(url);
    $clickgraph.attr("src", url);
    return;
 };

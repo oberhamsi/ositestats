@@ -34,7 +34,7 @@ function clickGraph(dayOrMonth, siteKey) {
 	});
 	maxRefs = maxRefs / 2;
 	
-	var dot = ['digraph "' + siteKey + '" {'];
+	var dot = ['digraph "' + siteKey + '" {\nrankdir=LR\n'];
 	//var externals = [];
 	for (var pageKey in graph) {
 		var node = graph[pageKey];
