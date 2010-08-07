@@ -28,6 +28,10 @@ select#timeKey {
 }
 
 
+td {
+   text-align:right;
+}
+
 /** visualize **/
 .visualize {
 background:none repeat scroll 0 0 #FAFAFA;
