@@ -22,6 +22,11 @@ select#timeKey {
    font-size:large;
 }
 
+.distributioncontainer {
+   clear:both;
+   margin: 10px;
+}
+
 
 /** visualize **/
 .visualize {

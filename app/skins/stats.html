@@ -15,9 +15,6 @@ function renderDistTable(data, $table) {
       keys.push(key);
    };
    var $tbody = $(".sts-tablebody", $table);
-   var $thead = $(".sts-tablehead", $table);
-   $thead.append("<td>&nbsp;</td>");
-   $thead.append("<th scope='row'>" + dist.month + "</th>");
    
    keys = keys.filter(function(k) {
       return dist.distributions[k];
@@ -39,7 +36,7 @@ function renderAggregateTable(data, $table) {
    var $tbody = $(".sts-tablebody", $table);
    data.aggregates.forEach(function(aggregate) {
       var $row = $("<tr></tr>");
-      $row.append("<th>" + aggregate.day + "</th>");
+      $row.append("<th>" + aggregate.day.substr(6,8) + "</th>");
       $row.append("<td>" + aggregate.hits + "</td>");
       $row.append("<td>" + aggregate.uniques + "</td>");
       $tbody.append($row);
@@ -52,7 +49,6 @@ function onTimeKeyChange() {
    // clear old data
    $(".visualize").empty();
    $(".sts-tablebody").empty();
-   $(".sts-tablehead").empty();
    
    var distOps = {
       parseDirection: 'x',
@@ -107,7 +103,7 @@ $(document).ready(function() {
 	<caption></caption>
 	<thead>
 		<tr class="sts-tablehead">
-		   <td></td>
+		   <td>Date</td>
 			<th scope="row">Hits</th>
 			<th scope="row">Uniques</th>
 		</tr>
@@ -119,8 +115,7 @@ $(document).ready(function() {
    </div>
 </div>
 
-<br style="clear:both"/>
-<div>
+<div class="distributioncontainer">
    <table id='page' style="float:left">
 	   <caption id='sts-tablecaption'></caption>
 	   <thead>
@@ -135,8 +130,7 @@ $(document).ready(function() {
    </div>
 </div>
 
-<br style="clear:both"/>
-<div>
+<div class="distributioncontainer">
    <table id='referer' style="float:left">
 	   <caption id='sts-tablecaption'></caption>
 	   <thead>
@@ -151,9 +145,7 @@ $(document).ready(function() {
    </div>
 </div>
 
-<br style="clear:both"/>
-
-<div>
+<div class="distributioncontainer">
    <table id='useragents' style="float:left;display:none;">
 	   <caption id='sts-tablecaption'></caption>
 	   <thead>
@@ -167,9 +159,7 @@ $(document).ready(function() {
    </div>
 </div>
 
-<br style="clear:both"/>
-
-<div>
+<div class="distributioncontainer">
    <h3> Clickgraph </h3>
 	<img src="<% clickGraphImgUrl <% site %> <% timeKey %> %>"/>
 </div>
@@ -182,4 +172,4 @@ $(document).ready(function() {
 </tr>
 
 <% subskin timeKeyOption %>
-<option value="<% timeKey %>"> <% timeKey %>
+<option value="<% timeKey %>"> <% timeKey | keyToDate | dateFormat "MM/yyyy" %>
