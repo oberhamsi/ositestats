@@ -148,8 +148,9 @@ $.fn.visualize = function(options, container){
 					var yLabels = [];
 					var chartHeight = o.height;
 					var numLabels = chartHeight / 50;
-					var loopInterval = Math.round(this.topValue() / numLabels);
-					loopInterval = loopInterval - (loopInterval % 10);
+					var rawInterval = Math.round(this.topValue() / numLabels);
+					var loopInterval = rawInterval - rawInterval % 50;
+					loopInterval = loopInterval; // - (loopInterval % 10);
 	
 					for(var j=0; j<=numLabels; j++){
 						yLabels.push(j*loopInterval);
