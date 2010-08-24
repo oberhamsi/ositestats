@@ -1,6 +1,7 @@
 /** basics **/
 body {
 font-family:"Segoe UI",Frutiger,Tahoma,Helvetica,"Helvetica Neue",Arial,sans-serif;
+font-size:small;
 }
 table {
 border-collapse:collapse;
@@ -28,7 +29,7 @@ select#timeKey {
 }
 
 
-td {
+td, th{
    text-align:right;
 }
 
@@ -37,7 +38,6 @@ img#clickgraph {
 }
 
 /** visualize **/
-
 
 
 .visualize {
@@ -163,8 +163,7 @@ list-style:none outside none;
 
 
 /** vis light **/
-font-size:62.5%;
-}
+
 table {
    height:200px;
    margin-left:30px;

@@ -32,11 +32,16 @@ function renderDistTable(data, $table) {
    return;
 };
 
+var WEEKDAY = ['Mo', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 function renderAggregateTable(data, $table) {
+   var date = new Date();
+   date.setYear(data.timeKey.substr(0, 4));
+   date.setMonth(data.timeKey.substr(5, 6));
    var $tbody = $(".sts-tablebody", $table);
    data.aggregates.forEach(function(aggregate) {
+      date.setDate(aggregate.day.substr(6,8));
       var $row = $("<tr></tr>");
-      $row.append("<th>" + aggregate.day.substr(6,8) + "</th>");
+      $row.append("<th>" + date.getDate() + ' ' + WEEKDAY[date.getDay()] + ' ' + "</th>");
       $row.append("<td>" + aggregate.hits + "</td>");
       $row.append("<td>" + aggregate.uniques + "</td>");
       $tbody.append($row);
