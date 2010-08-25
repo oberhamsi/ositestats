@@ -3,7 +3,7 @@ var {write, join} = require('fs');
 var {Hit, Site, Distribution} = require('./model');
 var {command} = require('bsubprocess');
 var {clickGraphSettings} = require('./config');
-
+var dates = require('ringo/utils/dates');
 export('clickGraph');
 
 /**
@@ -34,18 +34,19 @@ function clickGraph(dayOrMonth, siteKey) {
 	});
 	maxRefs = maxRefs / 2;
 	
-	var dot = ['digraph "' + siteKey + '" {\nrankdir=LR\n'];
+	var minHits = clickGraphSettings.sites[siteKey].minHits;
+	var dot = ['digraph "' + siteKey + '" {\nrankdir=LR\nlabel="Last updated: ' + dates.format(new Date(), 'dd.MMM HH:mm') + '. Only connections with min. ' + minHits + ' clicks displayed"\n'];
 	//var externals = [];
 	for (var pageKey in graph) {
 		var node = graph[pageKey];
 		for (var refKey in node.referers) {
 			let weight = node.referers[refKey];
-			if (weight < (clickGraphSettings.sites[siteKey].minHits || 10)) continue;
+			if (weight < (minHits || 10)) continue;
 			
 			//if (refKey.substr(0,4) === 'http') {
 			//	externals.push('"' + refKey + '"');
 			//}
-			dot.push('"' + refKey + '" -> "' + pageKey + '" [style="setlinewidth(' + parseInt(10*(weight/maxRefs)) + ')", label=' + weight + ']');
+			dot.push('"' + refKey + '" -> "' + pageKey + '" [style="setlinewidth(' + Math.max(1, parseInt(10*(weight/maxRefs))) + ')", label=' + weight + ']');
 		};
 	}
 	//externals.push(' '); // so last node gets attributes when joined
