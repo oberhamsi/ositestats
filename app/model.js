@@ -99,6 +99,12 @@ Distribution.Normalizer = {
       });
       if (isLocalDomain) return 'localDomain';
       
+      if (normalKey && normalKey.length) {
+         normalKey = normalKey.toLowerCase();
+         if (normalKey.substr(-1) !== '/') {
+            normalKey = normalKey + '/';
+         }
+      }
       return removeQueryParams(normalKey);
       
    },
