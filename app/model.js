@@ -116,6 +116,10 @@ Distribution.Normalizer = {
          if (idx > 0) {
             normalKey = rawKey.slice(idx);
          }
+         normalKey = normalKey.toLowerCase();
+         if (normalKey.substr(-1) !== '/') {
+            normalKey = normalKey + '/';
+         }
       }
       return removeQueryParams(normalKey);
    },
