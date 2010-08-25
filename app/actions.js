@@ -134,9 +134,10 @@ exports.aggregatedata = function(req, siteKey, timeKey) {
       aggregateDuration = "day";
    } else if (timeKey.length == 4){
       aggregateDuration = "month";
-      duration == 'year'
+      duration = 'year'
    }
 
+   print (aggregateDuration, duration, timeKey);
    var hitAggregates = HitAggregate.query().
          equals('duration', aggregateDuration).
          equals(duration, timeKey).

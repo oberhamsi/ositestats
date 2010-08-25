@@ -79,6 +79,22 @@ function onTimeKeyChange() {
          height: 400,
       }, $("div#vishits"));
    });
+   
+   // aggregates hits, uniques for whole month
+   $.get('/aggregatedata/<%site%>/' + timeKey.substr(0,4), function(data) {
+      var currentMonthAggregate = null;
+      data.aggregates.some(function(aggregate) {
+         if (aggregate.month == timeKey) {
+            currentMonthAggregate = aggregate;
+            return true;
+         }
+         return false;
+      });
+      if (!currentMonthAggregate) return;
+      
+      $("#monthUniques").html(currentMonthAggregate.uniques);
+      $("#monthHits").html(currentMonthAggregate.hits);
+   });
 
    // render distributions, pages, referers, useragents
    var distOps = {
@@ -119,11 +135,15 @@ $(document).ready(function() {
 
 <h1> <%site%>, <select id="timeKey"><% for timeKey in <% timeKeys %> render timeKeyOption %></select></h1>
 
+<div id="monthOverview">
+   <h3> Monthly total: <span id="monthHits"></span> Hits from <span id="monthUniques"></span> Uniques.</h3>
+</div>
+
 <div>
-   <div id="vishits" class="visualize" style="float:left">
+   <div id="vishits" class="visualize" style="float:left;">
    </div>
 <br style="clear:both"/>
-<table id='hits'>
+<table id='hits' style="display:none">
 	<caption></caption>
 	<thead>
 		<tr class="sts-tablehead">
