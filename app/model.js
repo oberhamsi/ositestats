@@ -48,8 +48,8 @@ var Distribution = store.defineEntity('Distribution');
  */
 Distribution.prototype.toString = function() {
 
-   return $f("[Distribution: {} {}, {} - {}", 
-         this.key, this[this.duration], this.site, this.distributions && this.distributions.toSource());
+   return $f("[Distribution: {} {}, {}", 
+         this.key, this[this.duration], this.site);
 };
 
 // helper for normalizers, removes ?, & parts of url
