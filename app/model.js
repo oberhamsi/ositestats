@@ -275,6 +275,20 @@ Hit.prototype.toString = function() {
    return $f('[{} - {} - {} - {}]', this.ip, new Date(this.timestamp), this.page, this.userAgent);
 };
 
+Hit.archive = function(monthKey) {
+   var HitArchive = store.defineEntity('Hit' + monthKey);
+   var hits = Hit.query().equals('month', monthKey).select();
+   for each (hit in hits) {
+      var ha = new HitArchive();
+      for (var key in hit) {
+         ha[key] = hit[key];
+      }
+      ha.save();
+      hit.remove();
+   }
+   return;
+};
+
 /**
  * Converts a Date to a timeKey.
  * @param {Date} date the date to convert

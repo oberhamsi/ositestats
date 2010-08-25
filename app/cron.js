@@ -60,6 +60,16 @@ exports.updatestats = function() {
       }
    } // each site
    store.commitTransaction();
+   
+   // check if hits of last month are still in Hit model
+   // if yes we move them into HitMMMM model.
+   var lastMonth = new Date();
+   lastMonth.setMonth(lastMonth.getMonth()-1);
+   var monthKey = dateToKey(lastMonth, 'month');
+   if (Hit.query().equals('month', monthKey).select().length > 0) {
+      Hit.archive(monthKey);
+      log.info('archived ' +  monthKey + ' hits');
+   } 
    log.info('[cron] >done');
    return;
 };
