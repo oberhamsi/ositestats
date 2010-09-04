@@ -41,7 +41,7 @@ function renderAggregateTable(data, $table) {
    data.aggregates.forEach(function(aggregate) {
       date.setDate(aggregate.day.substr(6,8));
       var $row = $("<tr></tr>");
-      $row.append("<th>" + date.getDate() + ' ' + WEEKDAY[date.getDay()] + ' ' + "</th>");
+      $row.append("<th>" + date.getDate() + '<br/>' + WEEKDAY[date.getDay()] + ' ' + "</th>");
       $row.append("<td>" + aggregate.hits + "</td>");
       $row.append("<td>" + aggregate.uniques + "</td>");
       $tbody.append($row);
@@ -50,7 +50,7 @@ function renderAggregateTable(data, $table) {
    date.setDate(date.getDate()+1);
    while(date.getMonth() === currentMonth) {
       var $row = $("<tr></tr>");
-      $row.append("<th>" + date.getDate() + ' ' + WEEKDAY[date.getDay()] + ' ' + "</th>");
+      $row.append("<th>" + date.getDate() + '<br/>' + WEEKDAY[date.getDay()] + ' ' + "</th>");
       $row.append("<td>" + 0 + "</td>");
       $row.append("<td>" + 0 + "</td>");
       $tbody.append($row);
@@ -80,12 +80,12 @@ function onTimeKeyChange() {
    $.get('/aggregatedata/<%site%>/' + timeKey, function(data) {
       renderAggregateTable(data, $('table#hits'));
       $('table#hits').visualize({
-         type: 'line',
+         type: 'bar',
          
          parseDirection: 'y',
          appendTitle: false,
-         lineWeight: 10,
-         width: 900,
+         lineWidth: 20,
+         width: 930,
          height: 400,
       }, $("div#vishits"));
    });
