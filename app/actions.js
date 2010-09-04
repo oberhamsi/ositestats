@@ -72,8 +72,7 @@ exports.index = function(req) {
       var aggs = HitAggregate.query().
             equals('duration', 'day').
             equals('site', site.title).
-            select().slice(-30);
-      aggs.reverse();
+            select().slice(0,100);
       var sparkValues = [agg.uniques for each (agg in aggs)];
       return {
          title: site.title,
