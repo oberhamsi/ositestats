@@ -47,6 +47,7 @@ function renderAggregateTable(data, $table) {
       $tbody.append($row);
    });
    var currentMonth = date.getMonth();
+   date.setDate(date.getDate()+1);
    while(date.getMonth() === currentMonth) {
       var $row = $("<tr></tr>");
       $row.append("<th>" + date.getDate() + ' ' + WEEKDAY[date.getDay()] + ' ' + "</th>");
