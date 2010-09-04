@@ -46,6 +46,15 @@ function renderAggregateTable(data, $table) {
       $row.append("<td>" + aggregate.uniques + "</td>");
       $tbody.append($row);
    });
+   var currentMonth = date.getMonth();
+   while(date.getMonth() === currentMonth) {
+      var $row = $("<tr></tr>");
+      $row.append("<th>" + date.getDate() + ' ' + WEEKDAY[date.getDay()] + ' ' + "</th>");
+      $row.append("<td>" + 0 + "</td>");
+      $row.append("<td>" + 0 + "</td>");
+      $tbody.append($row);
+      date.setDate(date.getDate()+1);
+   }
    return;
 };
 
