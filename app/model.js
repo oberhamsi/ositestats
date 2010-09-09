@@ -1,6 +1,6 @@
 var ARRAY = require('ringo/utils/arrays');
 var NUMBER = require('ringo/utils/numbers');
-var $f = require('ringo/utils').format;
+var $f = require('ringo/utils/strings').format;
 
 export('Hit', 'HitAggregate', 'Distribution', 'Site',
       'dateToKey', 'keyToDate', 'getFirst', 'getLast');

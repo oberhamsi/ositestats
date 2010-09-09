@@ -1,6 +1,6 @@
 var STRING = require('ringo/utils/strings');
 
-var {Response, jsonResponse, skinResponse} = require('ringo/webapp/response');
+var {Response} = require('ringo/webapp/response');
 var {Site, Hit, HitAggregate, Distribution, dateToKey} = require('./model');
 var config = require('./config');
 
@@ -80,7 +80,7 @@ exports.index = function(req) {
       };
    });
 
-   return skinResponse('./skins/dashboard.html', {
+   return Response.skin('skins/dashboard.html', {
       rootUrl: config.baseUri,
       sites: sites,
    });
@@ -110,7 +110,7 @@ exports.stats = function(req, siteKey, timeKey) {
       equals('duration', duration).
       select(duration);
    
-   return skinResponse('./skins/stats.html', {
+   return Response.skin('skins/stats.html', {
       site: siteKey,
       duration: duration,
       timeKey: timeKey,
@@ -147,7 +147,7 @@ exports.aggregatedata = function(req, siteKey, timeKey) {
       return a[aggregateDuration] - b[aggregateDuration];
    });
 
-   return jsonResponse({
+   return Response.json({
       site: siteKey,
       timeKey: timeKey,
       aggregates: [ha.serialize() for each (ha in hitAggregates)],
@@ -180,7 +180,7 @@ exports.distributiondata = function(req, siteKey, distributionKey, timeKey) {
       return -1;
    });
  
-   return jsonResponse({
+   return Response.json({
       site: siteKey,
       timeKey: timeKey,
       distributionKey: distributionKey,
