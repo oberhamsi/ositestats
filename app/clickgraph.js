@@ -20,11 +20,11 @@ function clickGraph(dayOrMonth, site) {
 	var graph = {}; // {page: 'xy', hits: 4, referers: ['abc': 5, 'def': 7]}
 	var maxRefs = 0;
 	hits.forEach(function(hit) {
-		var page = Distribution.Normalizer.page(hit.page, site.domains);
-		var referer = Distribution.Normalizer.referer(hit.referer, site.domains);
+		var page = Distribution.Normalizer.page(hit.page, site.getDomains());
+		var referer = Distribution.Normalizer.referer(hit.referer, site.getDomains());
 		if (referer !== 'localDomain') return;
 		
-		referer = Distribution.Normalizer.page(hit.referer, site.domains);
+		referer = Distribution.Normalizer.page(hit.referer, site.getDomains());
 		var node = graph[page] || {hits: 0, referers: {}};
 		node.hits++;
 		node.referers[referer] = (node.referers[referer] || 0 ) + 1;
