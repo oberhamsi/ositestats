@@ -1,8 +1,9 @@
 var {write, join} = require('fs');
 
 var {Hit, Site, Distribution} = require('./model');
-var {command} = require('bsubprocess');
+var {command} = require('ringo/subprocess');
 var {clickGraphSettings} = require('./config');
+var {write} = require('fs');
 var dates = require('ringo/utils/dates');
 export('clickGraph');
 
@@ -53,15 +54,12 @@ function clickGraph(dayOrMonth, site) {
 	//dot.push(externals.join(' [color=blue]\n'));
 	//dot.push('}');
 	dot.push('}');
-	// FIXME do this with streams, no need to write .dot file
 	var dotFile = join(clickGraphSettings.directory, site.title, dayOrMonth + '.dot');
+	write(dotFile, dot.join('\n'));
+		
 	var imgFile = join(clickGraphSettings.directory, site.title, dayOrMonth + '.png');
-	try {
-		write(dotFile, dot.join('\n'));
-		write(imgFile, command('/usr/bin/dot', '-Tpng', dotFile), 'wb');
-	} catch (e) {
-		print (e);
-	}
+   var imgData = command('/usr/bin/dot', '-Tpng', dotFile, {binary: true});
+   write(imgFile, imgData, 'wb');
 	return;
 };
 
