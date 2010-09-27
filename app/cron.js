@@ -12,16 +12,16 @@ var log = require('ringo/logging').getLogger('cron');
  * @param {String} duration 'hour' or 'month'
  */
 var getTodoKey = exports.getTodoKey = function(entity, duration, site) {
-   var item = getLast(entity, duration, site);
+   var item = entity.getNewest(site, duration);
    var starttime = null;
    
    if (item) {
-      var hit = getLast(Hit, duration, site);
+      var hit = Hit.getNewest(site, duration);
       if (hit && hit[duration] >= item[duration]) {
          starttime = item[duration];
       }
    } else { 
-      hit = getFirst(Hit, duration, site);
+      hit = Hit.getOldest(site);
       if (hit) starttime = hit[duration];
    }
    

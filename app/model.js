@@ -2,8 +2,7 @@ var ARRAY = require('ringo/utils/arrays');
 var NUMBER = require('ringo/utils/numbers');
 var $f = require('ringo/utils/strings').format;
 
-export('Hit', 'HitAggregate', 'Distribution', 'Site',
-      'dateToKey', 'keyToDate', 'getFirst', 'getLast');
+export('Hit', 'HitAggregate', 'Distribution', 'Site', 'dateToKey', 'keyToDate');
 
 var {store} = require('./config');
 
@@ -67,26 +66,6 @@ var MAPPING_HIT = {
    }
 };
 
-function getLast(entity, duration, site) {
-   var items = [];
-   if (entity === Hit) {
-      items = entity.query().equals('site', site).orderBy('timestamp desc').limit(1).select();
-   } else {
-      items = entity.query().equals('site', site).equals('duration', duration).limit(1).select();
-   }
-   return items[items.length-1];
-};
-
-function getFirst(entity, duration, site) {
-   var items = [];
-   if (entity === Hit) {
-      items = entity.query().equals('site', site).limit(1).select();
-   } else {
-      items = entity.query().equals('site', site).equals('duration', duration).limit(1).select();
-   }
-   return items[0];
-};
-
 /**
  * Site
  */
@@ -105,6 +84,11 @@ Site.prototype.getDomains = function() {
  * we create a Distribution for the attribute userAgent.
  */
 var Distribution = store.defineEntity('Distribution', MAPPING_DISTRIBUTION);
+
+Distribution.getNewest = function(site, duration) {
+   return Distribution.query().equals('site', site).equals('duration', duration).orderBy('month desc').limit(1).select()[0];
+}
+
 
 /**
  * String rep
@@ -236,6 +220,10 @@ Distribution.create = function(monthKey, site) {
  */
 var HitAggregate = store.defineEntity('HitAggregate', MAPPING_HITAGGREGATE);
 
+HitAggregate.getNewest = function(site, duration) {
+   return HitAggregate.query().equals('site', site).equals('duration', duration).orderBy('day desc').limit(1).select()[0];
+}
+
 Object.defineProperty(HitAggregate.prototype, 'starttime', {
    get: function() {
       return keyToDate(this[this.duration]);
@@ -319,6 +307,14 @@ Hit.prototype.toString = function() {
    return $f('[{} - {} - {} - {}]', this.ip, new Date(this.timestamp), this.page, this.userAgent);
 };
 
+Hit.getNewest = function(site) {
+   return Hit.query().equals('site', site).orderBy('timestamp desc').limit(1).select()[0];
+};
+
+Hit.getOldest = function(site) {
+   return Hit.query().equals('site', site).orderBy('timestamp').limit(1).select()[0];
+}
+
 /**
  * Converts a Date to a timeKey.
  * @param {Date} date the date to convert
@@ -383,6 +379,7 @@ function extractDomain(uri) {
    }
    if (!uri || !uri.getHost()) return null;
    
+   // FIXM not really.. breaks on test.com.vn
    return uri.getHost().split('.').splice(-2).join('.');
 }
 
