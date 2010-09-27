@@ -4,44 +4,107 @@ var $f = require('ringo/utils/strings').format;
 
 export('Hit', 'HitAggregate', 'Distribution', 'Site',
       'dateToKey', 'keyToDate', 'getFirst', 'getLast');
-module.shared = true;
 
-var {store, log} = require('./config');
+var {store} = require('./config');
 
-// FIXME getLast/getFirst would be super fast with access to berkley cursors
-var getLast = function(entity, duration, siteKey) {
+var MAPPING_SITE = {
+   table: 'site',
+   properties: {
+      title: {type: 'string'},
+      domain: {type: 'string'},
+   }
+};
+
+var MAPPING_DISTRIBUTION = {
+   table: 'distribution',
+   properties: {
+      key: {type: 'string'},
+      duration: {type: 'string'},
+      // unused day: {type: 'string'},
+      month: {type: 'string'},
+      year: {type: 'string'},
+      
+      distributions: {type: 'string'}, // json
+      site: {
+         type: 'object',
+         entity: 'Site',
+      }
+   }
+};
+
+var MAPPING_HITAGGREGATE = {
+   table: 'hitaggregate',
+   properties: {
+      hits: {type: 'long'},
+      uniques: {type: 'long'},
+      duration: {type: 'string'},
+      day: {type: 'string'},
+      month: {type: 'string'},
+      year: {type: 'string'},
+      site: {
+         type: 'object',
+         entity: 'Site',
+      }
+   }
+};
+
+var MAPPING_HIT = {
+   table: 'hit',
+   properties: {
+      timestamp: {type: 'long'},
+      site: {
+         type: 'object',
+         entity: 'Site',
+      },
+      ip: {type: 'string'},
+      userAgent: {type: 'string'},
+      unique: {type: 'string'},
+      referer: {type: 'string'},
+      page: {type: 'string'},
+      
+      day: {type: 'string'},
+      month: {type: 'string'},
+   }
+};
+
+function getLast(entity, duration, site) {
    var items = [];
    if (entity === Hit) {
-      items = entity.query().equals('site', siteKey).select();
+      items = entity.query().equals('site', site).orderBy('timestamp desc').limit(1).select();
    } else {
-      items = entity.query().equals('site', siteKey).equals('duration', duration).select();
+      items = entity.query().equals('site', site).equals('duration', duration).limit(1).select();
    }
    return items[items.length-1];
 };
 
-var getFirst = function(entity, duration, siteKey) {
+function getFirst(entity, duration, site) {
    var items = [];
    if (entity === Hit) {
-      items = entity.query().equals('site', siteKey).select();
+      items = entity.query().equals('site', site).limit(1).select();
    } else {
-      items = entity.query().equals('site', siteKey).equals('duration', duration).select();
+      items = entity.query().equals('site', site).equals('duration', duration).limit(1).select();
    }
    return items[0];
 };
 
 /**
- * A Site: title, domains
+ * Site
  */
-var Site = store.defineEntity('Site');
+var Site = store.defineEntity('Site', MAPPING_SITE);
 Site.prototype.toString = function() {
-   return '[Site] ' + this.title + ' (' + this.domains.join(',') + ')';
+   return '[Site] ' + this.title + ' (' + this.domain + ')';
+};
+
+// too lazy to do relation table
+Site.prototype.getDomains = function() {
+   return this.domain.split(',');
 };
 
 /**
  * A Distribution stores the monthly distribution of a Hit attribute. For example
  * we create a Distribution for the attribute userAgent.
  */
-var Distribution = store.defineEntity('Distribution');
+var Distribution = store.defineEntity('Distribution', MAPPING_DISTRIBUTION);
 
 /**
  * String rep
@@ -92,42 +155,25 @@ Distribution.Normalizer = {
       return browser + ', ' + os;
    },
    referer: function(rawKey, localDomains) {
-      var normalKey = rawKey && rawKey.split('/').slice(0,3).join('/');
+      var domain = extractDomain(rawKey);
       // if it's null or undef its certainly no localdomain
-      var isLocalDomain = normalKey && localDomains.some(function(ld) {
-         return normalKey.indexOf(ld) > -1;
+      var isLocalDomain = domain && localDomains.some(function(ld) {
+         return domain.indexOf(ld) > -1;
       });
       if (isLocalDomain) return 'localDomain';
       
-      if (normalKey && normalKey.length) {
-         normalKey = normalKey.toLowerCase();
-         if (normalKey.substr(-1) !== '/') {
-            normalKey = normalKey + '/';
-         }
-      }
-      return removeQueryParams(normalKey);
+      return domain;
       
    },
-   page: function(rawKey, localDomains) {
-      // drop local domain part
-      var normalKey = rawKey;
-      if (rawKey && rawKey.length) {
-         var idx = 0;
-         localDomains.some(function(ld) {
-            if (rawKey.indexOf(ld) > -1) {
-               idx = rawKey.indexOf(ld) + ld.length
-               return true;
-            }
-         });
-         if (idx > 0) {
-            normalKey = rawKey.slice(idx);
-         }
-         normalKey = normalKey.toLowerCase();
-         if (normalKey.substr(-1) !== '/') {
-            normalKey = normalKey + '/';
+   page: function(rawKey) {
+      var path = extractPath(rawKey);
+      if (path) {
+         path = path.toLowerCase();
+         if (path.substr(-1) !== '/') {
+            path = path + '/';
          }
       }
-      return removeQueryParams(normalKey);
+      return path;
    },
 };
 /**
@@ -135,13 +181,12 @@ Distribution.Normalizer = {
  * @param {String} montKey
  * @returns {Array} array of serialized distributions created/updated
  */
-Distribution.create = function(monthKey, siteKey) {
+Distribution.create = function(monthKey, site) {
    
    var hits = Hit.query().
       equals('month', monthKey).
-      equals('site', siteKey).
+      equals('site', site).
       select();
-   var site = Site.query().equals('title', siteKey).select()[0];
    var date = keyToDate(monthKey);
    var newDistributions = [];
    var hitsCount = hits.length;
@@ -150,20 +195,18 @@ Distribution.create = function(monthKey, siteKey) {
       // for refererr stats
       var counter = {};
       var normalize = Distribution.Normalizer[key];
-      // FIXME smarter sample taking, don't check them all
       for (var i=0; i<hitsCount; i++) {
          var hit = hits[i];
-         // site.domains only used by Normalizer.referer
-         var distributionKey = normalize(hit[key], site.domains);
-         if (counter[distributionKey] === undefined) counter[distributionKey] = 1;
+         var distributionKey = normalize(hit[key], site.getDomains());
+         if (counter[distributionKey] === undefined) counter[distributionKey] = 0;
          counter[distributionKey]++;
       }
 
-      // calc distributions
+      // drop low distributions for nicer stats
       var distributions = {};
       for (let cKey in counter) {
-         // drop very low percent values for prettier stats
          let percent = parseInt((counter[cKey] / hitsCount) * 1000, 10);
+         /// also drop localDomain referers
          if (percent > 0.001 && cKey !== 'localDomain') {
             distributions[cKey] = counter[cKey];
          }
@@ -172,13 +215,13 @@ Distribution.create = function(monthKey, siteKey) {
          equals('duration', 'month').
          equals('month', monthKey).
          equals('key', key).
-         equals('site', siteKey).
+         equals('site', site).
          select()[0] || new Distribution();
 
-      distribution.site = siteKey;
+      distribution.site = site;
       distribution.duration = 'month';
       distribution.key = key;
-      distribution.distributions = distributions;
+      distribution.distributions = JSON.stringify(distributions);
       distribution.month = monthKey;
       distribution.year = dateToKey(date, 'year');
       distribution.save();
@@ -191,7 +234,7 @@ Distribution.create = function(monthKey, siteKey) {
  * HitAggregates exist for days and months. They hold the amount of uniques
  * and hits for their duration.
  */
-var HitAggregate = store.defineEntity('HitAggregate');
+var HitAggregate = store.defineEntity('HitAggregate', MAPPING_HITAGGREGATE);
 
 Object.defineProperty(HitAggregate.prototype, 'starttime', {
    get: function() {
@@ -226,16 +269,17 @@ HitAggregate.prototype.serialize = function() {
  * Creates or updates the HitAggregate for the given timeKey.
  * @param {String} dayOrMonth a timeKey string, e.g. '201004', '20100405'
  */
-HitAggregate.create = function(dayOrMonth, siteKey) {
+HitAggregate.create = function(dayOrMonth, site) {
    var keyDayOrMonth = dayOrMonth.length === 6 ? 'month' : 'day';
    var otherKey = dayOrMonth.length === 6 ? 'day' : 'month';
    var hits = Hit.query().
       equals(keyDayOrMonth, dayOrMonth).
-      equals('site', siteKey).
+      equals('site', site).
       select();
 
    var uCount = 0;
    var uniques = {};
+   // TODO replace with `distinct(unique)` sql
    for each (var hit in hits) {
       if (!uniques[hit.unique]) {
          uniques[hit.unique] = true;
@@ -247,10 +291,10 @@ HitAggregate.create = function(dayOrMonth, siteKey) {
    var hitAggregate = HitAggregate.query().
       equals('duration', keyDayOrMonth).
       equals(keyDayOrMonth, dayOrMonth).
-      equals('site', siteKey).
+      equals('site', site).
       select()[0] || new HitAggregate();
 
-   hitAggregate.site = siteKey;
+   hitAggregate.site = site;
    hitAggregate.duration = keyDayOrMonth;
    hitAggregate.year = dateToKey(date, 'year');
    hitAggregate.uniques = uCount;
@@ -266,27 +310,13 @@ HitAggregate.create = function(dayOrMonth, siteKey) {
 /**
  * Hit. A single PageView by a client.
  */
-var Hit = store.defineEntity('Hit');
+var Hit = store.defineEntity('Hit', MAPPING_HIT);
 
 /**
  * String rep
  */
 Hit.prototype.toString = function() {
    return $f('[{} - {} - {} - {}]', this.ip, new Date(this.timestamp), this.page, this.userAgent);
-};
-
-Hit.archive = function(monthKey) {
-   var HitArchive = store.defineEntity('Hit' + monthKey);
-   var hits = Hit.query().equals('month', monthKey).select();
-   for each (hit in hits) {
-      var ha = new HitArchive();
-      for (var key in hit) {
-         ha[key] = hit[key];
-      }
-      ha.save();
-      hit.remove();
-   }
-   return;
 };
 
 /**
@@ -296,7 +326,7 @@ Hit.archive = function(monthKey) {
  * @returns {String} the key for the given date and duration
  *
  */
-var dateToKey = function(date, duration) {
+function dateToKey(date, duration) {
    if (duration === 'day') {
       return [date.getFullYear(), 
               NUMBER.format(date.getMonth(), "00"), 
@@ -318,7 +348,7 @@ var dateToKey = function(date, duration) {
  * @param {String} key the key to convert
  * @return {Date} date for the key
  */
-var keyToDate = function(key) {
+function keyToDate (key) {
    var date = new Date();
    var year = parseInt(key.substr(0,4), 10);
    var month = 0;
@@ -342,24 +372,26 @@ var keyToDate = function(key) {
    date.setSeconds(0);
    date.setMilliseconds(0);
    return date;
+};
+
+function extractDomain(uri) {
+   try {
+      uri = new java.net.URL(uri);
+   } catch(e) {
+      //java.net.MalformedURLException
+      return null;
+   }
+   if (!uri || !uri.getHost()) return null;
+   
+   return uri.getHost().split('.').splice(-2).join('.');
 }
 
-/**
- * We must have something in the index or equals() queries will fail. see #1
- */
-exports.workaroundBugOne = function() {
-   (new HitAggregate({
-      duration: 'noop',
-      day: 'noop',
-      month: 'noop',
-      site: 'noop'
-   })).save();
-   (new Distribution({
-      duration: 'noop',
-      key: 'noop',
-      month: 'noop',
-      day: 'noop',
-      year: 'noop',
-      site:'noop'
-   })).save();
-}
+function extractPath(uri) {
+   try {
+      var uri = new java.net.URL(uri);
+   } catch(e) {
+      //java.net.MalformedURLException
+      return null;
+   }
+   return uri.getPath();
+};

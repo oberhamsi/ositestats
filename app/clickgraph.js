@@ -10,14 +10,12 @@ export('clickGraph');
  * creates a png clickgraph for the given duration & site.
  * see clickGraphSettings in config-example.js
  */ 
-function clickGraph(dayOrMonth, siteKey) {
+function clickGraph(dayOrMonth, site) {
    var keyDayOrMonth = dayOrMonth.length === 6 ? 'month' : 'day';
    var hits = Hit.query().
       equals(keyDayOrMonth, dayOrMonth).
-      equals('site', siteKey).
+      equals('site', site).
       select();
-   var site = Site.query().equals('title', siteKey).select()[0];
-	
 	var graph = {}; // {page: 'xy', hits: 4, referers: ['abc': 5, 'def': 7]}
 	var maxRefs = 0;
 	hits.forEach(function(hit) {
@@ -29,13 +27,14 @@ function clickGraph(dayOrMonth, siteKey) {
 		var node = graph[page] || {hits: 0, referers: {}};
 		node.hits++;
 		node.referers[referer] = (node.referers[referer] || 0 ) + 1;
-		if (maxRefs < node.referers[referer]) maxRefs = node.referers[referer];
+		if (maxRefs < node.referers[referer]) {
+		   maxRefs = node.referers[referer];
+	   }
 		graph[page] = node;
 	});
 	maxRefs = maxRefs / 2;
-	
-	var minHits = clickGraphSettings.sites[siteKey].minHits;
-	var dot = ['digraph "' + siteKey + '" {\nrankdir=LR\nlabel="Last updated: ' + dates.format(new Date(), 'dd.MMM HH:mm') + '. Only connections with min. ' + minHits + ' clicks displayed"\n'];
+	var minHits = clickGraphSettings.sites[site.title].minHits;
+	var dot = ['digraph "' + site.title + '" {\nrankdir=LR\nlabel="Last updated: ' + dates.format(new Date(), 'dd.MMM HH:mm') + '. Only connections with min. ' + minHits + ' clicks displayed"\n'];
 	//var externals = [];
 	for (var pageKey in graph) {
 		var node = graph[pageKey];
@@ -55,8 +54,8 @@ function clickGraph(dayOrMonth, siteKey) {
 	//dot.push('}');
 	dot.push('}');
 	// FIXME do this with streams, no need to write .dot file
-	var dotFile = join(clickGraphSettings.directory, siteKey, dayOrMonth + '.dot');
-	var imgFile = join(clickGraphSettings.directory, siteKey, dayOrMonth + '.png');
+	var dotFile = join(clickGraphSettings.directory, site.title, dayOrMonth + '.dot');
+	var imgFile = join(clickGraphSettings.directory, site.title, dayOrMonth + '.png');
 	try {
 		write(dotFile, dot.join('\n'));
 		write(imgFile, command('/usr/bin/dot', '-Tpng', dotFile), 'wb');

@@ -1,8 +1,10 @@
 var STRING = require('ringo/utils/strings');
 
 var {Response} = require('ringo/webapp/response');
-var {Site, Hit, HitAggregate, Distribution, dateToKey} = require('./model');
+var {Site, Hit, HitAggregate, Distribution, dateToKey, extractDomain} = require('./model');
 var config = require('./config');
+
+var COOKIE_NAME = 'ositestats';
 
 /**
  * Main action logging a Hit.
@@ -12,13 +14,44 @@ var config = require('./config');
  * req.params.site the site for which this Hit will be logged
  */
 exports.hit = function(req) {
+   var ignoreResponse = {
+      status: 401,
+      headers: {'Content-Type': 'text/html'},
+      body: ['']
+   };
+   // drop spiders
    var userAgent = req.getHeader("User-Agent").toLowerCase();
    if (STRING.contains(userAgent, "bot") || STRING.contains(userAgent, "spider")) {
-      return new Response();
+      ignoreResponse.body = ['no bots'];
+      return ignoreResponse;
+   }
+   // drop empty referers - hotlinked countpixel
+   var page = req.getHeader('Referer');
+   if (!page) {
+      ignoreResponse.body = ['missing referer'];
+      return ignoreResponse;
+   }
+   // drop if missing site
+   if (!req.params.site) {
+      ignoreResponse.body = ['missing site'];
+      return ignoreResponse;
    }
    
-   var response = new Response('');
-   var ip = req.env.REMOTE_HOST;
+   var redirectResponse = new Response('See other: /blank');
+   redirectResponse.status = 302;
+   redirectResponse.setHeader('Location', '/blank');
+   
+   var site = req.params.site;
+   // drop if not one of the domains we count for that site
+   var domain = extractDomain(page);
+   var matchingSites = Site.query().equals('title', site).equals('domain', domain).select();
+   if (matchingSites.length <= 0) {
+      ignoreResponse.body = ['domain not registered for site ' + site];
+      return ignoreResponse;
+   }
+   var siteEntity = matchingSites[0];
+   
+   var ip = req.remoteAddress;
    var forwardedFor = req.getHeader("X-Forwarded-For");
    if (forwardedFor != null && typeof(forwardedFor) === "string") {
       if (STRING.contains(forwardedFor, ",") === true) {
@@ -29,63 +62,71 @@ exports.hit = function(req) {
    }
    
    var unique;
-   if (!req.cookies.stss) {
+   if (!req.cookies[COOKIE_NAME]) {
       unique = STRING.digest(ip + "/" +  Math.random() + "/" + userAgent);
-      response.setCookie('stss', unique);
+      redirectResponse.setCookie(COOKIE_NAME, unique);
    } else {
-      unique = req.cookies.stss;
+      unique = req.cookies[COOKIE_NAME];
    }
    var now = new Date();
    (new Hit({
       timestamp: now.getTime(),
-      site: unescape(req.params.site) || config.defaultSite,
+      site: siteEntity,
       ip: ip,
       userAgent: userAgent,
       unique: unique || null,
       referer: unescape(req.params.referer) || null,
-      page: req.getHeader('Referer') || null,
+      page: page || null,
 
       day: dateToKey(now, 'day'),
       month: dateToKey(now, 'month'),
    })).save();
-
-   return response;
+   return redirectResponse;
    
 };
 
-exports.index = function(req) {
+exports.blank = function(req) {
+   return {
+      status: 200, 
+      headers: {'Content-Type': 'image/gif'},
+      body: ["GIF89a^A^@^A^@�^@^@^@^@^@^@^@^@!�^D^A^@^@^@^@,^@^@^@^@^A^@^A^@^@^B^BD^A^@;"]
+   };
+}
 
-   if (req.isPost) {
+exports.index = {
+   
+   GET: function(req) {
+      // output front line
+      var sites = Site.query().select();
+      sites = sites.map(function(site) {
+         var aggs = HitAggregate.query().
+               equals('duration', 'day').
+               equals('site', site).
+               select().slice(0,100);
+         var sparkValues = [agg.uniques for each (agg in aggs)];
+         return {
+            title: site.title,
+            sparkValues: sparkValues.join(','),
+         };
+      });
+
+      return Response.skin('skins/dashboard.html', {
+         rootUrl: config.baseUri,
+         sites: sites,
+      });
+   },
+   
+   POST: function(req) {
       // FIXME error handling
-      var title = req.params.newSiteTitle || "";
-      title = title.trim();
-      var domains = req.params.newSiteDomains || "";
-      domains = domains.split(/[\n\r]/);
+      var title = req.params.newSiteTitle.trim();
+      var domain = req.params.newSiteDomain.trim();
       (new Site({
          title: title,
-         domains: domains,
+         domain: domain,
       })).save();
+      return Response.redirect('/');
    }
-
-   var sites = Site.query().equals('title', 'ringojs').select();
-   sites = sites.map(function(site) {
-      var aggs = HitAggregate.query().
-            equals('duration', 'day').
-            equals('site', site.title).
-            select().slice(0,100);
-      var sparkValues = [agg.uniques for each (agg in aggs)];
-      return {
-         title: site.title,
-         sparkValues: sparkValues.join(','),
-      };
-   });
-
-   return Response.skin('skins/dashboard.html', {
-      rootUrl: config.baseUri,
-      sites: sites,
-   });
 };
-
 
 /**
  * Show statistic overview
@@ -105,11 +146,13 @@ exports.stats = function(req, siteKey, timeKey) {
       duration == 'year'
    }
    
+   // FIXME I want site.title to be primary so i can do Site.get(title)
+   var site = Site.query().equals('title', siteKey).select()[0]
+   
    var aggregateTimeKeys = HitAggregate.query().
-      equals('site', siteKey).
+      equals('site', site).
       equals('duration', duration).
       select(duration);
-   
    return Response.skin('skins/stats.html', {
       site: siteKey,
       duration: duration,
@@ -136,11 +179,12 @@ exports.aggregatedata = function(req, siteKey, timeKey) {
       duration = 'year'
    }
 
-   print (aggregateDuration, duration, timeKey);
+   var site = Site.query().equals('title', siteKey).select()[0];
+   
    var hitAggregates = HitAggregate.query().
          equals('duration', aggregateDuration).
          equals(duration, timeKey).
-         equals('site', siteKey).
+         equals('site', site).
          select();
    
    hitAggregates.sort(function(a, b) {
@@ -168,11 +212,13 @@ exports.distributiondata = function(req, siteKey, distributionKey, timeKey) {
       timeKey = dateToKey(now, 'month');
    }
 
+   var site = Site.query().equals('title', siteKey).select()[0];
+   
    var distributions = Distribution.query().
       equals('duration', 'month').
       equals('key', distributionKey).
       equals('month', timeKey).
-      equals('site', siteKey).
+      equals('site', site).
       select();
 
    distributions.sort(function(a, b) {

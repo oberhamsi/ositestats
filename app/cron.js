@@ -1,7 +1,8 @@
 include('./model');
 
 var {clickGraph} = require('./clickgraph');
-var {store, log, clickGraphSettings} = require('./config');
+var {store, clickGraphSettings} = require('./config');
+var log = require('ringo/logging').getLogger('cron');
 
 /**
  * Returns the first timeKey for which the given entity has
@@ -10,17 +11,17 @@ var {store, log, clickGraphSettings} = require('./config');
  * @param {Prototype} entity either Distribution or HitAggregate
  * @param {String} duration 'hour' or 'month'
  */
-var getTodoKey = exports.getTodoKey = function(entity, duration, siteKey) {
-   var item = getLast(entity, duration, siteKey);
+var getTodoKey = exports.getTodoKey = function(entity, duration, site) {
+   var item = getLast(entity, duration, site);
    var starttime = null;
    
    if (item) {
-      var hit = getLast(Hit, duration, siteKey);
+      var hit = getLast(Hit, duration, site);
       if (hit[duration] >= item[duration]) {
          starttime = item[duration];
       }
    } else { 
-      hit = getFirst(Hit, duration, siteKey);
+      hit = getFirst(Hit, duration, site);
       if (hit) starttime = hit[duration];
    }
    
@@ -28,26 +29,29 @@ var getTodoKey = exports.getTodoKey = function(entity, duration, siteKey) {
 };
 
 /**
- * create HitAggregations and Distributions.
+ * Create HitAggregations and Distributions.
+ * If there are unprocessed hits: update aggregation & distribution for the
+ * appropriate timekeys.
  */
 exports.updatestats = function() {
-   store.beginTransaction();
+   //store.beginTransaction();
    log.info('[cron] starting...');
    for each (var site in Site.query().select()) {
-      var siteKey = site.title;
-      var siteDomains = site.domains;      
       for each (var entity in [HitAggregate, Distribution]) {
          for each (var duration in ['day', 'month']) {
             if (entity == Distribution && duration === 'day') continue;
             
-            var startKey = getTodoKey(entity, duration, siteKey);
+            // first key for which we need to calculate distribution & aggregation
+            var startKey = getTodoKey(entity, duration, site);
             if (!startKey) continue;
 
+            // increase key by duration and `create` dist & agg for each key
+            // until we are at current time.
             var currentKey = startKey;
             var currentDate = keyToDate(startKey);
             var now = dateToKey(new Date(), duration);
             while (currentKey <= now) {
-               var item = entity.create(currentKey, siteKey);
+               var item = entity.create(currentKey, site);
                log.info('[cron] created/updated {}', item);
                if (duration === 'day') {
                   currentDate.setDate(currentDate.getDate()+1);
@@ -59,17 +63,19 @@ exports.updatestats = function() {
          }
       }
    } // each site
-   store.commitTransaction();
+   //store.commitTransaction();
    
    // check if hits of last month are still in Hit model
    // if yes we move them into HitMMMM model.
+   /*
    var lastMonth = new Date();
    lastMonth.setMonth(lastMonth.getMonth()-1);
    var monthKey = dateToKey(lastMonth, 'month');
    if (Hit.query().equals('month', monthKey).select().length > 0) {
       Hit.archive(monthKey);
       log.info('archived ' +  monthKey + ' hits');
-   } 
+   }
+   */
    log.info('[cron] >done');
    return;
 };
@@ -79,7 +85,7 @@ exports.updateClickGraph = function() {
    for each (var site in Site.query().select()) {
       var siteKey = site.title;
 		if (clickGraphSettings.sites[siteKey]) {
-			clickGraph(dateToKey(new Date(), 'month'), siteKey);
+			clickGraph(dateToKey(new Date(), 'month'), site);
 			log.info('[cron] clickgraph written for ' + siteKey);
 		}
 	}
