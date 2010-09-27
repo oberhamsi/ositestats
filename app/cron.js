@@ -17,7 +17,7 @@ var getTodoKey = exports.getTodoKey = function(entity, duration, site) {
    
    if (item) {
       var hit = getLast(Hit, duration, site);
-      if (hit[duration] >= item[duration]) {
+      if (hit && hit[duration] >= item[duration]) {
          starttime = item[duration];
       }
    } else { 
