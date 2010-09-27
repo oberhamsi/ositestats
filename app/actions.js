@@ -7,11 +7,7 @@ var config = require('./config');
 var COOKIE_NAME = 'ositestats';
 
 /**
- * Main action logging a Hit.
- *
- * req.params.referer the referer of the page this Hit comes from
- *
- * req.params.site the site for which this Hit will be logged
+ * Main action logging a Hit. Redirects to /blank if hit was registered.
  */
 exports.hit = function(req) {
    var ignoreResponse = {
