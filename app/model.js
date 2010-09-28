@@ -98,23 +98,6 @@ Distribution.prototype.toString = function() {
          this.key, this[this.duration], this.site);
 };
 
-// helper for normalizers, removes ?, & parts of url
-function removeQueryParams(rawKey) {
-	if (!rawKey) return rawKey;
-
-   var idx = 0;
-   ['?', '&'].some(function(qp) {
-   	if (rawKey.indexOf(qp) > -1) {
-   		idx = rawKey.indexOf(qp);
-   		return true;
-   	}
-   });
-   if (idx > 0) {
-   	rawKey = rawKey.slice(0, idx);
-   }
-   return rawKey;
-};
-
 /**
  * Hit attributes should be normalized before we calculate their distribution to
  * keep the amount of different values sane (e.g. we only differentiate between
