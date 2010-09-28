@@ -352,7 +352,7 @@ function keyToDate (key) {
    return date;
 };
 
-exports.extractDomain = function extractDomain(uri) {
+var extractDomain = exports.extractDomain = function(uri) {
    try {
       uri = new java.net.URL(uri);
    } catch(e) {
