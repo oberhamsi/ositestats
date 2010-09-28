@@ -19,7 +19,13 @@ exports.middleware = [
     'ringo/middleware/responselog',
 ];
 
-var Store = require('ringo/storage/berkeleystore').Store;
+var Store = require("ringo/storage/sql/store").Store;
+var store = exports.store = new Store({
+    "url": "jdbc:mysql://localhost/ositestats",
+    "driver": "com.mysql.jdbc.Driver",
+    "username": "root",
+    "password": ""
+});
 
 /**
  * Path to database directory
