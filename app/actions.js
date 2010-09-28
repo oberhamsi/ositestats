@@ -1,5 +1,6 @@
 var STRING = require('ringo/utils/strings');
 
+var {ByteString} = require('binary');
 var {Response} = require('ringo/webapp/response');
 var {Site, Hit, HitAggregate, Distribution, dateToKey, extractDomain} = require('./model');
 var config = require('./config');
@@ -85,7 +86,7 @@ exports.blank = function(req) {
    return {
       status: 200, 
       headers: {'Content-Type': 'image/gif'},
-      body: ["GIF89a^A^@^A^@�^@^@^@^@^@^@^@^@!�^D^A^@^@^@^@,^@^@^@^@^A^@^A^@^@^B^BD^A^@;"]
+      body: [new ByteString([71,73,70,56,57,97,1,0,1,0,128,0,0,255,255,255,255,255,255,33,249,4,1,10,0,1,0,44,0,0,0,0,1,0,1,0,0,2,2,76,1,0,59])],
    };
 }
 
