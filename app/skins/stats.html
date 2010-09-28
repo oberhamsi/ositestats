@@ -64,8 +64,8 @@ function renderAggregateTable(data) {
       date.setDate(aggregate.day.substr(6,8));
       aggData.push({
          date: date.getDate() + " " + WEEKDAY[date.getDay()],
-         hits: aggregate.hits,
-         uniques: aggregate.uniques
+         hits: aggregate.hits || "0",
+         uniques: aggregate.uniques || "0"
       });
       if (aggregate.hits > maxValue) {
          maxValue = aggregate.hits;
