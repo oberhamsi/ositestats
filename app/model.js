@@ -1,5 +1,4 @@
-var ARRAY = require('ringo/utils/arrays');
-var NUMBER = require('ringo/utils/numbers');
+var numbers = require('ringo/utils/numbers');
 var $f = require('ringo/utils/strings').format;
 
 export('Hit', 'HitAggregate', 'Distribution', 'Site', 'dateToKey', 'keyToDate');
@@ -325,12 +324,12 @@ Hit.getOldest = function(site) {
 function dateToKey(date, duration) {
    if (duration === 'day') {
       return [date.getFullYear(), 
-              NUMBER.format(date.getMonth(), "00"), 
-              NUMBER.format(date.getDate(), "00")
+              numbers.format(date.getMonth(), "00"), 
+              numbers.format(date.getDate(), "00")
              ].join('');
    } else if (duration === 'month') {
       return [date.getFullYear(),
-              NUMBER.format(date.getMonth(), "00")
+              numbers.format(date.getMonth(), "00")
              ].join('');
    } else if (duration === 'year') {
       return ""+date.getFullYear();
@@ -370,7 +369,7 @@ function keyToDate (key) {
    return date;
 };
 
-function extractDomain(uri) {
+exports.extractDomain = function extractDomain(uri) {
    try {
       uri = new java.net.URL(uri);
    } catch(e) {

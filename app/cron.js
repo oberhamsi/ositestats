@@ -1,5 +1,4 @@
-include('./model');
-
+var {Site, Hit, HitAggregate, Distribution, keyToDate, dateToKey} = require('./model');
 var {clickGraph} = require('./clickgraph');
 var {store, clickGraphSettings} = require('./config');
 var log = require('ringo/logging').getLogger('cron');

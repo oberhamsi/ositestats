@@ -1,10 +1,10 @@
 var {write, join} = require('fs');
+var {command} = require('ringo/subprocess');
+var dates = require('ringo/utils/dates');
 
 var {Hit, Site, Distribution} = require('./model');
-var {command} = require('ringo/subprocess');
 var {clickGraphSettings} = require('./config');
-var {write} = require('fs');
-var dates = require('ringo/utils/dates');
+
 export('clickGraph');
 
 /**

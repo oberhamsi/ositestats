@@ -1,4 +1,4 @@
-var STRING = require('ringo/utils/strings');
+var strings = require('ringo/utils/strings');
 
 var {ByteString} = require('binary');
 var {Response} = require('ringo/webapp/response');
@@ -18,7 +18,7 @@ exports.hit = function(req) {
    };
    // drop spiders
    var userAgent = req.getHeader("User-Agent").toLowerCase();
-   if (STRING.contains(userAgent, "bot") || STRING.contains(userAgent, "spider")) {
+   if (strings.contains(userAgent, "bot") || strings.contains(userAgent, "spider")) {
       ignoreResponse.body = ['no bots'];
       return ignoreResponse;
    }
@@ -33,11 +33,7 @@ exports.hit = function(req) {
       ignoreResponse.body = ['missing site'];
       return ignoreResponse;
    }
-   
-   var redirectResponse = new Response('See other: /blank');
-   redirectResponse.status = 302;
-   redirectResponse.setHeader('Location', '/blank');
-   
+      
    var site = req.params.site;
    // drop if not one of the domains we count for that site
    var domain = extractDomain(page);
@@ -48,10 +44,15 @@ exports.hit = function(req) {
    }
    var siteEntity = matchingSites[0];
    
+   // success response redirects to /blank gif
+   var redirectResponse = new Response('See other: /blank');
+   redirectResponse.status = 302;
+   redirectResponse.setHeader('Location', '/blank');
+   
    var ip = req.remoteAddress;
    var forwardedFor = req.getHeader("X-Forwarded-For");
    if (forwardedFor != null && typeof(forwardedFor) === "string") {
-      if (STRING.contains(forwardedFor, ",") === true) {
+      if (strings.contains(forwardedFor, ",") === true) {
          ip = forwardedFor.trim().split(/\s*,\s*/)[0];
       } else {
          ip = forwardedFor;
@@ -60,7 +61,7 @@ exports.hit = function(req) {
    
    var unique;
    if (!req.cookies[COOKIE_NAME]) {
-      unique = STRING.digest(ip + "/" +  Math.random() + "/" + userAgent);
+      unique = strings.digest(ip + "/" +  Math.random() + "/" + userAgent);
       redirectResponse.setCookie(COOKIE_NAME, unique);
    } else {
       unique = req.cookies[COOKIE_NAME];
