@@ -14,10 +14,7 @@ exports.urls = [
 
 exports.app = 'ringo/webapp';
 
-exports.middleware = [
-    'ringo/middleware/etag',
-    'ringo/middleware/responselog',
-];
+// exports.middleware = [];
 
 var Store = require("ringo/storage/sql/store").Store;
 var store = exports.store = new Store({
