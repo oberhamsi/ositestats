@@ -1,6 +1,4 @@
-CREATE INDEX site_title ON site (title);
-CREATE INDEX site_domain ON site (domain);
-CREATE INDEX site_id ON site (id);
+CREATE INDEX site_title_domain ON site (title, domain);
 /*
  very important for fast aggregation
 */
