@@ -9,7 +9,7 @@ exports.httpConfig = {
 };
 
 exports.urls = [
-    [ '/', './actions' ]
+    [ '/', require('./actions') ]
 ];
 
 exports.app = 'ringo/webapp';
