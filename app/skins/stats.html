@@ -109,14 +109,19 @@ function updateClickGraph(timeKey) {
 function onTimeKeyChange() {
    var timeKey = $(this).val();
    document.location.hash = timeKey;
+   
+   var $distributions = $("#distributions");
+   var $aggregates = $("#aggregate");
    // clear old data
+   $distributions.empty();
+   $aggregates.empty();
    
    // clickgraph img src update
    updateClickGraph(timeKey);
    
    // aggregates hits, uniques
    $.get('/aggregatedata/<%site%>/' + timeKey, function(data) {
-      $("#aggregate").append(renderAggregateTable(data, $('table#hits')));
+      $aggregates.append(renderAggregateTable(data, $('table#hits')));
    });
    
    // aggregates hits, uniques for whole month
@@ -135,7 +140,6 @@ function onTimeKeyChange() {
       $("#monthHits").html(currentMonthAggregate.hits);
    });
 
-   var $distributions = $("#distributions");
    $.get('/distributiondata/<%site%>/page/' + timeKey, function(data) {
       $distributions.append(renderDistTable(data, $("table#page")));
    });
