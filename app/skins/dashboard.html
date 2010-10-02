@@ -6,7 +6,7 @@
 <script>
    $(document).ready(function() {
       $('.sparkline').sparkline('html', {
-	defaultPixelsPerValue: 5,
+	defaultPixelsPerValue: 1,
 	minSpotColor: false,
 	spotColor: false,});
       $('.counterlink').click(function() {
@@ -18,10 +18,14 @@
 
 <% subskin 'content' %>
 
-<h1> Welcome to SiteStats</h1>
-
+<h1> Dashboard</h1>
+<table style='border:0px'>
+<tr>
+   <th></th>
+   <th>90 day uniques</th>
+</tr>
 <% for site in <% sites %> render siteInfo %>
-
+</table>
 
 
 <div class="siteinfo">
@@ -37,19 +41,24 @@
 
 
 <% subskin 'siteInfo' %>
-<div class="siteinfo">
-   <span class='sparkline'> <% site.sparkValues %> </span>
-
-   <!-- FIXME <% href %> once macros are resovled in macros --->
+<tr>
+<td>
    <span class="sitetitle">
       <a href="./stats/<% site.title %>"><% site.title %></a> 
    </span>
-<!--   <br/>
+</td>
+<td>
+   <span class='sparkline'> <% site.sparkValues %> </span>
+</td>
+
+<td>
+   <!---
    <a href="#" class="counterlink" site="<% site.title | escapeHtml %>">show counter code</a>
    <br/>
    <% render counterCode %>
--->
-</div>
+   --->
+</td>
+</tr>
 
 <% subskin 'counterCode' %>
 <textarea id="code" site="<% site.title | escapeHtml %>" style="display:none" cols=80 rows=12>

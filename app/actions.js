@@ -102,7 +102,7 @@ exports.index = {
                equals('duration', 'day').
                equals('site', site).
                orderBy('day desc').
-               select().slice(0,14);
+               select().slice(0,90);
          var sparkValues = [agg.uniques for each (agg in aggs)];
          return {
             title: site.title,
@@ -185,6 +185,7 @@ exports.aggregatedata = function(req, siteKey, timeKey) {
          equals('duration', aggregateDuration).
          equals(duration, timeKey).
          equals('site', site).
+         orderBy(duration + ' desc').
          select();
    
    hitAggregates.sort(function(a, b) {
