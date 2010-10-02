@@ -107,6 +107,8 @@ exports.index = {
          return {
             title: site.title,
             sparkValues: sparkValues.join(','),
+            sparkMin: Math.min.apply(this, sparkValues),
+            sparkMax: Math.max.apply(this, sparkValues),
          };
       });
 

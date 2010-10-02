@@ -70,7 +70,6 @@ exports.clickGraphSettings = {
 	// per site config, sites not mentioned here don't get a sitegraph
 	sites: {
 		'example': {
-			minHits: 10,
 		},
 	}
 };

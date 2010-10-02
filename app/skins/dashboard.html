@@ -2,6 +2,15 @@
 
 <% subskin 'head' %>
 <link rel="stylesheet" href="<% href /static/dashboard.css %>" />
+<style>
+   td {
+      text-align:right;
+      min-width: 40px;
+   }
+   th {
+      text-align:center;
+   }
+</style>
 <script type="text/javascript" src="<% href ./static/jquery.sparkline.js %>"></script>
 <script>
    $(document).ready(function() {
@@ -19,10 +28,17 @@
 <% subskin 'content' %>
 
 <h1> Dashboard</h1>
+
 <table style='border:0px'>
 <tr>
    <th></th>
-   <th>90 day uniques</th>
+   <th>90 days</th>
+   <th>
+   min
+   </th>
+   <th>
+   max
+   </th>
 </tr>
 <% for site in <% sites %> render siteInfo %>
 </table>
@@ -49,6 +65,12 @@
 </td>
 <td>
    <span class='sparkline'> <% site.sparkValues %> </span>
+</td>
+<td>
+      <% site.sparkMin %>
+</td>
+<td> 
+      <% site.sparkMax %>
 </td>
 
 <td>
