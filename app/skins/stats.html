@@ -74,18 +74,7 @@ function renderAggregateTable(data) {
          maxValue = aggregate.uniques;
       }
    });
-   var currentMonth = date.getMonth();
-   date.setDate(date.getDate()+1);
-   while(date.getMonth() === currentMonth) {
-      var $row = $("<tr></tr>");
-      aggData.push({
-         date: date.getDate() +  " " + WEEKDAY[date.getDay()],
-         hits: 0,
-         uniques: 0,
-      });
-      date.setDate(date.getDate()+1);
-   }
-   
+      
    var MAX_WIDTH = 400;
    return TEMPLATES.aggregate({
       aggregates: aggData
