@@ -361,8 +361,11 @@ var extractDomain = exports.extractDomain = function(uri) {
    }
    if (!uri || !uri.getHost()) return null;
    
-   // FIXM not really.. breaks on test.com.vn
-   return uri.getHost().split('.').splice(-2).join('.');
+   var domainParts = uri.getHost().split('.');
+   if (domainParts.length > 2) {
+      domainParts.splice(0,1);
+   }
+   return domainParts.join('.');
 }
 
 function extractPath(uri) {

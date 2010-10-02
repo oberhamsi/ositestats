@@ -23,6 +23,12 @@
       width: 700px;
    }
    
+   .uniques {
+      border-bottom: blue 3px solid;
+   }
+   .hits {
+      border-bottom: red 3px solid;
+   }
 </style>
 <script type="text/javascript">
 var site = "<%site%>";
@@ -64,7 +70,7 @@ function renderAggregateTable(data) {
    data.aggregates.forEach(function(aggregate) {
       date.setDate(aggregate.day.substr(6,8));
       aggData.push({
-         date: date.getDate() + " " + WEEKDAY[date.getDay()],
+         date: date.getDate() + '., ' + WEEKDAY[date.getDay()],
          hits: aggregate.hits || "0",
          uniques: aggregate.uniques || "0"
       });
@@ -155,13 +161,13 @@ $(document).ready(function() {
 
 <% subskin 'content' %>
 <div>
-<a href="<% href / %>">Dashboard</a>
+<a href="<% href / %>">←Dashboard</a>
 </div>
 
 <h1> <%site%>, <select id="timeKey"><% for timeKey in <% timeKeys %> render timeKeyOption %></select></h1>
 
 <div id="monthOverview">
-   <h3> Monthly total: <span id="monthHits"></span> Hits from <span id="monthUniques"></span> Uniques.</h3>
+   <h3><span id="monthHits"></span> Hits from <span id="monthUniques"></span> Uniques.</h3>
 </div>
 
 <div id="aggregate">
@@ -182,11 +188,15 @@ $(document).ready(function() {
 
 </div>
 
+<DL>
+<DT>Unique<dd>A unique browsing device identified by a cookie or IP/UserAgent combination.
+<DT>Page<dd>Content requested by User.
+</DL>
 
 
 <script template="distribution" type="handlebarjs">
    <table>
-      <caption>{{distributionKey}}</caption>
+      <caption>top {{distributionKey}}s</caption>
       {{#distributions}}
          <tr>
             <th>{{key}}</th>
@@ -200,8 +210,8 @@ $(document).ready(function() {
    <table>
       <tr>
       <th></th>
-      <th> Uniques </th>
-      <th> Pages </th>
+      <th class="uniques"> Uniques </th>
+      <th class="hits"> Pages </th>
       </tr>
       {{#aggregates}}
       <tr>

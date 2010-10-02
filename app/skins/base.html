@@ -2,6 +2,7 @@
 <head>
 <title><% title %></title>
 <script type="text/javascript" src="<% href /static/jquery.js %>"></script>
+<link rel="stylesheet" href="<% href /static/base.css %>" />
 
 <% render 'head' %>
 </head>
@@ -18,7 +19,12 @@
     <div id="menu">
         <% render 'menu' %>
     </div>
-    <div id="footer"><% footer %></div>
+    <div id="footer"><% footer %>
+    
+    <p>
+    <a href="http://github.com/oberhamsi/ositestats">ositestats</a>
+    </p>
+    </div>
 </div>
 </body>
 </html>

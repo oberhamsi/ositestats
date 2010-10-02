@@ -1,20 +1,20 @@
 <% extends 'skins/base.html' %>
 
 <% subskin 'head' %>
-<link rel="stylesheet" href="<% href /static/dashboard.css %>" />
 <style>
    td {
       text-align:right;
       min-width: 40px;
    }
    th {
-      text-align:center;
+      text-align:right;
    }
 </style>
 <script type="text/javascript" src="<% href ./static/jquery.sparkline.js %>"></script>
 <script>
    $(document).ready(function() {
       $('.sparkline').sparkline('html', {
+      fillColor: 'blue',
 	defaultPixelsPerValue: 1,
 	minSpotColor: false,
 	spotColor: false,});
@@ -38,6 +38,9 @@
    </th>
    <th>
    max
+   </th>
+   <th>
+   avg
    </th>
 </tr>
 <% for site in <% sites %> render siteInfo %>
@@ -71,6 +74,9 @@
 </td>
 <td> 
       <% site.sparkMax %>
+</td>
+<td> 
+      <% site.sparkAvg %>
 </td>
 
 <td>
