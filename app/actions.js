@@ -87,7 +87,7 @@ exports.hit = function(req) {
 exports.blank = function(req) {
    return {
       status: 200, 
-      headers: {'Content-Type': 'applicaton/x-javascript'},
+      headers: {'Content-Type': 'applicaton/x-javascript', 'Connection': 'close'},
       body: ['{}'],
    };
 }
@@ -101,6 +101,7 @@ exports.index = {
          var aggs = HitAggregate.query().
                equals('duration', 'day').
                equals('site', site).
+               orderBy('day desc').
                select().slice(0,14);
          var sparkValues = [agg.uniques for each (agg in aggs)];
          return {
