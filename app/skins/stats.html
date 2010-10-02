@@ -6,6 +6,7 @@
    tr > th {
       text-align:left;
    }
+   
    tr > td {
       text-align: right;
    }
@@ -195,6 +196,11 @@ $(document).ready(function() {
 
 <script template="aggregate" type="handlebarjs">
    <table>
+      <tr>
+      <th></th>
+      <th> Uniques </th>
+      <th> Pages </th>
+      </tr>
       {{#aggregates}}
       <tr>
          <th> {{date}} </th>
