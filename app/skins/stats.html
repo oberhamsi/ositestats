@@ -31,8 +31,10 @@ var TEMPLATES = {};
 function renderDistTable(data) {
 
    var distributions = JSON.parse(data.distributions[0].distributions);
-   var keys = Object.keys(distributions);;
-   
+   var keys = [];
+   for (var key in distributions) {
+      keys.push(key);
+   }
    keys.sort(function(a, b) {
       return ( (distributions[b] || 0) - (distributions[a] || 0));
    });
