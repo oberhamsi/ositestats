@@ -136,15 +136,16 @@ function onTimeKeyChange() {
       $("#monthHits").html(currentMonthAggregate.hits);
    });
 
-   $.get('/distributiondata/<%site%>/page/' + timeKey, function(data) {
-      $distributions.append(renderDistTable(data, $("table#page")));
-   });
    $.get('/distributiondata/<%site%>/referer/' + timeKey, function(data) {
       $distributions.append(renderDistTable(data, $("table#referer")));
    });
    $.get('/distributiondata/<%site%>/userAgent/' + timeKey, function(data) {
       $distributions.append(renderDistTable(data, $("table#useragents")));
    });
+   $.get('/distributiondata/<%site%>/page/' + timeKey, function(data) {
+      $distributions.append(renderDistTable(data, $("table#page")));
+   });
+
 };
 
 $(document).ready(function() {
