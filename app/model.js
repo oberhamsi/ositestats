@@ -75,7 +75,7 @@ Site.prototype.toString = function() {
 
 // too lazy to do relation table
 Site.prototype.getDomains = function() {
-   return this.domain.split(',');
+   return this.domain.split(',').map(function(domain) { return domain.trim(); });
 };
 
 /**

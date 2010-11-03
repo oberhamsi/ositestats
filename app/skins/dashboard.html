@@ -43,18 +43,16 @@
 <% for site in <% sites %> render siteInfo %>
 </table>
 
-<!--
 <div class="siteinfo">
    <h2> New Site </h2>
    <form method="POST">
       Site Name<br/>
       <input name="newSiteTitle" type="text"><br/>
-      Domain<br/>
-      <input name="newSiteDomain" type="text"><br/>
+      Domains (comma seperated)<br/>
+      <input name="newSiteDomain" type="text" size=50><br/>
       <input value="create" type="submit"/>
    </form>
 </div>
--->
 
 <% subskin 'siteInfo' %>
 <tr>
