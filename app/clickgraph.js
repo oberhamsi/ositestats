@@ -1,4 +1,4 @@
-var {write, join} = require('fs');
+var {write, join, exists, makeDirectory} = require('fs');
 var {command} = require('ringo/subprocess');
 var dates = require('ringo/utils/dates');
 
@@ -55,10 +55,15 @@ function clickGraph(dayOrMonth, site) {
 	//dot.push(externals.join(' [color=blue]\n'));
 	//dot.push('}');
 	dot.push('}');
-	var dotFile = join(clickGraphSettings.directory, site.title, dayOrMonth + '.dot');
+	// does the directory exist?
+	var siteDir = join(clickGraphSettings.directory, site.title);
+	if (!exists(siteDir)) {
+	   makeDirectory(siteDir);
+	}
+	var dotFile = join(siteDir, dayOrMonth + '.dot');
 	write(dotFile, dot.join('\n'));
 		
-	var imgFile = join(clickGraphSettings.directory, site.title, dayOrMonth + '.png');
+	var imgFile = join(siteDir, dayOrMonth + '.png');
    var imgData = command('/usr/bin/dot', '-Tpng', dotFile, {binary: true});
    write(imgFile, imgData, 'wb');
 	return;
