@@ -34,9 +34,10 @@ function clickGraph(dayOrMonth, site) {
 		graph[page] = node;
 	});
 	maxRefs = maxRefs / 2;
-	var minHits = clickGraphSettings.sites[site.title].minHits;
+	var minHits = maxRefs / 2;
 	var dot = ['digraph "' + site.title + '" {\nrankdir=LR\nlabel="Last updated: ' + dates.format(new Date(), 'dd.MMM HH:mm') + '. Only connections with min. ' + minHits + ' clicks displayed"\n'];
 	//var externals = [];
+	// FIXME count number of nodes -- thre must be a maximum
 	for (var pageKey in graph) {
 		var node = graph[pageKey];
 		for (var refKey in node.referers) {

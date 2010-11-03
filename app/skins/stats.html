@@ -6,6 +6,7 @@
    tr > th {
       text-align:left;
    }
+   
    tr > td {
       text-align: right;
    }
@@ -22,6 +23,12 @@
       width: 700px;
    }
    
+   .uniques {
+      border-bottom: blue 3px solid;
+   }
+   .hits {
+      border-bottom: red 3px solid;
+   }
 </style>
 <script type="text/javascript">
 var site = "<%site%>";
@@ -33,7 +40,7 @@ function renderDistTable(data) {
    var keys = [];
    for (var key in distributions) {
       keys.push(key);
-   };
+   }
    keys.sort(function(a, b) {
       return ( (distributions[b] || 0) - (distributions[a] || 0));
    });
@@ -63,7 +70,7 @@ function renderAggregateTable(data) {
    data.aggregates.forEach(function(aggregate) {
       date.setDate(aggregate.day.substr(6,8));
       aggData.push({
-         date: date.getDate() + " " + WEEKDAY[date.getDay()],
+         date: date.getDate() + '., ' + WEEKDAY[date.getDay()],
          hits: aggregate.hits || "0",
          uniques: aggregate.uniques || "0"
       });
@@ -74,18 +81,7 @@ function renderAggregateTable(data) {
          maxValue = aggregate.uniques;
       }
    });
-   var currentMonth = date.getMonth();
-   date.setDate(date.getDate()+1);
-   while(date.getMonth() === currentMonth) {
-      var $row = $("<tr></tr>");
-      aggData.push({
-         date: date.getDate() +  " " + WEEKDAY[date.getDay()],
-         hits: 0,
-         uniques: 0,
-      });
-      date.setDate(date.getDate()+1);
-   }
-   
+      
    var MAX_WIDTH = 400;
    return TEMPLATES.aggregate({
       aggregates: aggData
@@ -140,15 +136,16 @@ function onTimeKeyChange() {
       $("#monthHits").html(currentMonthAggregate.hits);
    });
 
-   $.get('/distributiondata/<%site%>/page/' + timeKey, function(data) {
-      $distributions.append(renderDistTable(data, $("table#page")));
-   });
    $.get('/distributiondata/<%site%>/referer/' + timeKey, function(data) {
       $distributions.append(renderDistTable(data, $("table#referer")));
    });
    $.get('/distributiondata/<%site%>/userAgent/' + timeKey, function(data) {
       $distributions.append(renderDistTable(data, $("table#useragents")));
    });
+   $.get('/distributiondata/<%site%>/page/' + timeKey, function(data) {
+      $distributions.append(renderDistTable(data, $("table#page")));
+   });
+
 };
 
 $(document).ready(function() {
@@ -165,13 +162,13 @@ $(document).ready(function() {
 
 <% subskin 'content' %>
 <div>
-<a href="<% href / %>">Dashboard</a>
+<a href="<% href / %>">←Dashboard</a>
 </div>
 
 <h1> <%site%>, <select id="timeKey"><% for timeKey in <% timeKeys %> render timeKeyOption %></select></h1>
 
 <div id="monthOverview">
-   <h3> Monthly total: <span id="monthHits"></span> Hits from <span id="monthUniques"></span> Uniques.</h3>
+   <h3><span id="monthHits"></span> Hits from <span id="monthUniques"></span> Uniques.</h3>
 </div>
 
 <div id="aggregate">
@@ -192,11 +189,15 @@ $(document).ready(function() {
 
 </div>
 
+<DL>
+<DT>Unique<dd>A unique browsing device identified by a cookie or IP/UserAgent combination.
+<DT>Page<dd>Content requested by User.
+</DL>
 
 
 <script template="distribution" type="handlebarjs">
    <table>
-      <caption>{{distributionKey}}</caption>
+      <caption>top {{distributionKey}}s</caption>
       {{#distributions}}
          <tr>
             <th>{{key}}</th>
@@ -208,6 +209,11 @@ $(document).ready(function() {
 
 <script template="aggregate" type="handlebarjs">
    <table>
+      <tr>
+      <th></th>
+      <th class="uniques"> Uniques </th>
+      <th class="hits"> Pages </th>
+      </tr>
       {{#aggregates}}
       <tr>
          <th> {{date}} </th>

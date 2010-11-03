@@ -1,12 +1,21 @@
 <% extends 'skins/base.html' %>
 
 <% subskin 'head' %>
-<link rel="stylesheet" href="<% href /static/dashboard.css %>" />
+<style>
+   td {
+      text-align:right;
+      min-width: 40px;
+   }
+   th {
+      text-align:right;
+   }
+</style>
 <script type="text/javascript" src="<% href ./static/jquery.sparkline.js %>"></script>
 <script>
    $(document).ready(function() {
       $('.sparkline').sparkline('html', {
-	defaultPixelsPerValue: 5,
+      fillColor: 'blue',
+	defaultPixelsPerValue: 1,
 	minSpotColor: false,
 	spotColor: false,});
       $('.counterlink').click(function() {
@@ -18,12 +27,23 @@
 
 <% subskin 'content' %>
 
-<h1> Welcome to SiteStats</h1>
+<h1> Dashboard</h1>
 
+<table style='border:0px'>
+<tr>
+   <th></th>
+   <th>90 days</th>
+   <th>
+   max
+   </th>
+   <th>
+   avg
+   </th>
+</tr>
 <% for site in <% sites %> render siteInfo %>
+</table>
 
-
-
+<!--
 <div class="siteinfo">
    <h2> New Site </h2>
    <form method="POST">
@@ -34,22 +54,33 @@
       <input value="create" type="submit"/>
    </form>
 </div>
-
+-->
 
 <% subskin 'siteInfo' %>
-<div class="siteinfo">
-   <span class='sparkline'> <% site.sparkValues %> </span>
-
-   <!-- FIXME <% href %> once macros are resovled in macros --->
+<tr>
+<td>
    <span class="sitetitle">
       <a href="./stats/<% site.title %>"><% site.title %></a> 
    </span>
-<!--   <br/>
+</td>
+<td>
+   <span class='sparkline'> <% site.sparkValues %> </span>
+</td>
+<td> 
+      <% site.sparkMax %>
+</td>
+<td> 
+      <% site.sparkAvg %>
+</td>
+
+<td>
+   <!---
    <a href="#" class="counterlink" site="<% site.title | escapeHtml %>">show counter code</a>
    <br/>
    <% render counterCode %>
--->
-</div>
+   --->
+</td>
+</tr>
 
 <% subskin 'counterCode' %>
 <textarea id="code" site="<% site.title | escapeHtml %>" style="display:none" cols=80 rows=12>

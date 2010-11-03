@@ -1,8 +1,8 @@
-var databasePath = "/home/simon/db.sitestats/";
+var databasePath = "/home/simon/db.sitestats.copy/";
 var {Store} = require('ringo/storage/berkeleystore');
 var h2store = new Store(databasePath, {enableTransactions: false});
 
-var H2Hit = h2store.defineEntity('Hit201007');
+var H2Hit = h2store.defineEntity('Hit201005');
 
 var {Hit, Site} = require('../model');
 

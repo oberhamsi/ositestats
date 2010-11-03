@@ -1,0 +1,20 @@
+html{background:white url() no-repeat bottom right;color:black;margin:4em;}
+body{font:normal medium 'Gill Sans','Gill Sans MT','Goudy Bookletter 1911','Linux Libertine O','Liberation Serif',Candara,serif;margin:1.75em 
+auto;width:40em;line-height:1.75;word-spacing:0.1em;color:#503e2b}
+
+#footer {
+   text-align:center;
+}
+
+select {
+   font-size:x-large;
+}
+
+a {
+   color: #3d2b4f;
+}
+
+
+tr:hover {
+   background-color: #d9c2b4;
+}

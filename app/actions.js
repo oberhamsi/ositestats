@@ -87,7 +87,7 @@ exports.hit = function(req) {
 exports.blank = function(req) {
    return {
       status: 200, 
-      headers: {'Content-Type': 'applicaton/x-javascript'},
+      headers: {'Content-Type': 'applicaton/x-javascript', 'Connection': 'close'},
       body: ['{}'],
    };
 }
@@ -101,11 +101,15 @@ exports.index = {
          var aggs = HitAggregate.query().
                equals('duration', 'day').
                equals('site', site).
-               select().slice(0,14);
+               orderBy('day desc').
+               select().slice(0,90);
          var sparkValues = [agg.uniques for each (agg in aggs)];
          return {
             title: site.title,
             sparkValues: sparkValues.join(','),
+            sparkMin: Math.min.apply(this, sparkValues),
+            sparkMax: Math.max.apply(this, sparkValues),
+            sparkAvg: parseInt(sparkValues.reduce(function(x,y) { return x+y;}) / sparkValues.length, 10),
          };
       });
 
@@ -184,6 +188,7 @@ exports.aggregatedata = function(req, siteKey, timeKey) {
          equals('duration', aggregateDuration).
          equals(duration, timeKey).
          equals('site', site).
+         orderBy(duration + ' desc').
          select();
    
    hitAggregates.sort(function(a, b) {
