@@ -24,4 +24,12 @@ The clickgraph shows the most often used paths through your website. It needs:
 
   * graphviz (specifically `/usr/bin/dot` must be present)
   * to create directories below `app/static/clickgraphs/`
-  
+
+Webinterface
+--------------
+The app gives you a dashboard to create new sites that need tracking:
+
+  * Site name - keep to lowercase, alphanums for now
+  * Domain - comma seperated list of TLDs that belong to that site
+
+The list of domains is essential! Hits must originate from that domain or they are not counted.
