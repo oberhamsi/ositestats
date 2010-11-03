@@ -12,24 +12,6 @@ exports.urls = [
     [ '/', require('./actions') ]
 ];
 
-exports.app = 'ringo/webapp';
-
-// exports.middleware = [];
-
-var Store = require("ringo/storage/sql/store").Store;
-var store = exports.store = new Store({
-    "url": "jdbc:mysql://localhost/ositestats",
-    "driver": "com.mysql.jdbc.Driver",
-    "username": "root",
-    "password": ""
-});
-
-/**
- * Path to database directory
- */
-var databasePath = "/usr/local/db.sitestats/";
-exports.store = new Store(databasePath, {enableTransactions: false});
-
 exports.macros = [
     'ringo/skin/macros',
     'ringo/skin/filters',
@@ -52,9 +34,37 @@ if (!log) {
    var log = exports.log = require('ringo/logging').getLogger('sitestats');
 }
 
+/**
+ * How often should sitestats recalculate the statistics?
+ */
+var statsUpdateInterval = 30; // minutes
 
-var statsUpdateInterval = 30; // in minutes
-var clickGraphUpdateInterval = 6 * 60;
+/**
+ * How often should sitestats update the clickgraph
+ */
+var clickGraphUpdateInterval = 6 * 60; // minutes
+
+/**
+ * Store settings
+ */
+var Store = require("ringo/storage/sql/store").Store;
+var store = exports.store = new Store({
+    "url": "jdbc:mysql://localhost/ositestats",
+    "driver": "com.mysql.jdbc.Driver",
+    "username": "root",
+    "password": ""
+});
+
+/**
+ * Cronjob creating the statistics
+ */
+if (!crons) {
+   var crons = exports.crons = {
+      aggregator: setInterval(require('./cron').updatestats, 1000 * 60 * statsUpdateInterval),
+      clickGraphUpdater: setInterval(require('./cron').updateClickGraph, 1000 * 60 * clickGraphUpdateInterval),
+   }
+};
+
 /**
  * generates site click graphs
  */
@@ -71,12 +81,5 @@ exports.clickGraphSettings = {
 	}
 };
 
-/**
- * cronjob creating the statistics
- */
-if (!crons) {
-   var crons = exports.crons = {
-      aggregator: setInterval(require('./cron').updatestats, 1000 * 60 * statsUpdateInterval),
-      clickGraphUpdater: setInterval(require('./cron').updateClickGraph, 1000 * 60 * clickGraphUpdateInterval),
-   }
-}
+
+exports.app = 'ringo/webapp';

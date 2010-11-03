@@ -1,3 +1,27 @@
-# SiteStats
-A simple site tracker.
+ositestats
+============
 
+A website tracking server for RingoJs.
+
+Install
+----------
+Requires ringo-sqlstore:
+
+    ringo-admin install grob/ringo-sqlstore
+
+Create `app/config.js` using `app/config-example.js` as a template:
+
+    cp app/config-example.js app/config.js
+    nano app/config.js
+
+You will probably want to modify those properties:
+
+    `store`: the mysql connection information
+    `statsUpdateInterval`: interval for statistics update (minutes)
+    `clickGraphUpdateInterval`: interval for clickgraph update (minutes)
+    
+The clickgraph shows the most often used paths through your website. It needs:
+
+  * graphviz (specifically `/usr/bin/dot` must be present)
+  * to create directories below `app/static/clickgraphs/`
+  
