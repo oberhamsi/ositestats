@@ -1,7 +1,0 @@
-{
-    "name": "sitestats",
-    "version": "0.1.0",
-    "description": "Web analytics server",
-    "keywords": ["internet", "statistics"],
-    "author": "Simon Oberhammer <simon@nekapuzer.at>"
-}
