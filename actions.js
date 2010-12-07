@@ -1,7 +1,8 @@
+// stdlib
 var strings = require('ringo/utils/strings');
-
 var {ByteString} = require('binary');
 var {Response} = require('ringo/webapp/response');
+// custom
 var {Site, Hit, HitAggregate, Distribution, dateToKey, extractDomain} = require('./model');
 var config = require('./config');
 
@@ -93,7 +94,6 @@ exports.blank = function(req) {
 }
 
 exports.index = {
-   
    GET: function(req) {
       // output front line
       var sites = Site.query().select();
@@ -113,8 +113,8 @@ exports.index = {
          };
       });
 
-      return Response.skin('skins/dashboard.html', {
-         rootUrl: config.baseUri,
+      return Response.skin(module.resolve('skins/dashboard.html'), {
+         baseUri: config.http.baseUri,
          sites: sites,
       });
    },
@@ -136,7 +136,7 @@ exports.index = {
  * @param {String} timeKey the month timekey for which to show statistics
  */
 exports.stats = function(req, siteKey, timeKey) {
-   var siteKey = siteKey || req.params.siteKey || config.defaultSite;
+   var siteKey = siteKey || req.params.siteKey;
    var timeKey = timeKey || req.params.timeKey;  
    var duration;
    if (!timeKey) {
@@ -156,7 +156,7 @@ exports.stats = function(req, siteKey, timeKey) {
       equals('site', site).
       equals('duration', duration).
       select(duration);
-   return Response.skin('skins/stats.html', {
+   return Response.skin(module.resolve('skins/stats.html'), {
       site: siteKey,
       duration: duration,
       timeKey: timeKey,
@@ -166,7 +166,7 @@ exports.stats = function(req, siteKey, timeKey) {
 
 
 exports.aggregatedata = function(req, siteKey, timeKey) {
-   var siteKey = siteKey || req.params.siteKey || config.defaultSite;
+   var siteKey = siteKey || req.params.siteKey;
    var timeKey = timeKey || req.params.timeKey;  
    var duration;
    var aggregateDuration;
@@ -208,7 +208,7 @@ exports.aggregatedata = function(req, siteKey, timeKey) {
  *
  */
 exports.distributiondata = function(req, siteKey, distributionKey, timeKey) {
-   var siteKey = siteKey || req.params.site || config.defaultSite;
+   var siteKey = siteKey || req.params.site;
    var distributionKey = distributionKey || req.params.distributionKey || 'userAgent';
    var timeKey = timeKey || req.params.timeKey;  
    if (!timeKey) {

@@ -5,25 +5,22 @@ A website tracking server for RingoJs.
 
 Install
 ----------
-Requires ringo-sqlstore:
+Requires ringo-sqlstore and stick
 
     ringo-admin install grob/ringo-sqlstore
+    ringo-admin install hns/stick
 
 Create `config.js` using `config-example.js` as a template:
 
     cp config-example.js config.js
     nano config.js
-
-You will probably want to modify those properties:
-
-    `store`: the mysql connection information
-    `statsUpdateInterval`: interval for statistics update (minutes)
-    `clickGraphUpdateInterval`: interval for clickgraph update (minutes)
     
 The clickgraph shows the most often used paths through your website. It needs:
 
   * graphviz (specifically `/usr/bin/dot` must be present)
   * creates directories & files below `static/clickgraphs/`
+
+Start with `ringo main.js`.
 
 Webinterface
 --------------

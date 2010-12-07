@@ -1,4 +1,4 @@
-<% extends 'skins/base.html' %>
+<% extends './base.html' %>
 
 <% subskin 'head' %>
 <style>
@@ -10,7 +10,7 @@
       text-align:right;
    }
 </style>
-<script type="text/javascript" src="<% href ./static/jquery.sparkline.js %>"></script>
+<script type="text/javascript" src="/jquery.sparkline.js"></script>
 <script>
    $(document).ready(function() {
       $('.sparkline').sparkline('html', {
@@ -87,7 +87,7 @@
      var stss = document.createElement('script');
      stss.type = 'text/javascript';
      stss.async = true;
-     stss.src = '<% rootUrl %>/hit/?referer=' + escape(document.referrer) +
+     stss.src = '<% baseUri %>/hit/?referer=' + escape(document.referrer) +
           '&site=<% site.title | escapeHtml %>' +
           '&random=' + (new Date()).getTime();
      var s = document.getElementsByTagName('script')[0];

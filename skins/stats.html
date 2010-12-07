@@ -1,7 +1,7 @@
-<% extends 'skins/base.html' %>
+<% extends './base.html' %>
 
 <% subskin 'head' %>
-<script type="text/javascript" src="<% href /static/handlebars.js %>"></script>
+<script type="text/javascript" src="/handlebars.js"></script>
 <style>
    tr > th {
       text-align:left;
@@ -162,7 +162,7 @@ $(document).ready(function() {
 
 <% subskin 'content' %>
 <div>
-<a href="<% href / %>">←Dashboard</a>
+<a href="/">←Dashboard</a>
 </div>
 
 <h1> <%site%>, <select id="timeKey"><% for timeKey in <% timeKeys %> render timeKeyOption %></select></h1>

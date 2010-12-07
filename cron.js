@@ -1,6 +1,7 @@
+// custom
 var {Site, Hit, HitAggregate, Distribution, keyToDate, dateToKey} = require('./model');
 var {clickGraph} = require('./clickgraph');
-var {store, clickGraphSettings} = require('./config');
+var config = require('./config');
 var log = require('ringo/logging').getLogger('cron');
 
 /**
@@ -33,7 +34,6 @@ var getTodoKey = exports.getTodoKey = function(entity, duration, site) {
  * appropriate timekeys.
  */
 exports.updatestats = function() {
-   //store.beginTransaction();
    log.info('[cron] starting...');
    for each (var site in Site.query().select()) {
       for each (var entity in [HitAggregate, Distribution]) {
@@ -62,7 +62,6 @@ exports.updatestats = function() {
          }
       }
    } // each site
-   //store.commitTransaction();
    
    // check if hits of last month are still in Hit model
    // if yes we move them into HitMMMM model.
@@ -83,7 +82,7 @@ exports.updateClickGraph = function() {
 	log.info('[cron] updating clickgraphs');
    for each (var site in Site.query().select()) {
       var siteKey = site.title;
-		if (clickGraphSettings.sites[siteKey]) {
+		if (config.clickgraph.sites.indexOf(siteKey) != -1) {
 			clickGraph(dateToKey(new Date(), 'month'), site);
 			log.info('[cron] clickgraph written for ' + siteKey);
 		}
