@@ -1,7 +1,7 @@
 <% extends './base.html' %>
 
 <% subskin 'head' %>
-<script type="text/javascript" src="/handlebars.js"></script>
+<script type="text/javascript" src="/jquery.tmpl.js"></script>
 <style>
    tr > th {
       text-align:left;
@@ -32,7 +32,6 @@
 </style>
 <script type="text/javascript">
 var site = "<%site%>";
-var TEMPLATES = {};
 
 function renderDistTable(data) {
 
@@ -50,11 +49,10 @@ function renderDistTable(data) {
       distData.push({key: k, value: distributions[k]});
    });
    
-   var result = TEMPLATES.distribution({
+   return $.tmpl('distribution', {
       distributionKey: data.distributionKey,
       distributions: distData,
    });
-   return result;
 };
 
 var WEEKDAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -74,23 +72,15 @@ function renderAggregateTable(data) {
          hits: aggregate.hits || "0",
          uniques: aggregate.uniques || "0"
       });
-      if (aggregate.hits > maxValue) {
-         maxValue = aggregate.hits;
-      }
-      if (aggregate.uniques > maxValue) {
-         maxValue = aggregate.uniques;
-      }
+      maxValue = Math.max(maxValue, aggregate.uniques, aggregate.hits);
    });
       
    var MAX_WIDTH = 400;
-   return TEMPLATES.aggregate({
-      aggregates: aggData
+   return $.tmpl('aggregate', {
+         aggregates: aggData
       }, {
-      hitsWidth: function(ctx) {
-            return parseInt(ctx.hits / maxValue * MAX_WIDTH, 10)
-      },
-      uniquesWidth: function(ctx) {
-            return parseInt( ctx.uniques / maxValue * MAX_WIDTH, 10)
+      getPixelWidth: function(key, idx) {
+         return parseInt(this.data.aggregates[idx][key] / maxValue * MAX_WIDTH, 10)
       },
    });
 };
@@ -117,7 +107,7 @@ function onTimeKeyChange() {
    
    // aggregates hits, uniques
    $.get('/aggregatedata/<%site%>/' + timeKey, function(data) {
-      $aggregates.append(renderAggregateTable(data, $('table#hits')));
+      $aggregates.append(renderAggregateTable(data));
    });
    
    // aggregates hits, uniques for whole month
@@ -149,8 +139,8 @@ function onTimeKeyChange() {
 };
 
 $(document).ready(function() {
-   TEMPLATES.distribution = Handlebars.compile($('[template=distribution]').text());
-   TEMPLATES.aggregate = Handlebars.compile($('[template=aggregate]').text());
+   $.template('distribution', $('[template=distribution]'));
+   $.template('aggregate', $('[template=aggregate]'));
    
    $('#timeKey').change(onTimeKeyChange);
    var timeKey = document.location.hash && document.location.hash.substr(1) || "<% timeKey %>";
@@ -195,40 +185,40 @@ $(document).ready(function() {
 </DL>
 
 
-<script template="distribution" type="handlebarjs">
+<script template="distribution" type="template">
    <table>
-      <caption>top {{distributionKey}}s</caption>
-      {{#distributions}}
+      <caption>top ${distributionKey}s</caption>
+      {{each distributions}}
          <tr>
-            <th>{{key}}</th>
-            <td>{{value}}</td>
+            <th>${key}</th>
+            <td>${value}</td>
          </tr>
-      {{/distributions}}
+      {{/each}}
    </table>
 </script>
 
-<script template="aggregate" type="handlebarjs">
+<script template="aggregate" type="template">
    <table>
       <tr>
       <th></th>
       <th class="uniques"> Uniques </th>
       <th class="hits"> Pages </th>
       </tr>
-      {{#aggregates}}
+      {{each aggregates}}
       <tr>
-         <th> {{date}} </th>
-         <td> {{uniques}}</td>
-         <td> {{hits}}</td>
+         <th> ${date} </th>
+         <td> ${uniques}</td>
+         <td> ${hits}</td>
          <td>
-            <div style="width: {{#hitsWidth}} {{/hitsWidth}}px; height: 5px; background-color:red">
+            <div style="width: ${$item.getPixelWidth('hits', $index)}px; height: 5px; background-color:red">
             &nbsp;
             </div>
-            <div style="width: {{#uniquesWidth}} {{/uniquesWidth}}px; height: 5px; background-color:blue">
+            <div style="width: ${$item.getPixelWidth('uniques', $index)}px; height: 5px; background-color:blue">
             &nbsp;
             </div>
          </td>
       </tr>
-      {{/aggregates}}
+      {{/each}}
    </table>
 </script>
 
