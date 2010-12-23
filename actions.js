@@ -93,6 +93,28 @@ exports.blank = function(req) {
    };
 }
 
+function sum(array) {
+   var s= 0;
+   array.forEach(function(i) {
+      s += i;
+   });
+   return s;
+};
+
+function getMovingAverages(array, len) {
+   var averaged = [];
+   var chunk = [];
+   array.forEach(function(item) {
+      chunk.push(item);
+      if (chunk.length > len) {
+         averaged.push(sum(chunk) / chunk.length);
+         chunk = [];
+      }      
+   });
+   return averaged;
+};
+
+
 exports.index = {
    GET: function(req) {
       // output front line
@@ -102,13 +124,14 @@ exports.index = {
                equals('duration', 'day').
                equals('site', site).
                orderBy('day desc').
-               select().slice(0,90);
+               select().slice(0,900);
          var sparkValues = [agg.uniques for each (agg in aggs)];
+         sparkValues = getMovingAverages(sparkValues, 3);
          return {
             title: site.title,
             sparkValues: sparkValues.join(','),
-            sparkMin: Math.min.apply(this, sparkValues),
-            sparkMax: Math.max.apply(this, sparkValues),
+            sparkMin: parseInt(Math.min.apply(this, sparkValues), 10),
+            sparkMax: parseInt(Math.max.apply(this, sparkValues), 10),
             sparkAvg: sparkValues && sparkValues.length && parseInt(sparkValues.reduce(function(x,y) { return x+y;}) / sparkValues.length, 10),
          };
       });
