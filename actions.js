@@ -2,6 +2,7 @@
 var strings = require('ringo/utils/strings');
 var {ByteString} = require('binary');
 var {Response} = require('ringo/webapp/response');
+var {Request} = require('ringo/webapp/request');
 // custom
 var {Site, Hit, HitAggregate, Distribution, dateToKey, extractDomain} = require('./model');
 var config = require('./config');
@@ -12,6 +13,7 @@ var COOKIE_NAME = 'ositestats';
  * Main action logging a Hit. Redirects to /blank if hit was registered.
  */
 exports.hit = function(req) {
+   var req = new Request(req);
    var ignoreResponse = {
       status: 401,
       headers: {'Content-Type': 'text/html'},
