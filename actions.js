@@ -109,7 +109,7 @@ exports.index = {
             sparkValues: sparkValues.join(','),
             sparkMin: Math.min.apply(this, sparkValues),
             sparkMax: Math.max.apply(this, sparkValues),
-            sparkAvg: sparkValues.length && parseInt(sparkValues.reduce(function(x,y) { return x+y;}) / sparkValues.length, 10),
+            sparkAvg: sparkValues && sparkValues.length && parseInt(sparkValues.reduce(function(x,y) { return x+y;}) / sparkValues.length, 10),
          };
       });
 
