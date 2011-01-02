@@ -14,17 +14,17 @@ var log = require('ringo/logging').getLogger('cron');
 var getTodoKey = exports.getTodoKey = function(entity, duration, site) {
    var item = entity.getNewest(site, duration);
    var starttime = null;
-   
+
    if (item) {
       var hit = Hit.getNewest(site, duration);
       if (hit && hit[duration] >= item[duration]) {
          starttime = item[duration];
       }
-   } else { 
+   } else {
       hit = Hit.getOldest(site);
       if (hit) starttime = hit[duration];
    }
-   
+
    return starttime;
 };
 
@@ -39,7 +39,7 @@ exports.updatestats = function() {
       for each (var entity in [HitAggregate, Distribution]) {
          for each (var duration in ['day', 'month']) {
             if (entity == Distribution && duration === 'day') continue;
-            
+
             // first key for which we need to calculate distribution & aggregation
             var startKey = getTodoKey(entity, duration, site);
             if (!startKey) continue;
@@ -62,7 +62,7 @@ exports.updatestats = function() {
          }
       }
    } // each site
-   
+
    // check if hits of last month are still in Hit model
    // if yes we move them into HitMMMM model.
    /*
@@ -82,7 +82,7 @@ exports.updateClickGraph = function() {
 	log.info('[cron] updating clickgraphs');
    for each (var site in Site.query().select()) {
       var siteKey = site.title;
-		if (config.clickgraph.sites.indexOf(siteKey) != -1) {
+		if (config.stats.clickgraph.sites.indexOf(siteKey) != -1) {
 			clickGraph(dateToKey(new Date(), 'month'), site);
 			log.info('[cron] clickgraph written for ' + siteKey);
 		}

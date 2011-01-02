@@ -30,7 +30,7 @@ app.static(module.resolve('./static'));
 
 // cron jobs updating stats
 var crons = crons || {
-   aggregator: 
+   aggregator:
       setInterval(
          require('./cron').updatestats,
          config.stats.update.statistics * 1000 * 60
