@@ -27,7 +27,7 @@ function onTimeKeyChange() {
    var $distributions = $("#distributions");
    var $aggregates = $("#aggregate");
    // clear old data
-   //$distributions.empty();
+   $distributions.empty();
    $aggregates.empty();
 
    // clickgraph img src update
