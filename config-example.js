@@ -26,7 +26,6 @@ exports.stats = {
    },
    clickgraph: {
       directory: module.resolve('static/clickgraphs/'),
-      url: './static/clickgraphs',
       sites: ['example'],
    },
 };
