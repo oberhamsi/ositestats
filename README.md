@@ -3,7 +3,7 @@ ositestats
 
 A website tracking server for RingoJs.
 
-[[/wiki/ositestats_what_you_get.png]]
+<img src="hhttps://github.com/oberhamsi/ositestats/wiki/ositestats_what_you_get.png" width="800" alt="Interface ScreenShot" />
 
 Install
 ----------
