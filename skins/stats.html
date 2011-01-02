@@ -48,7 +48,11 @@
 <div >
    <div style='text-align:center;'>
    <a href="/">←Dashboard</a>
-   <h1> <%site%>, <select id="timeKey"><% for timeKey in <% timeKeys %> render timeKeyOption %></select></h1>
+   <h1>
+      <select id="timeKey" size=4><% for timeKey in <% timeKeys %> render timeKeyOption %></select>
+
+   <% site %>
+   </h1>
    </div>
 
    <div id="monthOverview">
@@ -82,10 +86,10 @@
    <table>
       <thead>
             {{if distributionKey == 'userAgent'}}
-            <td>%</td>
+            <td style='text-align:center'>%</td>
             {{/if}}
             <td></td>
-            <td>#</td>
+            <td></td>
       </thead>
       {{each distributions}}
          <tr>
@@ -104,19 +108,19 @@
    <table>
       <tr>
       <th></th>
-      <th class="uniques"> Uniques </th>
       <th class="hits"> Pages </th>
+      <th class="uniques"> Uniques </th>
       </tr>
       {{each aggregates}}
       <tr>
          <th> ${date} </th>
-         <td> ${uniques}</td>
          <td> ${hits}</td>
+         <td> ${uniques}</td>
          <td>
-            <div style="width: ${$item.getPixelWidth('hits', $index)}px; height: 5px; background-color:red">
+            <div style="width: ${$item.getPixelWidth('hits', $index)}px; height: 5px; {{if weekend}} background-color: #ffcccc;  {{else}} background-color:red {{/if}}">
             &nbsp;
             </div>
-            <div style="width: ${$item.getPixelWidth('uniques', $index)}px; height: 5px; background-color:blue">
+            <div style="width: ${$item.getPixelWidth('uniques', $index)}px; height: 5px; {{if weekend}} background-color: #ccccff {{else}} background-color:blue {{/if}}">
             &nbsp;
             </div>
          </td>
@@ -126,4 +130,4 @@
 </script>
 
 <% subskin timeKeyOption %>
-<option value="<% timeKey %>"> <% timeKey | keyToDate | dateFormat "MM/yyyy" %>
+<option value="<% timeKey %>"> <% timeKey | keyToDate | dateFormat "yyyy MMM " %>

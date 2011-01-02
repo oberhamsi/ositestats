@@ -105,8 +105,6 @@ function renderDistTable(data) {
    });
 };
 
-var WEEKDAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
 /**
  * @returns {jQuery} rendered template
  */
@@ -122,7 +120,8 @@ function renderAggregateTable(data) {
    data.aggregates.forEach(function(aggregate) {
       date.setDate(aggregate.day.substr(6,8));
       aggData.push({
-         date: date.getDate() + '., ' + WEEKDAY[date.getDay()],
+         weekend: date.getDay() === 0 || date.getDay() === 6,
+         date: date.getDate() + '.',
          hits: aggregate.hits || "0",
          uniques: aggregate.uniques || "0"
       });
