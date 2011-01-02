@@ -182,6 +182,7 @@ Distribution.create = function(monthKey, site) {
             distributions[cKey] = counter[cKey];
          }
       }
+
       var distribution = Distribution.query().
          equals('duration', 'month').
          equals('month', monthKey).

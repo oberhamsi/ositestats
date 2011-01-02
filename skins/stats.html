@@ -2,6 +2,7 @@
 
 <% subskin 'head' %>
 <script type="text/javascript" src="/jquery.tmpl.js"></script>
+<script type="text/javascript" src="/main.js"></script>
 <style>
    tr > th {
       text-align:left;
@@ -29,125 +30,18 @@
    .hits {
       border-bottom: red 3px solid;
    }
-</style>
-<script type="text/javascript">
-var site = "<%site%>";
 
-function renderDistTable(data) {
-
-   var distributions = JSON.parse(data.distributions[0].distributions);
-   var keys = [];
-   for (var key in distributions) {
-      keys.push(key);
+   .ui-tabs-hide{
+     display: none
    }
-   keys.sort(function(a, b) {
-      return ( (distributions[b] || 0) - (distributions[a] || 0));
-   });
 
-   var distData = [];
-   keys.forEach(function(k) {
-      distData.push({key: k, value: distributions[k]});
-   });
 
-   return $.tmpl('distribution', {
-      distributionKey: data.distributionKey,
-      distributions: distData,
-   });
-};
-
-var WEEKDAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-function renderAggregateTable(data) {
-
-   var aggData = [];
-
-   var maxValue = 0;
-
-   var date = new Date();
-   date.setYear(data.timeKey.substr(0, 4));
-   date.setMonth(data.timeKey.substring(4));
-   data.aggregates.forEach(function(aggregate) {
-      date.setDate(aggregate.day.substr(6,8));
-      aggData.push({
-         date: date.getDate() + '., ' + WEEKDAY[date.getDay()],
-         hits: aggregate.hits || "0",
-         uniques: aggregate.uniques || "0"
-      });
-      maxValue = Math.max(maxValue, aggregate.uniques, aggregate.hits);
-   });
-
-   var MAX_WIDTH = 400;
-   return $.tmpl('aggregate', {
-         aggregates: aggData
-      }, {
-      getPixelWidth: function(key, idx) {
-         return parseInt(this.data.aggregates[idx][key] / maxValue * MAX_WIDTH, 10)
-      },
-   });
-};
-
-function updateClickGraph(timeKey) {
-   $clickgraph = $("#clickgraph");
-   var url = $clickgraph.attr("data-stat-graphpath") + "/" + timeKey + ".png";
-   $clickgraph.attr("src", url);
-   return;
-};
-
-function onTimeKeyChange() {
-   var timeKey = $(this).val();
-   document.location.hash = timeKey;
-
-   var $distributions = $("#distributions");
-   var $aggregates = $("#aggregate");
-   // clear old data
-   $distributions.empty();
-   $aggregates.empty();
-
-   // clickgraph img src update
-   updateClickGraph(timeKey);
-
-   // aggregates hits, uniques
-   $.get('/aggregatedata/<%site%>/' + timeKey, function(data) {
-      $aggregates.append(renderAggregateTable(data));
-   });
-
-   // aggregates hits, uniques for whole month
-   $.get('/aggregatedata/<%site%>/' + timeKey.substr(0,4), function(data) {
-      var currentMonthAggregate = null;
-      data.aggregates.some(function(aggregate) {
-         if (aggregate.month == timeKey) {
-            currentMonthAggregate = aggregate;
-            return true;
-         }
-         return false;
-      });
-      if (!currentMonthAggregate) return;
-
-      $("#monthUniques").html(currentMonthAggregate.uniques);
-      $("#monthHits").html(currentMonthAggregate.hits);
-   });
-
-   $.get('/distributiondata/<%site%>/referer/' + timeKey, function(data) {
-      $distributions.append(renderDistTable(data, $("table#referer")));
-   });
-   $.get('/distributiondata/<%site%>/userAgent/' + timeKey, function(data) {
-      $distributions.append(renderDistTable(data, $("table#useragents")));
-   });
-   $.get('/distributiondata/<%site%>/page/' + timeKey, function(data) {
-      $distributions.append(renderDistTable(data, $("table#page")));
-   });
-
-};
-
-$(document).ready(function() {
-   $.template('distribution', $('[template=distribution]'));
-   $.template('aggregate', $('[template=aggregate]'));
-
-   $('#timeKey').change(onTimeKeyChange);
-   var timeKey = document.location.hash && document.location.hash.substr(1) || "<% timeKey %>";
-   $('#timeKey').val(timeKey);
-   $('#timeKey').trigger('change');
-   return;
-});
+</style>
+<script>
+   var settings = {
+      site: "<%site%>",
+      timeKey: <% timeKey %>,
+   }
 </script>
 
 <% subskin 'content' %>
@@ -186,15 +80,27 @@ $(document).ready(function() {
 
 
 <script template="distribution" type="template">
+   <div id="tab-${distributionKey}">
    <table>
-      <caption>top ${distributionKey}s</caption>
+      <caption>${distributionKey}s</caption>
+      <thead>
+            {{if distributionKey !== 'page'}}
+            <td>%</td>
+            {{/if}}
+            <td></td>
+            <td>#</td>
+      </thead>
       {{each distributions}}
          <tr>
+            {{if distributionKey !== 'page'}}
+            <td>${$item.getPercent($index)}</td>
+            {{/if}}
             <th>${key}</th>
             <td>${value}</td>
          </tr>
       {{/each}}
    </table>
+   </div>
 </script>
 
 <script template="aggregate" type="template">

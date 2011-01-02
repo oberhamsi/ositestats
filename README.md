@@ -88,10 +88,26 @@ If a User has JavaScript disabled then he won't be counted. That is intentional 
 
 OSiteStats tracks to basic values that are aggregate for day and month timespans:
 
-   * Unique: A unique browsing device identified by either a cookie (most of the time) or IP/UserAgent combination.
-   * Page: Content requested by the User
+### Unique
 
+A unique browsing device identified by either a cookie (most of the time) or IP/UserAgent combination. Note that
 
+   * the numbers for Uniques can not simply be added up to get to higher aggregations, obviously
+   * the number of Users to your site is usually about 1/3 to 1/2 of the number of Uniques (this depend on various factors)
+
+### Page
+
+Content requested by the User
+
+### UserAgent, Referrer
+
+The distribution of UserAgents and Referers per Unique (!).
+
+While this is straight forward for UserAgents (a Unique always has, per definition, only one UserAgent) read the following carefully to understand how this influences the Referer statistic:
+
+Each Unique can only contribute one Referer per aggregation, although he might have come from several sources within that timespan. The overall trend should stay the same, but obviously this gets more vague the larger the timespan. Yet, on small timescales (days to 1 month) this removes the inflation of Users who come repeatedly from a weird source like their email, a certain news article or twitter instead of google-ing or entering the domain directly.
+
+IMO this results in the more interesting statistic for Referers: how many new Uniques did you get from a particular Referrer.
 
 JSON API
 -----------
