@@ -6,6 +6,8 @@ A website tracking server for RingoJs.
 Install
 ----------
 
+You need: Java, mysql-server
+
 Install RingoJs
 
     git clone git://github.com/ringo/ringojs.git
@@ -19,11 +21,12 @@ Install ringo-sqlstore and stick
     ringo-admin install grob/ringo-sqlstore
     ringo-admin install ringo/stick
 
-Create 'config.js` using `config-example.js` as a template:
+Create `config.js` using `config-example.js` as a template:
 
     cp config-example.js config.js
     nano config.js
 
+Create an empty database for ositestats and adapt mySQL settings in `config.js`
 
 Optional: Clickgraph
 ---------------------
@@ -86,8 +89,6 @@ They can help you answer questions. They can not be read as hard facts like 'num
 
 If a User has JavaScript disabled then he won't be counted. That is intentional - he probably does not want to be counted. Why else would anyone disable JavaScript.
 
-OSiteStats tracks to basic values that are aggregate for day and month timespans:
-
 ### Unique
 
 A unique browsing device identified by either a cookie (most of the time) or IP/UserAgent combination. Note that
@@ -101,9 +102,7 @@ Content requested by the User - one request to the counter path as used by Track
 
 ### UserAgent, Referrer
 
-The distribution of UserAgents and Referers.
-
-While this is straight forward for UserAgents (a Unique always has, per definition, only one UserAgent) this is weirder for Referers:
+The distribution of UserAgents and Referers. While this is straight forward for UserAgents (a Unique always has, per definition, only one UserAgent) this is weirder for Referers:
 
 Each Unique can only contribute one Referer per aggregation although he might really have come from several different sources within that timespan. The overall trend should stay the same but this gets more vague the larger the timespan.
 
