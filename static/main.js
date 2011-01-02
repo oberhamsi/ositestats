@@ -58,14 +58,17 @@ function onTimeKeyChange() {
       var UNIQUES = currentMonthAggregate.uniques;
       $.get('/distributiondata/' + settings.site + '/referer/' + timeKey, function(data) {
          data.totalUniques = UNIQUES;
+         data.title = 'Uniques per Traffic Source';
          $distributions.append(renderDistTable(data, $("table#referer")));
       });
       $.get('/distributiondata/' + settings.site + '/userAgent/' + timeKey, function(data) {
          data.totalUniques = UNIQUES;
+         data.title = 'Uniques per Browser, OS combination';
          $distributions.append(renderDistTable(data, $("table#useragents")));
       });
       $.get('/distributiondata/' + settings.site + '/page/' + timeKey, function(data) {
          data.totalUniques = UNIQUES;
+         data.title = 'Top Requested Pages';
          $distributions.append(renderDistTable(data, $("table#page")));
       });
 
@@ -93,6 +96,7 @@ function renderDistTable(data) {
 
    return $.tmpl('distribution', {
       distributionKey: data.distributionKey,
+      title: data.title,
       distributions: distData,
    },{
       getPercent: function(idx) {
@@ -140,7 +144,7 @@ function renderAggregateTable(data) {
  */
 function updateClickGraph(timeKey) {
    $clickgraph = $("#clickgraph");
-   var url = $clickgraph.attr("data-stat-graphpath") + "/" + timeKey + ".png";
+   var url = $clickgraph.attr("data-stat-graphpath") + timeKey + ".png";
    $clickgraph.attr("src", url);
    return;
 };

@@ -45,46 +45,43 @@
 </script>
 
 <% subskin 'content' %>
-<div>
-<a href="/">←Dashboard</a>
+<div >
+   <div style='text-align:center;'>
+   <a href="/">←Dashboard</a>
+   <h1> <%site%>, <select id="timeKey"><% for timeKey in <% timeKeys %> render timeKeyOption %></select></h1>
+   </div>
+
+   <div id="monthOverview">
+      <h3><span id="monthHits"></span> Pages from <span id="monthUniques"></span> Uniques</h3>
+   </div>
+
+   <div id="aggregate">
+
+   </div>
+
+
+   <div class="distributioncontainer">
+      <h3> Clickgraph </h3>
+
+      <a href="/clickgraphs/<% site %>/<% timeKey %>.png">
+         <img id="clickgraph" data-stat-graphpath="/clickgraphs/<% site %>/"
+               src="/clickgraphs/<% site %>/<% timeKey %>.png"/>
+      </a>
+   </div>
+
+   <div id="distributions">
+
+   </div>
+
 </div>
-
-<h1> <%site%>, <select id="timeKey"><% for timeKey in <% timeKeys %> render timeKeyOption %></select></h1>
-
-<div id="monthOverview">
-   <h3><span id="monthHits"></span> Hits from <span id="monthUniques"></span> Uniques.</h3>
-</div>
-
-<div id="aggregate">
-
-</div>
-
-
-<div class="distributioncontainer">
-   <h3> Clickgraph </h3>
-
-   <a href="/clickgraphs/<% site %>/<% timeKey %>.png">
-      <img id="clickgraph" data-stat-graphpath="/clickgraphs/<% site %>/"
-            src="/clickgraphs/<% site %>/<% timeKey %>.png"/>
-   </a>
-</div>
-
-<div id="distributions">
-
-</div>
-
-<DL>
-<DT>Unique<dd>A unique browsing device identified by a cookie or IP/UserAgent combination.
-<DT>Page<dd>Content requested by User.
-</DL>
-
 
 <script template="distribution" type="template">
    <div id="tab-${distributionKey}">
+   <h3>${title}</h3>
+
    <table>
-      <caption>${distributionKey}s</caption>
       <thead>
-            {{if distributionKey !== 'page'}}
+            {{if distributionKey == 'userAgent'}}
             <td>%</td>
             {{/if}}
             <td></td>
@@ -92,7 +89,7 @@
       </thead>
       {{each distributions}}
          <tr>
-            {{if distributionKey !== 'page'}}
+            {{if distributionKey == 'userAgent'}}
             <td>${$item.getPercent($index)}</td>
             {{/if}}
             <th>${key}</th>
