@@ -6,6 +6,7 @@ var {Request} = require('ringo/webapp/request');
 // custom
 var {Site, Hit, HitAggregate, Distribution, dateToKey, extractDomain} = require('./model');
 var config = require('./config');
+var objects = require('ringo/utils/objects');
 
 var COOKIE_NAME = 'ositestats';
 
@@ -36,7 +37,7 @@ exports.hit = function(req) {
       ignoreResponse.body = ['missing site'];
       return ignoreResponse;
    }
-      
+
    var site = req.params.site;
    // drop if not one of the domains we count for that site
    var domain = extractDomain(page);
@@ -46,13 +47,13 @@ exports.hit = function(req) {
       return ignoreResponse;
    }
    var siteEntity = matchingSites[0];
-   
+
    // success response redirects to /blank gif
    var redirectResponse = new Response('See other: /blank');
    redirectResponse.status = 302;
    redirectResponse.setHeader('Location', '/blank');
    redirectResponse.setHeader('Content-Type', 'application/x-javascript');
-   
+
    var ip = req.remoteAddress;
    var forwardedFor = req.getHeader("X-Forwarded-For");
    if (forwardedFor != null && typeof(forwardedFor) === "string") {
@@ -62,7 +63,7 @@ exports.hit = function(req) {
          ip = forwardedFor;
       }
    }
-   
+
    var unique;
    if (!req.cookies[COOKIE_NAME]) {
       unique = strings.digest(ip + "/" +  Math.random() + "/" + userAgent);
@@ -84,12 +85,12 @@ exports.hit = function(req) {
       month: dateToKey(now, 'month'),
    })).save();
    return redirectResponse;
-   
+
 };
 
 exports.blank = function(req) {
    return {
-      status: 200, 
+      status: 200,
       headers: {'Content-Type': 'applicaton/x-javascript', 'Connection': 'close'},
       body: ['{}'],
    };
@@ -111,7 +112,7 @@ function getMovingAverages(array, len) {
       if (chunk.length > len) {
          averaged.push(sum(chunk) / chunk.length);
          chunk = [];
-      }      
+      }
    });
    return averaged;
 };
@@ -138,12 +139,12 @@ exports.index = {
          };
       });
 
-      return Response.skin(module.resolve('skins/dashboard.html'), {
+      return Response.skin(module.resolve('skins/dashboard.html'), objects.merge({
          baseUri: config.http.baseUri,
          sites: sites,
-      });
+      }, require('./macros')));
    },
-   
+
    POST: function(req) {
       // FIXME error handling
       var title = req.params.newSiteTitle.trim();
@@ -162,7 +163,7 @@ exports.index = {
  */
 exports.stats = function(req, siteKey, timeKey) {
    var siteKey = siteKey || req.params.siteKey;
-   var timeKey = timeKey || req.params.timeKey;  
+   var timeKey = timeKey || req.params.timeKey;
    var duration;
    if (!timeKey) {
       var now = new Date();
@@ -173,26 +174,26 @@ exports.stats = function(req, siteKey, timeKey) {
    } else if (timeKey.length == 4){
       duration == 'year'
    }
-   
+
    // FIXME I want site.title to be primary so i can do Site.get(title)
    var site = Site.query().equals('title', siteKey).select()[0]
-   
+
    var aggregateTimeKeys = HitAggregate.query().
       equals('site', site).
       equals('duration', duration).
       select(duration);
-   return Response.skin(module.resolve('skins/stats.html'), {
+   return Response.skin(module.resolve('skins/stats.html'), objects.merge({
       site: siteKey,
       duration: duration,
       timeKey: timeKey,
       timeKeys: aggregateTimeKeys
-   });
+   }, require('./macros'),require('ringo/skin/filters')));
 };
 
 
 exports.aggregatedata = function(req, siteKey, timeKey) {
    var siteKey = siteKey || req.params.siteKey;
-   var timeKey = timeKey || req.params.timeKey;  
+   var timeKey = timeKey || req.params.timeKey;
    var duration;
    var aggregateDuration;
    if (!timeKey) {
@@ -208,14 +209,14 @@ exports.aggregatedata = function(req, siteKey, timeKey) {
    }
 
    var site = Site.query().equals('title', siteKey).select()[0];
-   
+
    var hitAggregates = HitAggregate.query().
          equals('duration', aggregateDuration).
          equals(duration, timeKey).
          equals('site', site).
          orderBy(duration + ' desc').
          select();
-   
+
    hitAggregates.sort(function(a, b) {
       return a[aggregateDuration] - b[aggregateDuration];
    });
@@ -235,14 +236,14 @@ exports.aggregatedata = function(req, siteKey, timeKey) {
 exports.distributiondata = function(req, siteKey, distributionKey, timeKey) {
    var siteKey = siteKey || req.params.site;
    var distributionKey = distributionKey || req.params.distributionKey || 'userAgent';
-   var timeKey = timeKey || req.params.timeKey;  
+   var timeKey = timeKey || req.params.timeKey;
    if (!timeKey) {
       var now = new Date();
       timeKey = dateToKey(now, 'month');
    }
 
    var site = Site.query().equals('title', siteKey).select()[0];
-   
+
    var distributions = Distribution.query().
       equals('duration', 'month').
       equals('key', distributionKey).
@@ -254,7 +255,7 @@ exports.distributiondata = function(req, siteKey, distributionKey, timeKey) {
       if (a.day < b.day) return 1;
       return -1;
    });
- 
+
    return Response.json({
       site: siteKey,
       timeKey: timeKey,

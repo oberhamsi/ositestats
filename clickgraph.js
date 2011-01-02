@@ -3,14 +3,14 @@ var {command} = require('ringo/subprocess');
 var dates = require('ringo/utils/dates');
 
 var {Hit, Site, Distribution} = require('./model');
-var {clickGraphSettings} = require('./config');
+var config = require('./config');
 
 export('clickGraph');
 
 /**
  * creates a png clickgraph for the given duration & site.
- * see clickGraphSettings in config-example.js
- */ 
+ * see stats.clickgraph in config-example.js
+ */
 function clickGraph(dayOrMonth, site) {
    var keyDayOrMonth = dayOrMonth.length === 6 ? 'month' : 'day';
    var hits = Hit.query().
@@ -23,7 +23,7 @@ function clickGraph(dayOrMonth, site) {
 		var page = Distribution.Normalizer.page(hit.page, site.getDomains());
 		var referer = Distribution.Normalizer.referer(hit.referer, site.getDomains());
 		if (referer !== 'localDomain') return;
-		
+
 		referer = Distribution.Normalizer.page(hit.referer, site.getDomains());
 		var node = graph[page] || {hits: 0, referers: {}};
 		node.hits++;
@@ -43,7 +43,7 @@ function clickGraph(dayOrMonth, site) {
 		for (var refKey in node.referers) {
 			let weight = node.referers[refKey];
 			if (weight < (minHits || 10)) continue;
-			
+
 			//if (refKey.substr(0,4) === 'http') {
 			//	externals.push('"' + refKey + '"');
 			//}
@@ -56,16 +56,15 @@ function clickGraph(dayOrMonth, site) {
 	//dot.push('}');
 	dot.push('}');
 	// does the directory exist?
-	var siteDir = join(clickGraphSettings.directory, site.title);
+	var siteDir = join(config.stats.clickgraph.directory, site.title);
 	if (!exists(siteDir)) {
 	   makeDirectory(siteDir);
 	}
 	var dotFile = join(siteDir, dayOrMonth + '.dot');
 	write(dotFile, dot.join('\n'));
-		
+
 	var imgFile = join(siteDir, dayOrMonth + '.png');
    var imgData = command('/usr/bin/dot', '-Tpng', dotFile, {binary: true});
    write(imgFile, imgData, 'wb');
 	return;
 };
-
