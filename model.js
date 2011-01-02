@@ -21,7 +21,7 @@ var MAPPING_DISTRIBUTION = {
       // unused day: {type: 'string'},
       month: {type: 'string'},
       year: {type: 'string'},
-      
+
       distributions: {type: 'string'}, // json
       site: {
          type: 'object',
@@ -59,7 +59,7 @@ var MAPPING_HIT = {
       unique: {type: 'string'},
       referer: {type: 'string'},
       page: {type: 'string'},
-      
+
       day: {type: 'string'},
       month: {type: 'string'},
    }
@@ -94,7 +94,7 @@ Distribution.getNewest = function(site, duration) {
  */
 Distribution.prototype.toString = function() {
 
-   return $f("[Distribution: {} {}, {}", 
+   return $f("[Distribution: {} {}, {}",
          this.key, this[this.duration], this.site);
 };
 
@@ -127,9 +127,9 @@ Distribution.Normalizer = {
          return domain.indexOf(ld) > -1;
       });
       if (isLocalDomain) return 'localDomain';
-      
+
       return domain;
-      
+
    },
    page: function(rawKey) {
       var path = extractPath(rawKey);
@@ -148,7 +148,7 @@ Distribution.Normalizer = {
  * @returns {Array} array of serialized distributions created/updated
  */
 Distribution.create = function(monthKey, site) {
-   
+
    var hits = Hit.query().
       equals('month', monthKey).
       equals('site', site).
@@ -161,11 +161,16 @@ Distribution.create = function(monthKey, site) {
       // for refererr stats
       var counter = {};
       var normalize = Distribution.Normalizer[key];
+      var usedUniques = {};
       for (var i=0; i<hitsCount; i++) {
          var hit = hits[i];
-         var distributionKey = normalize(hit[key], site.getDomains());
-         if (counter[distributionKey] === undefined) counter[distributionKey] = 0;
-         counter[distributionKey]++;
+         if (!usedUniques[hit.unique] || key === 'page') {
+            var distributionKey = normalize(hit[key], site.getDomains());
+            if (counter[distributionKey] === undefined) counter[distributionKey] = 0;
+            counter[distributionKey]++;
+
+            usedUniques[hit.unique] = 1;
+         }
       }
 
       // drop low distributions for nicer stats
@@ -217,7 +222,7 @@ Object.defineProperty(HitAggregate.prototype, 'starttime', {
  * String rep
  */
 HitAggregate.prototype.toString = function() {
-   return $f('[HitAggregate: {} {}, {} hits: {}, uniques: {}]', 
+   return $f('[HitAggregate: {} {}, {} hits: {}, uniques: {}]',
          this.duration, this[this.duration], this.site, this.hits, this.uniques);
 };
 
@@ -269,7 +274,7 @@ HitAggregate.create = function(dayOrMonth, site) {
    hitAggregate.year = dateToKey(date, 'year');
    hitAggregate.uniques = uCount;
    hitAggregate.hits = hits.length;
-   
+
    hitAggregate[keyDayOrMonth] = dayOrMonth;
    hitAggregate[otherKey] = dateToKey(date, otherKey);
 
@@ -306,8 +311,8 @@ Hit.getOldest = function(site) {
  */
 function dateToKey(date, duration) {
    if (duration === 'day') {
-      return [date.getFullYear(), 
-              numbers.format(date.getMonth(), "00"), 
+      return [date.getFullYear(),
+              numbers.format(date.getMonth(), "00"),
               numbers.format(date.getDate(), "00")
              ].join('');
    } else if (duration === 'month') {
@@ -360,7 +365,7 @@ var extractDomain = exports.extractDomain = function(uri) {
       return null;
    }
    if (!uri || !uri.getHost()) return null;
-   
+
    var domainParts = uri.getHost().split('.');
    if (domainParts.length > 2) {
       domainParts.splice(0,1);
