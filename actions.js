@@ -126,12 +126,12 @@ exports.index = {
                equals('duration', 'day').
                equals('site', site).
                orderBy('day desc').
-               select().slice(0,900);
+               select().slice(0,350);
          var sparkValues = [agg.uniques for each (agg in aggs)];
-         sparkValues = getMovingAverages(sparkValues, 3);
+         var avgSparkValues = getMovingAverages(sparkValues, 3);
          return {
             title: site.title,
-            sparkValues: sparkValues.join(','),
+            sparkValues: avgSparkValues.join(','),
             sparkMin: parseInt(Math.min.apply(this, sparkValues), 10),
             sparkMax: parseInt(Math.max.apply(this, sparkValues), 10),
             sparkAvg: sparkValues && sparkValues.length && parseInt(sparkValues.reduce(function(x,y) { return x+y;}) / sparkValues.length, 10),
