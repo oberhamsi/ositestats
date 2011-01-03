@@ -1,18 +1,18 @@
 html{background:white url() no-repeat bottom right;color:black;margin:4em;}
-body{font-weight: light;font-family: "Lucida Grande","Lucida Sans Unicode",sans-serif;margin:1.75emauto;width:40em;line-height:1.75;word-spacing:0.1em;color:#503e2b}
+body{font-weight: light;font-family: "Lucida Grande","Lucida Sans Unicode",sans-serif;margin:1.75emauto;width:40em;line-height:1.75;word-spacing:0.1em;}
 
 #footer {
    text-align:center;
 }
 
 select {
-   font-size:x-large;
-}
-
-a {
-   color: #3d2b4f;
+   font-size:large;
 }
 
 h3 {
-   background-color: #cccccc;
+   text-decoration:underline;
+}
+
+button {
+   font-size:large;
 }

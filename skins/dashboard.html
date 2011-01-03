@@ -29,20 +29,10 @@
 
 <h1> Dashboard</h1>
 
-<table style='border:0px'>
-<tr>
-   <th></th>
-   <th>moving average</th>
-   <th>
-   max
-   </th>
-   <th>
-   avg
-   </th>
-</tr>
 <% for site in <% sites %> render siteInfo %>
-<tr><td colspan=4><i>Last 350 days.</i></td></tr>
-</table>
+
+<i>Uniques, last 350 days
+
 <!--
 <div class="siteinfo">
    <h2> New Site </h2>
@@ -56,31 +46,23 @@
 </div>
 -->
 <% subskin 'siteInfo' %>
-<tr>
-<td>
-   <span class="sitetitle">
-      <a href="./stats/<% site.title %>"><% site.title %></a> 
-   </span>
-</td>
-<td>
-   <span class='sparkline'> <% site.sparkValues %> </span>
-</td>
-<td> 
-      <% site.sparkMax %>
-</td>
-<td> 
-      <% site.sparkAvg %>
-</td>
+<div style='text-align:center;background-color:#eeeeee;'>
+   <form action="./stats/<% site.title %>" method="GET">
+   <button type="submit"><% site.title %> →</button>
+   </form>
 
-<td>
-   <!---
-   <a href="#" class="counterlink" site="<% site.title | escapeHtml %>">show counter code</a>
-   <br/>
-   <% render counterCode %>
-   --->
-</td>
-</tr>
-
+   <p> 
+    <span class='sparkline'> <% site.sparkValues %> </span><br/>
+   <% site.sparkAvg %> Ø
+   <br/> 
+   <% site.sparkMax %> max
+      <!---
+      <a href="#" class="counterlink" site="<% site.title | escapeHtml %>">show counter code</a>
+      <br/>
+      <% render counterCode %>
+      --->
+   </p>
+</div>
 <% subskin 'counterCode' %>
 <textarea id="code" site="<% site.title | escapeHtml %>" style="display:none" cols=80 rows=12>
  <script type="text/javascript">

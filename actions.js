@@ -128,6 +128,7 @@ exports.index = {
                equals('site', site).
                orderBy('day desc').
                select().slice(0,350);
+         aggs.reverse();
          var sparkValues = [agg.uniques for each (agg in aggs)];
          var avgSparkValues = getMovingAverages(sparkValues, 3);
          return {

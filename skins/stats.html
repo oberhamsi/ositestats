@@ -46,20 +46,24 @@
 
 <% subskin 'content' %>
 <div >
-   <div style='text-align:center;'>
-   <a href="/">←Dashboard</a>
-   <h1>
+   <div style='text-align:center;float:right'>
+   <form action="/" method="GET">
+   <button type="submit">←Dashboard</button>
+   <br/>
       <select id="timeKey" size=4><% for timeKey in <% timeKeys %> render timeKeyOption %></select>
 
-   <% site %>
-   </h1>
+   </form>
    </div>
 
    <div id="monthOverview">
-      <h3><span id="monthHits"></span> Pages from <span id="monthUniques"></span> Uniques</h3>
+      <h1>            <% site %>, <span id="monthTimeKey"></span> 
+      </h1>
+      <p>
+      <span id="monthHits"></span> Pages from <span id="monthUniques"></span> Uniques</span>
+      </p>
    </div>
 
-   <div id="aggregate">
+   <div id="aggregate" style='background-color:#eeeeee;'>
 
    </div>
 
@@ -80,7 +84,7 @@
 </div>
 
 <script template="distribution" type="template">
-   <div id="tab-${distributionKey}">
+   <div id="tab-${distributionKey}" style='background-color:#eeeeee;'>
    <h3>${title}</h3>
 
    <table>
@@ -130,4 +134,4 @@
 </script>
 
 <% subskin timeKeyOption %>
-<option value="<% timeKey %>"> <% timeKey | keyToDate | dateFormat "yyyy MMM " %>
+<option value="<% timeKey %>"> <% timeKey | keyToDate | dateFormat "MMM yyyy" %>

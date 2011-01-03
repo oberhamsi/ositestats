@@ -24,6 +24,9 @@ function onTimeKeyChange() {
    var timeKey = $(this).val();
    document.location.hash = timeKey;
 
+   var humanReadable = $(this).children("option:selected").text();
+   $('#monthTimeKey').html(humanReadable);
+
    var $distributions = $("#distributions");
    var $aggregates = $("#aggregate");
    // clear old data
