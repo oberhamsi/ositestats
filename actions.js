@@ -4,6 +4,7 @@ var {ByteString} = require('binary');
 var {Response} = require('ringo/webapp/response');
 var {Request} = require('ringo/webapp/request');
 var objects = require('ringo/utils/objects');
+var log = require('ringo/logging').getLogger(module.id);
 
 // custom
 var {Site, Hit, HitAggregate, Distribution, dateToKey, extractDomain} = require('./model');
@@ -11,6 +12,28 @@ var {getMovingAverages, getAverage} = require('./helpers');
 var config = require('./config');
 
 var COOKIE_NAME = 'ositestats';
+
+/**
+ * hit action puts new hit-data into hitQueue, processed by different thread
+ */
+var HitQueue = exports.HitQueue = {
+   entries: [],
+   
+   add: sync(function(entry) {
+      this.entries.push(entry);
+   }, this),
+   
+   splice: sync(function() {
+      return this.entries.splice(0);
+   }, this),
+   
+   process: function() {
+      log.info('processing HitQueue, length = ', this.entries.length);
+      this.splice().forEach(function(hit) {
+         (new Hit(hit)).save();
+      });
+   }
+};
 
 /**
  * Main action logging a Hit. Redirects to /blank if hit was registered.
@@ -54,7 +77,7 @@ exports.hit = function(req) {
       ignoreResponse.body = ['domain not registered for site ' + site];
       return ignoreResponse;
    }
-   var siteEntity = matchingSites[0];
+   var site = matchingSites[0];
    // success response redirects to /blank gif
    var redirectResponse = new Response('See other: /blank');
    redirectResponse.status = 302;
@@ -78,10 +101,11 @@ exports.hit = function(req) {
    } else {
       unique = req.cookies[COOKIE_NAME];
    }
+
    var now = new Date();
-   (new Hit({
+   HitQueue.add({
       timestamp: now.getTime(),
-      site: siteEntity,
+      site: site,
       ip: ip,
       userAgent: userAgent,
       unique: unique || null,
@@ -90,9 +114,8 @@ exports.hit = function(req) {
 
       day: dateToKey(now, 'day'),
       month: dateToKey(now, 'month'),
-   })).save();
+   });
    return redirectResponse;
-
 };
 
 exports.blank = function(req) {

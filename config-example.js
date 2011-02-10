@@ -23,6 +23,7 @@ exports.stats = {
    update: {
       statistics: 30,   // minutes
       clickgraph: 6 * 60,
+      hitqueue: 5
    },
    clickgraph: {
       directory: module.resolve('static/clickgraphs/'),

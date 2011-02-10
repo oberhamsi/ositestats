@@ -2,7 +2,7 @@
 var {Site, Hit, HitAggregate, Distribution, keyToDate, dateToKey} = require('./model');
 var {clickGraph} = require('./clickgraph');
 var config = require('./config');
-var log = require('ringo/logging').getLogger('cron');
+var log = require('ringo/logging').getLogger(module.id);
 
 /**
  * Returns the first timeKey for which the given entity has
@@ -79,4 +79,4 @@ exports.updateClickGraph = function() {
 	}
 	log.info('[cron] > done');
 	return;
-}
+};

@@ -41,6 +41,13 @@ var crons = crons || {
          require('./cron').updateClickGraph,
          config.stats.update.clickgraph * 1000 * 60
       ),
+   hitQueueProcessor:
+      setInterval(
+         function() {
+            require('./actions').HitQueue.process();
+         },
+         config.stats.update.hitqueue * 1000 * 60
+      ),
 };
 exports.crons = crons;
 
