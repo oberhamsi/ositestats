@@ -14,6 +14,9 @@ var store = exports.store = new Store({
     "driver": "com.mysql.jdbc.Driver",
     "username": "root",
     "password": ""
+}, {
+   maxConnections: 100,
+   cacheSize: 0
 });
 
 /**
