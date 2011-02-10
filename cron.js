@@ -44,12 +44,14 @@ exports.updatestats = function() {
             var startKey = getTodoKey(entity, duration, site);
             if (!startKey) continue;
 
-            // increase key by duration and `create` dist & agg for each key
+            // increase key by duration and create dist & agg for each key
             // until we are at current time.
             var currentKey = startKey;
             var currentDate = keyToDate(startKey);
             var now = dateToKey(new Date(), duration);
             while (currentKey <= now) {
+               // FIXME sqlstorebug must print site
+               log.info('cron for site ', site);
                var item = entity.create(currentKey, site);
                log.info('[cron] created/updated {}', item);
                if (duration === 'day') {
@@ -62,18 +64,6 @@ exports.updatestats = function() {
          }
       }
    } // each site
-
-   // check if hits of last month are still in Hit model
-   // if yes we move them into HitMMMM model.
-   /*
-   var lastMonth = new Date();
-   lastMonth.setMonth(lastMonth.getMonth()-1);
-   var monthKey = dateToKey(lastMonth, 'month');
-   if (Hit.query().equals('month', monthKey).select().length > 0) {
-      Hit.archive(monthKey);
-      log.info('archived ' +  monthKey + ' hits');
-   }
-   */
    log.info('[cron] >done');
    return;
 };

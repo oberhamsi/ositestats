@@ -3,15 +3,23 @@ var strings = require('ringo/utils/strings');
 var {ByteString} = require('binary');
 var {Response} = require('ringo/webapp/response');
 var {Request} = require('ringo/webapp/request');
+var objects = require('ringo/utils/objects');
+
 // custom
 var {Site, Hit, HitAggregate, Distribution, dateToKey, extractDomain} = require('./model');
+var {getMovingAverages, getAverage} = require('./helpers');
 var config = require('./config');
-var objects = require('ringo/utils/objects');
 
 var COOKIE_NAME = 'ositestats';
 
 /**
  * Main action logging a Hit. Redirects to /blank if hit was registered.
+ 
+ * The request must pass the following checks before it is registered:
+ *    * non-bot User-Agent header
+ *    * Referer header set
+ *    * site query parameter
+ *    * Referer url machtes a domain registered for that site
  */
 exports.hit = function(req) {
    var req = new Request(req);
@@ -47,7 +55,6 @@ exports.hit = function(req) {
       return ignoreResponse;
    }
    var siteEntity = matchingSites[0];
-
    // success response redirects to /blank gif
    var redirectResponse = new Response('See other: /blank');
    redirectResponse.status = 302;
@@ -96,47 +103,24 @@ exports.blank = function(req) {
    };
 }
 
-function sum(array) {
-   var s= 0;
-   array.forEach(function(i) {
-      s += i;
-   });
-   return s;
-};
-
-function getMovingAverages(array, len) {
-   var averaged = [];
-   var chunk = [];
-   array.forEach(function(item) {
-      chunk.push(item);
-      if (chunk.length > len) {
-         averaged.push(sum(chunk) / chunk.length);
-         chunk = [];
-      }
-   });
-   return averaged;
-};
-
-
 exports.index = {
    GET: function(req) {
       // output front line
       var sites = Site.query().select();
       sites = sites.map(function(site) {
-         var aggs = HitAggregate.query().
+         var sparkValues = HitAggregate.query().
                equals('duration', 'day').
                equals('site', site).
                orderBy('day desc').
-               select().slice(0,350);
-         aggs.reverse();
-         var sparkValues = [agg.uniques for each (agg in aggs)];
+               select('uniques').slice(0,350);
+         sparkValues.reverse();
          var avgSparkValues = getMovingAverages(sparkValues, 3);
          return {
             title: site.title,
             sparkValues: avgSparkValues.join(','),
             sparkMin: parseInt(Math.min.apply(this, sparkValues), 10),
             sparkMax: parseInt(Math.max.apply(this, sparkValues), 10),
-            sparkAvg: sparkValues && sparkValues.length && parseInt(sparkValues.reduce(function(x,y) { return x+y;}) / sparkValues.length, 10),
+            sparkAvg: getAverage(sparkValues),
          };
       });
 
@@ -170,14 +154,15 @@ exports.stats = function(req, siteKey, timeKey) {
       var now = new Date();
       timeKey = dateToKey(now, 'month');
    }
-   if (timeKey.length === 6) {
+   if (timeKey.length == 6) {
       duration = 'month';
    } else if (timeKey.length == 4){
       duration == 'year'
+   } else {
+      throw new Error('invalid timeKey: ' + timeKey);
    }
 
-   // FIXME I want site.title to be primary so i can do Site.get(title)
-   var site = Site.query().equals('title', siteKey).select()[0]
+   var site = Site.query().equals('title', siteKey).limit(1).select()[0];
 
    var aggregateTimeKeys = HitAggregate.query().
       equals('site', site).
@@ -191,7 +176,9 @@ exports.stats = function(req, siteKey, timeKey) {
    }, require('./macros'),require('ringo/skin/filters')));
 };
 
-
+/**
+ * @returns aggregated hits & uniques in json
+ */
 exports.aggregatedata = function(req, siteKey, timeKey) {
    var siteKey = siteKey || req.params.siteKey;
    var timeKey = timeKey || req.params.timeKey;
@@ -207,16 +194,21 @@ exports.aggregatedata = function(req, siteKey, timeKey) {
    } else if (timeKey.length == 4){
       aggregateDuration = "month";
       duration = 'year'
+   } else {
+      throw new Error('invalid timeKey: ' + timeKey);
    }
 
-   var site = Site.query().equals('title', siteKey).select()[0];
+   var site = Site.query().
+      equals('title', siteKey).
+      limit(1).
+      select()[0];
 
    var hitAggregates = HitAggregate.query().
-         equals('duration', aggregateDuration).
-         equals(duration, timeKey).
-         equals('site', site).
-         orderBy(duration + ' desc').
-         select();
+      equals('duration', aggregateDuration).
+      equals(duration, timeKey).
+      equals('site', site).
+      orderBy(duration + ' desc').
+      select('*');
 
    hitAggregates.sort(function(a, b) {
       return a[aggregateDuration] - b[aggregateDuration];
@@ -230,9 +222,7 @@ exports.aggregatedata = function(req, siteKey, timeKey) {
 }
 
 /**
- * Returns distribution data for the given key and month. Use by
- * stats skin to load distribution via ajax.
- *
+ * @returns distribution data as json.
  */
 exports.distributiondata = function(req, siteKey, distributionKey, timeKey) {
    var siteKey = siteKey || req.params.site;
@@ -243,15 +233,15 @@ exports.distributiondata = function(req, siteKey, distributionKey, timeKey) {
       timeKey = dateToKey(now, 'month');
    }
 
-   var site = Site.query().equals('title', siteKey).select()[0];
+   var site = Site.query().equals('title', siteKey).limit(1).select()[0];
 
    var distributions = Distribution.query().
       equals('duration', 'month').
       equals('key', distributionKey).
       equals('month', timeKey).
       equals('site', site).
-      select();
-
+      select('*');
+      
    distributions.sort(function(a, b) {
       if (a.day < b.day) return 1;
       return -1;

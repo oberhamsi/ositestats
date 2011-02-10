@@ -2,7 +2,7 @@ var numbers = require('ringo/utils/numbers');
 var $f = require('ringo/utils/strings').format;
 
 export('Hit', 'HitAggregate', 'Distribution', 'Site', 'dateToKey', 'keyToDate');
-
+var {unique} = require('./helpers');
 var {store} = require('./config');
 
 var MAPPING_SITE = {
@@ -10,6 +10,24 @@ var MAPPING_SITE = {
    properties: {
       title: {type: 'string'},
       domain: {type: 'string'},
+      
+      /**
+       without accessName it's easier to query()
+      aggregates: {
+         type: 'collection',
+         entity: 'HitAggregate',
+         localProperty: 'id',
+         foreignProperty: 'site',
+      },
+      
+      distributions: {
+         type: 'collection',
+         entity: 'Distribution',
+         localProperty: 'id',
+         foreignProperty: 'site',
+      },
+      **/
+      
    }
 };
 
@@ -85,17 +103,20 @@ Site.prototype.getDomains = function() {
 var Distribution = store.defineEntity('Distribution', MAPPING_DISTRIBUTION);
 
 Distribution.getNewest = function(site, duration) {
-   return Distribution.query().equals('site', site).equals('duration', duration).orderBy('month desc').limit(1).select()[0];
-}
+   return Distribution.query().
+         equals('site', site).
+         equals('duration', duration).
+         orderBy('month desc').
+         limit(1).
+         select()[0];
+};
 
 
 /**
  * String rep
  */
 Distribution.prototype.toString = function() {
-
-   return $f("[Distribution: {} {}, {}",
-         this.key, this[this.duration], this.site);
+   return $f("[Distribution: {} {}, {}", this.key, this[this.duration], this.site);
 };
 
 /**
@@ -152,7 +173,7 @@ Distribution.create = function(monthKey, site) {
    var hits = Hit.query().
       equals('month', monthKey).
       equals('site', site).
-      select();
+      select('*');
    var date = keyToDate(monthKey);
    var newDistributions = [];
    var hitsCount = hits.length;
@@ -169,7 +190,7 @@ Distribution.create = function(monthKey, site) {
             if (counter[distributionKey] === undefined) counter[distributionKey] = 0;
             counter[distributionKey]++;
 
-            usedUniques[hit.unique] = 1;
+            usedUniques[hit.unique] = true;
          }
       }
 
@@ -188,6 +209,7 @@ Distribution.create = function(monthKey, site) {
          equals('month', monthKey).
          equals('key', key).
          equals('site', site).
+         limit(0).
          select()[0] || new Distribution();
 
       distribution.site = site;
@@ -209,7 +231,12 @@ Distribution.create = function(monthKey, site) {
 var HitAggregate = store.defineEntity('HitAggregate', MAPPING_HITAGGREGATE);
 
 HitAggregate.getNewest = function(site, duration) {
-   return HitAggregate.query().equals('site', site).equals('duration', duration).orderBy('day desc').limit(1).select()[0];
+   return HitAggregate.query().
+      equals('site', site).
+      equals('duration', duration).
+      orderBy('day desc').
+      limit(1).
+      select()[0];
 }
 
 Object.defineProperty(HitAggregate.prototype, 'starttime', {
@@ -232,7 +259,7 @@ HitAggregate.prototype.toString = function() {
  */
 HitAggregate.prototype.serialize = function() {
    return {
-      site: this.site,
+      site: this.site.title,
       duration: this.duration,
       day: this.day,
       month: this.month,
@@ -248,33 +275,27 @@ HitAggregate.prototype.serialize = function() {
 HitAggregate.create = function(dayOrMonth, site) {
    var keyDayOrMonth = dayOrMonth.length === 6 ? 'month' : 'day';
    var otherKey = dayOrMonth.length === 6 ? 'day' : 'month';
-   var hits = Hit.query().
+   var uniquesOfHits = Hit.query().
       equals(keyDayOrMonth, dayOrMonth).
       equals('site', site).
-      select();
+      select('unique');
 
    var uCount = 0;
-   var uniques = {};
-   // TODO replace with `distinct(unique)` sql
-   for each (var hit in hits) {
-      if (!uniques[hit.unique]) {
-         uniques[hit.unique] = true;
-         uCount++;
-      }
-   }
+   var uniqueList = unique(uniquesOfHits);
 
    var date = keyToDate(dayOrMonth);
    var hitAggregate = HitAggregate.query().
       equals('duration', keyDayOrMonth).
       equals(keyDayOrMonth, dayOrMonth).
       equals('site', site).
+      limit(1).
       select()[0] || new HitAggregate();
 
    hitAggregate.site = site;
    hitAggregate.duration = keyDayOrMonth;
    hitAggregate.year = dateToKey(date, 'year');
-   hitAggregate.uniques = uCount;
-   hitAggregate.hits = hits.length;
+   hitAggregate.uniques = uniqueList.length;
+   hitAggregate.hits = uniquesOfHits.length;
 
    hitAggregate[keyDayOrMonth] = dayOrMonth;
    hitAggregate[otherKey] = dateToKey(date, otherKey);

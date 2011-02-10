@@ -16,7 +16,7 @@ function clickGraph(dayOrMonth, site) {
    var hits = Hit.query().
       equals(keyDayOrMonth, dayOrMonth).
       equals('site', site).
-      select();
+      select('*');
 	var graph = {}; // {page: 'xy', hits: 4, referers: ['abc': 5, 'def': 7]}
 	var maxRefs = 0;
 	hits.forEach(function(hit) {
