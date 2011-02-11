@@ -97,17 +97,11 @@ A unique browsing device identified by either a cookie (most of the time) or IP/
 
 ### Page
 
-Content requested by the User - one request to the counter path as used by Tracking Code (see below).
+Content requested by the User; i.e. one request to the counter path as used by the Tracking Code (see JavaScript code below).
 
 ### UserAgent, Referrer
 
-The distribution of UserAgents and Referers. While this is straight forward for UserAgents (a Unique always has, per definition, only one UserAgent) this is weirder for Referers:
-
-Each Unique can only contribute one Referer per aggregation although he might really have come from several different sources within that timespan. The overall trend should stay the same but this gets more vague the larger the timespan.
-
-Yet, on small timescales (days to 1 month) this removes the inflation of Users who come repeatedly from an unusal source like their email, a certain news article or twitter instead of google-ing or entering the domain directly.
-
-This results in the more interesting statistic for Referers: how many new Uniques did you get from a particular site.
+The distribution of UserAgents and Referers. While this is straight forward for UserAgents (a Unique always has, per definition, only one UserAgent) this is weirder for Referers: each Unique can only contribute one Referer per aggregation (this is an arbirtary restriction imposed by ositestats for a certain effect, read on) although that unique might really have come from several different sources on different occassions within the distribution's timespan.
 
 JSON API
 -----------
