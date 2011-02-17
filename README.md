@@ -1,14 +1,12 @@
 ositestats
 ============
 
-A website tracking server for RingoJs.
-
-<img src="https://github.com/oberhamsi/ositestats/wiki/ositestats_what_you_get.png" alt="Interface ScreenShot" />
+A website tracking and statistics application for RingoJs.org
 
 Install
 ----------
 
-You need: Java, mysql-server
+You need: Java, mysql-server5+
 
 Install RingoJs
 
@@ -28,11 +26,11 @@ Create `config.js` using `config-example.js` as a template:
     cp config-example.js config.js
     nano config.js
 
-Create an empty database for ositestats and adapt mySQL settings in `config.js`
+Create an empty database for ositestats and adapt mySQL settings in `config.js`.
 
 Optional: Clickgraph
 ---------------------
-The clickgraph shows the most often used paths through your website
+The clickgraph shows the most often used paths through your website. This component is optional.
 
 Install graphviz
 
@@ -64,9 +62,10 @@ Tracking Code
 
 Insert this at bottom of html files to trigger a count request for that page:
 
-    // Adapt:
-    //   * COUNTER_DOMAIN
-    //   * SITE_NAME
+    // You MUST change the following two variables to match
+    // your setup:
+    //   * 'stats.example.com' (COUNTER_DOMAIN)
+    //   * 'examplesite' (SITE_NAME)
     //
     <script type="text/javascript">
       (function() {
@@ -89,8 +88,6 @@ About Website Statistics
 
 They can help you answer questions. They can not be read as hard facts like 'number of users visiting my site'.
 
-If a User has JavaScript disabled then he won't be counted. That is intentional - he probably does not want to be counted. Why else would anyone disable JavaScript.
-
 ### Unique
 
 A unique browsing device identified by either a cookie (most of the time) or IP/UserAgent combination. Note that
@@ -100,17 +97,11 @@ A unique browsing device identified by either a cookie (most of the time) or IP/
 
 ### Page
 
-Content requested by the User - one request to the counter path as used by Tracking Code (see below).
+Content requested by the User; i.e. one request to the counter path as used by the Tracking Code (see JavaScript code below).
 
 ### UserAgent, Referrer
 
-The distribution of UserAgents and Referers. While this is straight forward for UserAgents (a Unique always has, per definition, only one UserAgent) this is weirder for Referers:
-
-Each Unique can only contribute one Referer per aggregation although he might really have come from several different sources within that timespan. The overall trend should stay the same but this gets more vague the larger the timespan.
-
-Yet, on small timescales (days to 1 month) this removes the inflation of Users who come repeatedly from an unusaly source like their email, a certain news article or twitter instead of google-ing or entering the domain directly.
-
-IMO this results in the more interesting statistic for Referers: how many new Uniques did you get from a particular Referrer.
+The distribution of UserAgents and Referers. While this is straight forward for UserAgents (a Unique always has, per definition, only one UserAgent) this is weirder for Referers: each Unique can only contribute one Referer per aggregation (this is an arbirtary restriction imposed by ositestats for a certain effect, read on) although that unique might really have come from several different sources on different occassions within the distribution's timespan.
 
 JSON API
 -----------
