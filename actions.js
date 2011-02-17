@@ -97,7 +97,7 @@ exports.hit = function(req) {
    var unique;
    if (!req.cookies[COOKIE_NAME]) {
       unique = strings.digest(ip + "/" +  Math.random() + "/" + userAgent);
-      redirectResponse.setCookie(COOKIE_NAME, unique);
+      redirectResponse.setCookie(COOKIE_NAME, unique, 365);
    } else {
       unique = req.cookies[COOKIE_NAME];
    }
