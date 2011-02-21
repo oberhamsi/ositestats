@@ -9,7 +9,10 @@ var actions = require('./actions');
 var config = require('./config');
 
 var app = Application();
-app.configure('static', 'params', 'route', 'responselog', 'notfound');
+app.configure('static', 'basicauth', 'params', 'route', 'responselog', 'notfound');
+
+// auth
+app.basicauth('/stats', config.stats.user.name, config.stats.user.password_sha1);
 
 // dashboard
 app.get('/', actions.index.GET);

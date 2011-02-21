@@ -23,6 +23,11 @@ var store = exports.store = new Store({
  * Statistic settings
  */
 exports.stats = {
+   user: {
+      name: 'stats',
+      // require('ringo/utils/strings').digest('protected', 'sha1')
+      password_sha1: '964cab4bb4a5111731b0c00dbb43f794698d8731' // 'protected'
+   },
    update: {
       statistics: 30,   // minutes
       clickgraph: 6 * 60,
