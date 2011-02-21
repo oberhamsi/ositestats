@@ -121,7 +121,7 @@ exports.hit = function(req) {
 exports.blank = function(req) {
    return {
       status: 200,
-      headers: {'Content-Type': 'applicaton/x-javascript', 'Connection': 'close'},
+      headers: {'Content-Type': 'application/x-javascript', 'Connection': 'close'},
       body: ['{}'],
    };
 }
