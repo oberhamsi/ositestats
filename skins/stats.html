@@ -1,6 +1,9 @@
-<% extends './base.html' %>
+<html lang="en">
+<head>
+<title>oSiteStats</title>
+<script type="text/javascript" src="/jquery.js"></script>
+<link rel="stylesheet" href="/base.css" />
 
-<% subskin 'head' %>
 <script type="text/javascript" src="/jquery.tmpl.js"></script>
 <script type="text/javascript" src="/main.js"></script>
 <style>
@@ -39,99 +42,65 @@
 </style>
 <script>
    var settings = {
-      site: "<%site%>",
-      timeKey: <% timeKey %>,
+      site: "{{site}}",
+      timeKey: {{timeKey}},
    }
 </script>
 
-<% subskin 'content' %>
-<div >
-   <div style='text-align:center;float:right'>
-   <form action="/" method="GET">
-   <button type="submit">←Dashboard</button>
-   <br/>
-      <select id="timeKey" size=4><% for timeKey in <% timeKeys %> render timeKeyOption %></select>
+</head>
+<body>
+<div id="wrap">
+    <div id="header">
+        <div id="logo">
+        </div>
+    </div>
+    <div id="main">
+   <div >
+      <div style='text-align:center;float:right'>
+      <form action="/" method="GET">
+      <button type="submit">←Dashboard</button>
+      <br/>
+         <select id="timeKey" size=4>
+         {{#timeKeys}}
+            <option value="{{.}}">{{.}}</option>
+         {{/timeKeys}}
+         </select>
+      </form>
+      </div>
 
-   </form>
+      <div id="monthOverview">
+         <h1>            {{site}}, <span id="monthTimeKey"></span>
+         </h1>
+         <p>
+         <span id="monthHits"></span> Pages from <span id="monthUniques"></span> Uniques</span>
+         </p>
+      </div>
+
+      <div id="aggregate" style='background-color:#eeeeee;'>
+
+      </div>
+
+
+      <div class="distributioncontainer">
+         <h3> Clickgraph </h3>
+
+         <a href="/clickgraphs/{{site}}/{{timeKey}}.png">
+            <img id="clickgraph" data-stat-graphpath="/clickgraphs/{{site}}/"
+                  src="/clickgraphs/{{site}}/{{timeKey}}.png"/>
+         </a>
+      </div>
+
+      <div id="distributions">
+
+      </div>
+
    </div>
 
-   <div id="monthOverview">
-      <h1>            <% site %>, <span id="monthTimeKey"></span> 
-      </h1>
-      <p>
-      <span id="monthHits"></span> Pages from <span id="monthUniques"></span> Uniques</span>
-      </p>
-   </div>
-
-   <div id="aggregate" style='background-color:#eeeeee;'>
-
-   </div>
-
-
-   <div class="distributioncontainer">
-      <h3> Clickgraph </h3>
-
-      <a href="/clickgraphs/<% site %>/<% timeKey %>.png">
-         <img id="clickgraph" data-stat-graphpath="/clickgraphs/<% site %>/"
-               src="/clickgraphs/<% site %>/<% timeKey %>.png"/>
-      </a>
-   </div>
-
-   <div id="distributions">
-
-   </div>
-
+    </div>
+    <p>
+    <a href="http://github.com/oberhamsi/ositestats">ositestats</a>
+    </p>
+    </div>
 </div>
-
-<script template="distribution" type="template">
-   <div id="tab-${distributionKey}" style='background-color:#eeeeee;'>
-   <h3>${title}</h3>
-
-   <table>
-      <thead>
-            {{if distributionKey == 'userAgent'}}
-            <td style='text-align:center'>%</td>
-            {{/if}}
-            <td></td>
-            <td></td>
-      </thead>
-      {{each distributions}}
-         <tr>
-            {{if distributionKey == 'userAgent'}}
-            <td>${$item.getPercent($index)}</td>
-            {{/if}}
-            <th>${key}</th>
-            <td>${value}</td>
-         </tr>
-      {{/each}}
-   </table>
-   </div>
-</script>
-
-<script template="aggregate" type="template">
-   <table>
-      <tr>
-      <th></th>
-      <th class="hits"> Pages </th>
-      <th class="uniques"> Uniques </th>
-      </tr>
-      {{each aggregates}}
-      <tr>
-         <th> ${date} </th>
-         <td> ${hits}</td>
-         <td> ${uniques}</td>
-         <td>
-            <div style="width: ${$item.getPixelWidth('hits', $index)}px; height: 5px; {{if weekend}} background-color: #ffcccc;  {{else}} background-color:red {{/if}}">
-            &nbsp;
-            </div>
-            <div style="width: ${$item.getPixelWidth('uniques', $index)}px; height: 5px; {{if weekend}} background-color: #ccccff {{else}} background-color:blue {{/if}}">
-            &nbsp;
-            </div>
-         </td>
-      </tr>
-      {{/each}}
-   </table>
-</script>
-
-<% subskin timeKeyOption %>
-<option value="<% timeKey %>"> <% timeKey | keyToDate | dateFormat "MMM yyyy" %>
+</body>
+</html>

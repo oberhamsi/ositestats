@@ -1,9 +1,11 @@
 // stdlib
 var strings = require('ringo/utils/strings');
 var {ByteString} = require('binary');
-var {Response} = require('ringo/webapp/response');
-var {Request} = require('ringo/webapp/request');
+var Response = require('ringo/jsgi/response');
 var objects = require('ringo/utils/objects');
+var {to_html} = require('ringo/mustache');
+var {read} = require('fs');
+
 var log = require('ringo/logging').getLogger(module.id);
 
 // custom
@@ -18,15 +20,15 @@ var COOKIE_NAME = 'ositestats';
  */
 var HitQueue = exports.HitQueue = {
    entries: [],
-   
+
    add: sync(function(entry) {
       this.entries.push(entry);
    }, this),
-   
+
    splice: sync(function() {
       return this.entries.splice(0);
    }, this),
-   
+
    process: function() {
       log.info('processing HitQueue, length = ', this.entries.length);
       this.splice().forEach(function(hit) {
@@ -37,7 +39,7 @@ var HitQueue = exports.HitQueue = {
 
 /**
  * Main action logging a Hit. Redirects to /blank if hit was registered.
- 
+
  * The request must pass the following checks before it is registered:
  *    * non-bot User-Agent header
  *    * Referer header set
@@ -45,7 +47,6 @@ var HitQueue = exports.HitQueue = {
  *    * Referer url machtes a domain registered for that site
  */
 exports.hit = function(req) {
-   var req = new Request(req);
    var ignoreResponse = {
       status: 401,
       headers: {'Content-Type': 'text/html'},
@@ -147,10 +148,10 @@ exports.index = {
          };
       });
 
-      return Response.skin(module.resolve('skins/dashboard.html'), objects.merge({
+      return Response.html(to_html(read(module.resolve('skins/dashboard.html')), {
          baseUri: config.http.baseUri,
          sites: sites,
-      }, require('./macros')));
+      }));
    },
 
    POST: function(req) {
@@ -191,12 +192,12 @@ exports.stats = function(req, siteKey, timeKey) {
       equals('site', site).
       equals('duration', duration).
       select(duration);
-   return Response.skin(module.resolve('skins/stats.html'), objects.merge({
+   return Response.html(to_html(read(module.resolve('skins/stats.html')), {
       site: siteKey,
       duration: duration,
       timeKey: timeKey,
       timeKeys: aggregateTimeKeys
-   }, require('./macros'),require('ringo/skin/filters')));
+   }) + read(module.resolve('skins/templates.skin')));
 };
 
 /**
@@ -264,7 +265,7 @@ exports.distributiondata = function(req, siteKey, distributionKey, timeKey) {
       equals('month', timeKey).
       equals('site', site).
       select('*');
-      
+
    distributions.sort(function(a, b) {
       if (a.day < b.day) return 1;
       return -1;

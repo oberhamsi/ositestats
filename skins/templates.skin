@@ -1,0 +1,49 @@
+<script template="distribution" type="template">
+   <div id="tab-${distributionKey}" style='background-color:#eeeeee;'>
+   <h3>${title}</h3>
+
+   <table>
+      <thead>
+            {{if distributionKey == 'userAgent'}}
+            <td style='text-align:center'>%</td>
+            {{/if}}
+            <td></td>
+            <td></td>
+      </thead>
+      {{each distributions}}
+         <tr>
+            {{if distributionKey == 'userAgent'}}
+            <td>${$item.getPercent($index)}</td>
+            {{/if}}
+            <th>${key}</th>
+            <td>${value}</td>
+         </tr>
+      {{/each}}
+   </table>
+   </div>
+</script>
+
+<script template="aggregate" type="template">
+   <table>
+      <tr>
+      <th></th>
+      <th class="hits"> Pages </th>
+      <th class="uniques"> Uniques </th>
+      </tr>
+      {{each aggregates}}
+      <tr>
+         <th> ${date} </th>
+         <td> ${hits}</td>
+         <td> ${uniques}</td>
+         <td>
+            <div style="width: ${$item.getPixelWidth('hits', $index)}px; height: 5px; {{if weekend}} background-color: #ffcccc;  {{else}} background-color:red {{/if}}">
+            &nbsp;
+            </div>
+            <div style="width: ${$item.getPixelWidth('uniques', $index)}px; height: 5px; {{if weekend}} background-color: #ccccff {{else}} background-color:blue {{/if}}">
+            &nbsp;
+            </div>
+         </td>
+      </tr>
+      {{/each}}
+   </table>
+</script>
