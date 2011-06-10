@@ -5,9 +5,8 @@ var Response = require('ringo/jsgi/response');
 var objects = require('ringo/utils/objects');
 var {to_html} = require('ringo/mustache');
 var {read} = require('fs');
-
 var log = require('ringo/logging').getLogger(module.id);
-
+var {setCookie} = require('ringo/utils/http');
 // custom
 var {Site, Hit, HitAggregate, Distribution, dateToKey, extractDomain} = require('./model');
 var {getMovingAverages, getAverage} = require('./helpers');
@@ -37,6 +36,17 @@ var HitQueue = exports.HitQueue = {
    }
 };
 
+function cookies(req) {
+    var cookies = new ScriptableMap();
+    var servletCookies = req.env.servletRequest.getCookies();
+    if (servletCookies) {
+        servletCookies.forEach(function(cookie) {
+            cookies[cookie.getName()] = cookie.getValue();
+        });
+    }
+   return cookies;
+}
+
 /**
  * Main action logging a Hit. Redirects to /blank if hit was registered.
 
@@ -53,13 +63,13 @@ exports.hit = function(req) {
       body: ['']
    };
    // drop spiders
-   var userAgent = req.getHeader("User-Agent").toLowerCase();
+   var userAgent = req.headers["user-agent"].toLowerCase();
    if (strings.contains(userAgent, "bot") || strings.contains(userAgent, "spider")) {
       ignoreResponse.body = ['no bots'];
       return ignoreResponse;
    }
    // drop empty referers - hotlinked countpixel
-   var page = req.getHeader('Referer');
+   var page = req.headers.referer;
    if (!page) {
       ignoreResponse.body = ['missing referer'];
       return ignoreResponse;
@@ -80,13 +90,17 @@ exports.hit = function(req) {
    }
    var site = matchingSites[0];
    // success response redirects to /blank gif
-   var redirectResponse = new Response('See other: /blank');
-   redirectResponse.status = 302;
-   redirectResponse.setHeader('Location', '/blank');
-   redirectResponse.setHeader('Content-Type', 'application/x-javascript');
+   var redirectResponse = {
+      body: ['See other: /blank'],
+      headers: {
+         'Location': '/blank',
+         'Content-Type': 'application/x-javascript'
+      },
+      status: 302
+   };
 
    var ip = req.remoteAddress;
-   var forwardedFor = req.getHeader("X-Forwarded-For");
+   var forwardedFor = req.headers["x-forwarded-for"];
    if (forwardedFor != null && typeof(forwardedFor) === "string") {
       if (strings.contains(forwardedFor, ",") === true) {
          ip = forwardedFor.trim().split(/\s*,\s*/)[0];
@@ -96,11 +110,11 @@ exports.hit = function(req) {
    }
 
    var unique;
-   if (!req.cookies[COOKIE_NAME]) {
+   if (!cookies(req)[COOKIE_NAME]) {
       unique = strings.digest(ip + "/" +  Math.random() + "/" + userAgent);
-      redirectResponse.setCookie(COOKIE_NAME, unique, 365);
+      redirectResponse.headers.setCookie = setCookie(COOKIE_NAME, unique, 365);
    } else {
-      unique = req.cookies[COOKIE_NAME];
+      unique = cookies(req)[COOKIE_NAME];
    }
 
    var now = new Date();
@@ -123,7 +137,7 @@ exports.blank = function(req) {
    return {
       status: 200,
       headers: {'Content-Type': 'application/x-javascript', 'Connection': 'close'},
-      body: ['{}'],
+      body: ['({})'],
    };
 }
 
