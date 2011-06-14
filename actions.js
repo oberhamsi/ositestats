@@ -36,17 +36,6 @@ var HitQueue = exports.HitQueue = {
    }
 };
 
-function cookies(req) {
-    var cookies = new ScriptableMap();
-    var servletCookies = req.env.servletRequest.getCookies();
-    if (servletCookies) {
-        servletCookies.forEach(function(cookie) {
-            cookies[cookie.getName()] = cookie.getValue();
-        });
-    }
-   return cookies;
-}
-
 /**
  * Main action logging a Hit. Redirects to /blank if hit was registered.
 
@@ -110,11 +99,11 @@ exports.hit = function(req) {
    }
 
    var unique;
-   if (!cookies(req)[COOKIE_NAME]) {
+   if (!req.cookies[COOKIE_NAME]) {
       unique = strings.digest(ip + "/" +  Math.random() + "/" + userAgent);
-      redirectResponse.headers.setCookie = setCookie(COOKIE_NAME, unique, 365);
+      redirectResponse.headers['Set-Cookie'] = setCookie(COOKIE_NAME, unique, 365);
    } else {
-      unique = cookies(req)[COOKIE_NAME];
+      unique = req.cookies[COOKIE_NAME];
    }
 
    var now = new Date();

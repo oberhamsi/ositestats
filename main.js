@@ -9,7 +9,7 @@ var actions = require('./actions');
 var config = require('./config');
 
 var app = Application();
-app.configure('static', 'basicauth', 'params', 'route', 'requestlog', 'notfound');
+app.configure('static', 'basicauth', 'cookies', 'params', 'route', 'requestlog', 'notfound');
 
 // auth
 app.basicauth('/stats', config.stats.user.name, config.stats.user.password_sha1);

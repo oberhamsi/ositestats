@@ -10,7 +10,7 @@ var MAPPING_SITE = {
    properties: {
       title: {type: 'string'},
       domain: {type: 'string'},
-      
+
       /**
        without accessName it's easier to query()
       aggregates: {
@@ -19,7 +19,7 @@ var MAPPING_SITE = {
          localProperty: 'id',
          foreignProperty: 'site',
       },
-      
+
       distributions: {
          type: 'collection',
          entity: 'Distribution',
@@ -27,7 +27,7 @@ var MAPPING_SITE = {
          foreignProperty: 'site',
       },
       **/
-      
+
    }
 };
 
