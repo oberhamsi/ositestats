@@ -50,8 +50,6 @@ exports.updatestats = function() {
             var currentDate = keyToDate(startKey);
             var now = dateToKey(new Date(), duration);
             while (currentKey <= now) {
-               // FIXME sqlstorebug must print site
-               log.info('cron for site ', site);
                var item = entity.create(currentKey, site);
                log.info('[cron] created/updated {}', item);
                if (duration === 'day') {
