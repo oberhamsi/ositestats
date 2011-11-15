@@ -33,26 +33,13 @@ app.get('/distributiondata/:siteKey/:distributionKey/:timeKey', actions.distribu
 app.static(module.resolve('./static'));
 
 // cron jobs updating stats
-var crons = crons || {
-   aggregator:
-      setInterval(
-         require('./cron').updatestats,
-         config.stats.update.statistics * 1000 * 60
-      ),
-   clickGraphUpdater:
-      setInterval(
-         require('./cron').updateClickGraph,
-         config.stats.update.clickgraph * 1000 * 60
-      ),
-   hitQueueProcessor:
-      setInterval(
-         function() {
-            require('./actions').HitQueue.process();
-         },
-         config.stats.update.hitqueue * 1000 * 60
-      ),
-};
-exports.crons = crons;
+var engine = require("ringo/engine").getRhinoEngine();
+var cronWorker = engine.getWorker();
+cronWorker.scheduleInterval(config.stats.update.statistics * 1000 * 60, this, require('./cron').updatestats);
+cronWorker.scheduleInterval(config.stats.update.clickgraph * 1000 * 60, this, require('./cron').updateClickGraph);
+var hitQueueWorker = engine.getWorker();
+var HitQueue = require('./actions').HitQueue;
+hitQueueWorker.scheduleInterval(config.stats.update.hitqueue * 1000 * 60, HitQueue , HitQueue.process);
 
 // go!
 var server = server || new Server({port: config.http.port, app: app});
