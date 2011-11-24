@@ -5,9 +5,9 @@ var {Hit} = require('../model');
 var config = require('../config');
 var hitQueue = [];
 
-var onmessage = function(hitData) {
-   if (hitData) {
-      hitQueue.push(hitData);
+var onmessage = function(event) {
+   if (event.data) {
+      hitQueue.push(event.data);
    }
 };
 
@@ -16,10 +16,11 @@ var onmessage = function(hitData) {
 var process = function() {
    if (hitQueue.length) {
       log.info('Processing HitQueue (length={})', hitQueue.length);
+      hitQueue.forEach(function(data) {
+         (new Hit(data)).save();
+      });
    }
-   hitQueue.splice(0).forEach(function(hitData) {
-      (new Hit(hitData)).save();
-   });
+   hitQueue = [];
 };
 
 /**
