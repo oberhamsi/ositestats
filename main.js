@@ -37,11 +37,13 @@ app.static(module.resolve('./static'));
 if (require.main === module) {
    var aggregator = new Worker(module.resolve('./workers/aggregator'));
    // FIXME ringo
+   require('./workers/aggregator');
    aggregator.postMessage();
    config.hitQueue = module.singleton('hitqueue', function() {
       return (new Worker(module.resolve('./workers/hitqueue')));
    });
    // FIXME ringo
+   require('./workers/hitqueue');
    config.hitQueue.postMessage();
    var server = server || new Server({port: config.http.port, app: app});
    server.start();
