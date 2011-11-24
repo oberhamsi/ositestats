@@ -7,34 +7,13 @@ var {to_html} = require('ringo/mustache');
 var {read} = require('fs');
 var log = require('ringo/logging').getLogger(module.id);
 var {setCookie} = require('ringo/utils/http');
+var {Worker} = require('ringo/worker');
 // custom
 var {Site, Hit, HitAggregate, Distribution, dateToKey, extractDomain} = require('./model');
 var {getMovingAverages, getAverage} = require('./helpers');
 var config = require('./config');
 
 var COOKIE_NAME = 'ositestats';
-
-/**
- * hit action puts new hit-data into hitQueue, processed by different thread
- */
-var HitQueue = exports.HitQueue = {
-   entries: [],
-
-   add: sync(function(entry) {
-      this.entries.push(entry);
-   }, this),
-
-   splice: sync(function() {
-      return this.entries.splice(0);
-   }, this),
-
-   process: function() {
-      log.info('processing HitQueue, length = ', this.entries.length);
-      this.splice().forEach(function(hit) {
-         (new Hit(hit)).save();
-      });
-   }
-};
 
 /**
  * Main action logging a Hit. Redirects to /blank if hit was registered.
@@ -45,12 +24,12 @@ var HitQueue = exports.HitQueue = {
  *    * site query parameter
  *    * Referer url machtes a domain registered for that site
  */
+var ignoreResponse = {
+   status: 401,
+   headers: {'Content-Type': 'text/html'},
+   body: ['']
+};
 exports.hit = function(req) {
-   var ignoreResponse = {
-      status: 401,
-      headers: {'Content-Type': 'text/html'},
-      body: ['']
-   };
    // drop spiders
    var userAgent = req.headers["user-agent"].toLowerCase();
    if (strings.contains(userAgent, "bot") || strings.contains(userAgent, "spider")) {
@@ -107,7 +86,7 @@ exports.hit = function(req) {
    }
 
    var now = new Date();
-   HitQueue.add({
+   config.hitQueue.postMessage({
       timestamp: now.getTime(),
       site: site,
       ip: ip,

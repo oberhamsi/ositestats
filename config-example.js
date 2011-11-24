@@ -22,19 +22,19 @@ var store = exports.store = new Store({
 /**
  * Statistic settings
  */
-exports.stats = {
-   user: {
-      name: 'stats',
-      // require('ringo/utils/strings').digest('protected', 'sha1')
-      password_sha1: '964cab4bb4a5111731b0c00dbb43f794698d8731' // 'protected'
-   },
-   update: {
-      statistics: 30,   // minutes
-      clickgraph: 6 * 60,
-      hitqueue: 5
-   },
-   clickgraph: {
-      directory: module.resolve('static/clickgraphs/'),
-      sites: ['example'],
-   },
+exports.auth = {
+   user: 'stats',
+   // require('ringo/utils/strings').digest('protected', 'sha1')
+   password_sha1: '964cab4bb4a5111731b0c00dbb43f794698d8731' // 'protected'
+};
+
+exports.interval = {
+   statistics: 30,      // update aggregation every x minutes
+   clickgraph: 6 * 60,  // redraw clickgraph every x min
+   hitqueue: 5          // write hitqueue to DB every x min
+};
+
+exports.clickgraph: {
+   directory: module.resolve('static/clickgraphs/'),  // must be writable by ringo
+   sites: ['example'],                                // sites for which to create clickgraph
 };

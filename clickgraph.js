@@ -5,13 +5,10 @@ var dates = require('ringo/utils/dates');
 var {Hit, Site, Distribution} = require('./model');
 var config = require('./config');
 
-export('clickGraph');
-
 /**
  * creates a png clickgraph for the given duration & site.
- * see stats.clickgraph in config-example.js
  */
-function clickGraph(dayOrMonth, site) {
+var clickGraph = exports.clickGraph = function (dayOrMonth, site) {
    var keyDayOrMonth = dayOrMonth.length === 6 ? 'month' : 'day';
    var hits = Hit.query().
       equals(keyDayOrMonth, dayOrMonth).
@@ -56,7 +53,7 @@ function clickGraph(dayOrMonth, site) {
 	//dot.push('}');
 	dot.push('}');
 	// does the directory exist?
-	var siteDir = join(config.stats.clickgraph.directory, site.title);
+	var siteDir = join(config.clickgraph.directory, site.title);
 	if (!exists(siteDir)) {
 	   makeDirectory(siteDir);
 	}

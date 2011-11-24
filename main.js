@@ -2,7 +2,8 @@
 var {Application} = require('stick');
 var {Server} = require('ringo/httpserver');
 var {join} = require('fs');
-var {setInterval} = require('ringo/scheduler');
+var {Worker} = require('ringo/worker');
+require("ringo/logging").setConfig(getResource("./log4j.properties"));
 
 // custom
 var actions = require('./actions');
@@ -12,7 +13,7 @@ var app = Application();
 app.configure('static', 'basicauth', 'cookies', 'params', 'route', 'requestlog', 'notfound');
 
 // auth
-app.basicauth('/stats', config.stats.user.name, config.stats.user.password_sha1);
+app.basicauth('/stats', config.auth.user, config.auth.password_sha1);
 
 // dashboard
 app.get('/', actions.index.GET);
@@ -32,15 +33,16 @@ app.get('/distributiondata/:siteKey/:distributionKey/:timeKey', actions.distribu
 // static
 app.static(module.resolve('./static'));
 
-// cron jobs updating stats
-var engine = require("ringo/engine").getRhinoEngine();
-var cronWorker = engine.getWorker();
-cronWorker.scheduleInterval(config.stats.update.statistics * 1000 * 60, this, require('./cron').updatestats);
-cronWorker.scheduleInterval(config.stats.update.clickgraph * 1000 * 60, this, require('./cron').updateClickGraph);
-var hitQueueWorker = engine.getWorker();
-var HitQueue = require('./actions').HitQueue;
-hitQueueWorker.scheduleInterval(config.stats.update.hitqueue * 1000 * 60, HitQueue , HitQueue.process);
-
-// go!
-var server = server || new Server({port: config.http.port, app: app});
-server.start();
+// startup server & aggregator worker
+if (require.main === module) {
+   var aggregator = new Worker(module.resolve('./workers/aggregator'));
+   // FIXME ringo
+   aggregator.postMessage();
+   config.hitQueue = module.singleton('hitqueue', function() {
+      return (new Worker(module.resolve('./workers/hitqueue')));
+   });
+   // FIXME ringo
+   config.hitQueue.postMessage();
+   var server = server || new Server({port: config.http.port, app: app});
+   server.start();
+}

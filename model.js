@@ -84,6 +84,31 @@ var MAPPING_HIT = {
 };
 
 /**
+ * Returns the first timeKey for which the given entity has
+ * Hits to process. This is used by updatestats() to determine
+ * which aggregations need processing.
+ * @param {Prototype} entity either Distribution or HitAggregate
+ * @param {String} duration 'hour' or 'month'
+ */
+var getTodoKey = exports.getTodoKey = function(entity, duration, site) {
+   var item = entity.getNewest(site, duration);
+   var starttime = null;
+
+   if (item) {
+      var hit = Hit.getNewest(site, duration);
+      if (hit && hit[duration] >= item[duration]) {
+         starttime = item[duration];
+      }
+   } else {
+      hit = Hit.getOldest(site);
+      if (hit) starttime = hit[duration];
+   }
+
+   return starttime;
+};
+
+
+/**
  * Site
  */
 var Site = store.defineEntity('Site', MAPPING_SITE);
