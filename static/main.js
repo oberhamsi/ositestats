@@ -29,7 +29,7 @@ function onTimeKeyChange() {
 
    var $tabs = $('#tabs');
    // clear old data
-   $tabs.empty();
+   //$tabs.empty();
 
    // clickgraph img src update
    updateClickGraph(timeKey);
