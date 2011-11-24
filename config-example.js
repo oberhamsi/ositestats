@@ -8,7 +8,7 @@ http.baseUri = 'http://' + http.host + ':' + http.port;
 /**
  * Store settings
  */
-var Store = require("ringo/storage/sql/store").Store;
+var Store = require("ringo/sqlstore").Store;
 var store = exports.store = new Store({
     "url": "jdbc:mysql://localhost/ositestats",
     "driver": "com.mysql.jdbc.Driver",
