@@ -48,10 +48,10 @@ exports.hit = function(req) {
       return ignoreResponse;
    }
 
-   var site = req.params.site;
+   var siteTitle = req.params.site;
    // drop if not one of the domains we count for that site
    var domain = extractDomain(page);
-   var matchingSites = Site.query().equals('title', site).equals('domain', domain).select();
+   var matchingSites = Site.query().equals('title', siteTitle).equals('domain', domain).select();
    if (matchingSites.length <= 0) {
       ignoreResponse.body = ['domain not registered for site ' + site];
       return ignoreResponse;
@@ -88,7 +88,7 @@ exports.hit = function(req) {
    var now = new Date();
    config.hitQueue.postMessage({
       timestamp: now.getTime(),
-      site: site,
+      siteTitle: siteTitle,
       ip: ip,
       userAgent: userAgent,
       unique: unique || null,
