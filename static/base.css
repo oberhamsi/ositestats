@@ -1,5 +1,12 @@
 html{background:white url() no-repeat bottom right;color:black;margin:4em;}
-body{font-weight: light;font-family: "Lucida Grande","Lucida Sans Unicode",sans-serif;margin:1.75emauto;width:40em;line-height:1.75;word-spacing:0.1em;}
+body{
+   font-family: 'Terminal Dosis', sans-serif;
+   margin:1.75em;
+   width:40em;
+   line-height:1.75;
+   word-spacing:0.1em;
+   letter-spacing: 0.05em;
+}
 
 #footer {
    text-align:center;
@@ -9,10 +16,3 @@ select {
    font-size:large;
 }
 
-h3 {
-   text-decoration:underline;
-}
-
-button {
-   font-size:large;
-}

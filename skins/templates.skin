@@ -1,15 +1,13 @@
 <script template="distribution" type="template">
-   <div id="tab-${distributionKey}" style='background-color:#eeeeee;'>
-   <h3>${title}</h3>
-
+   <div id="tab-${distributionKey}" class="tab">
    <table>
+      {{if distributionKey == 'userAgent'}}
       <thead>
-            {{if distributionKey == 'userAgent'}}
             <td style='text-align:center'>%</td>
-            {{/if}}
             <td></td>
             <td></td>
       </thead>
+         {{/if}}
       {{each distributions}}
          <tr>
             {{if distributionKey == 'userAgent'}}
@@ -24,6 +22,7 @@
 </script>
 
 <script template="aggregate" type="template">
+<div id="tab-aggregate" class="tab">
    <table>
       <tr>
       <th></th>
@@ -36,14 +35,15 @@
          <td> ${hits}</td>
          <td> ${uniques}</td>
          <td>
-            <div style="width: ${$item.getPixelWidth('hits', $index)}px; height: 5px; {{if weekend}} background-color: #ffcccc;  {{else}} background-color:red {{/if}}">
+            <div class="hits-statbar{{if weekend}}-weekend{{/if}}" style="width: ${$item.getPixelWidth('hits', $index)}px;">
             &nbsp;
             </div>
-            <div style="width: ${$item.getPixelWidth('uniques', $index)}px; height: 5px; {{if weekend}} background-color: #ccccff {{else}} background-color:blue {{/if}}">
+            <div class="uniques-statbar{{if weekend}}-weekend{{/if}}" style="width: ${$item.getPixelWidth('uniques', $index)}px;">
             &nbsp;
             </div>
          </td>
       </tr>
       {{/each}}
    </table>
+</div>
 </script>

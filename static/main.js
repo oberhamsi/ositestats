@@ -27,18 +27,17 @@ function onTimeKeyChange() {
    var humanReadable = $(this).children("option:selected").text();
    $('#monthTimeKey').html(humanReadable);
 
-   var $distributions = $("#distributions");
-   var $aggregates = $("#aggregate");
+   var $tabs = $('#tabs');
    // clear old data
-   $distributions.empty();
-   $aggregates.empty();
+   $tabs.empty();
 
    // clickgraph img src update
    updateClickGraph(timeKey);
 
    // aggregates hits, uniques
    $.get('/aggregatedata/' + settings.site + '/' + timeKey, function(data) {
-      $aggregates.append(renderAggregateTable(data));
+      $tabs.append(renderAggregateTable(data));
+      $('.tabheading > li:first').trigger('click');
    });
 
    // aggregates hits, uniques for whole month
@@ -51,7 +50,9 @@ function onTimeKeyChange() {
          }
          return false;
       });
-      if (!currentMonthAggregate) return;
+      if (!currentMonthAggregate) {
+         return;
+      }
 
       $("#monthUniques").html(currentMonthAggregate.uniques);
       $("#monthHits").html(currentMonthAggregate.hits);
@@ -61,18 +62,15 @@ function onTimeKeyChange() {
       var UNIQUES = currentMonthAggregate.uniques;
       $.get('/distributiondata/' + settings.site + '/referer/' + timeKey, function(data) {
          data.totalUniques = UNIQUES;
-         data.title = 'Uniques per Traffic Source';
-         $distributions.append(renderDistTable(data, $("table#referer")));
+         $tabs.append(renderDistTable(data, $("table#referer")));
       });
       $.get('/distributiondata/' + settings.site + '/userAgent/' + timeKey, function(data) {
          data.totalUniques = UNIQUES;
-         data.title = 'Uniques per Browser, OS combination';
-         $distributions.append(renderDistTable(data, $("table#useragents")));
+         $tabs.append(renderDistTable(data, $("table#useragents")));
       });
       $.get('/distributiondata/' + settings.site + '/page/' + timeKey, function(data) {
          data.totalUniques = UNIQUES;
-         data.title = 'Top Requested Pages';
-         $distributions.append(renderDistTable(data, $("table#page")));
+         $tabs.append(renderDistTable(data, $("table#page")));
       });
 
    });
@@ -136,7 +134,7 @@ function renderAggregateTable(data) {
          aggregates: aggData
       }, {
       getPixelWidth: function(key, idx) {
-         return parseInt(this.data.aggregates[idx][key] / maxValue * MAX_WIDTH, 10)
+         return parseInt(this.data.aggregates[idx][key] / maxValue * MAX_WIDTH, 10);
       },
    });
 };

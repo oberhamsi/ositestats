@@ -2,29 +2,40 @@
 <head>
 <title>oSiteStats</title>
 <script type="text/javascript" src="/jquery.js"></script>
+<link href='http://fonts.googleapis.com/css?family=Terminal+Dosis' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="/base.css" />
-
 <style>
-   td {
-      text-align:right;
-      min-width: 40px;
+   .site-container {
+      text-align:center;
+      background-color:#eeeeee;
+      width: 400px;
+      height: 120px;
    }
-   th {
-      text-align:right;
+   div.site-link {
+      float:right;
+      width: 50px;
+      background-color: #b50067;
+      color:white;
+      height: 120px;
+   }
+   div.site-link:hover {
+      background-color:#ff0090;
+      cursor:pointer;
    }
 </style>
 <script type="text/javascript" src="/jquery.sparkline.js"></script>
 <script>
    $(document).ready(function() {
       $('.sparkline').sparkline('html', {
-      fillColor: 'blue',
-	defaultPixelsPerValue: 2,
-	minSpotColor: false,
-	spotColor: false,});
-      $('.counterlink').click(function() {
-         var $link = $(this);
-         $('textarea[site=' + $link.attr('site') + ']').toggle();
-      });
+         fillColor: '#3c80b5',
+         lineColor: '#3c80b5',
+	      defaultPixelsPerValue: 3,
+	      minSpotColor: false,
+	      spotColor: false
+	   });
+	   $('div.site-link').click(function(){
+	      document.location.href = $(this).data('detailhref');
+	   });
    });
 </script>
 
@@ -36,28 +47,24 @@
         </div>
     </div>
     <div id="main">
-      <h1> Dashboard</h1>
+      <h1>Uniques per day</h1>
 
       {{#sites}}
-         <div style='text-align:center;background-color:#eeeeee;'>
-            <form action="./stats/{{title}}" method="GET">
-            <button type="submit">{{title}}→</button>
-            </form>
+         <div class="site-container">
+            <div data-detailhref="./stats/{{title}}" class="site-link">
+                  <span>→</span>
+            </div>
 
+            <h2>{{title}}</h2>
             <p>
              <span class='sparkline'>{{sparkValues}}</span><br/>
             {{sparkAvg}} Ø
-            <br/>
+            &nbsp;
             {{sparkMax}} max
-               <!---
-               <a href="#" class="counterlink" site="<% site.title | escapeHtml %>">show counter code</a>
-               <br/>
-               <% render counterCode %>
-               --->
             </p>
          </div>
+         <div style="clear:both"></div>
       {{/sites}}
-      <i>Uniques per day. Last 350 days.
 
     </div>
     <a href="http://github.com/oberhamsi/ositestats">ositestats</a>
@@ -79,19 +86,4 @@
       <input value="create" type="submit"/>
    </form>
 </div>
-
-<textarea id="code" site="<% site.title | escapeHtml %>" style="display:none" cols=80 rows=12>
- <script type="text/javascript">
-   (function() {
-     var stss = document.createElement('script');
-     stss.type = 'text/javascript';
-     stss.async = true;
-     stss.src = '<% baseUri %>/hit/?referer=' + escape(document.referrer) +
-          '&site=<% site.title | escapeHtml %>' +
-          '&random=' + (new Date()).getTime();
-     var s = document.getElementsByTagName('script')[0];
-     s.parentNode.insertBefore(stss, s);
-   })();
- </script>
-</textarea>
 -->

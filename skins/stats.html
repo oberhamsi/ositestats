@@ -1,6 +1,7 @@
 <html lang="en">
 <head>
 <title>oSiteStats</title>
+<link href='http://fonts.googleapis.com/css?family=Terminal+Dosis' rel='stylesheet' type='text/css'>
 <script type="text/javascript" src="/jquery.js"></script>
 <link rel="stylesheet" href="/base.css" />
 
@@ -16,6 +17,7 @@
    }
    td {
       min-width: 50px;
+      height: 1.5em;
    }
    caption {
       font-size: x-large;
@@ -28,14 +30,61 @@
    }
 
    .uniques {
-      border-bottom: blue 3px solid;
+      border-bottom: #3c80b5 3px solid;
    }
    .hits {
-      border-bottom: red 3px solid;
+      border-bottom: #b53b80 3px solid;
+   }
+   
+   .hits-statbar {
+      background-color: #b53b80;
+      height: 5px;
+   }
+   
+   .uniques-statbar {
+      background-color: #3c80b5;
+      height: 5px;
+   }
+   .hits-statbar-weekend {
+      background-color: #b59fac;
+      height: 5px;
+   }
+   
+   .uniques-statbar-weekend {
+      background-color: #9facb5;
+      height: 5px;
    }
 
    .ui-tabs-hide{
      display: none
+   }
+   
+   
+   ul {
+      list-style-type:none;
+      padding: 0px;
+      margin: 0px;
+   }
+   ul.tabheading > li {
+      float: left;
+      margin-right: 0.5em;
+      font-size:large;
+      background-color: #b50067;
+      color: white;
+      padding: 3px;
+   }
+   ul.tabheading > li:hover {
+      cursor:pointer;
+      background-color:#ff0090;
+   }
+   ul.tabheading > li.active {
+      background-color:#ff0090;
+      cursor: auto;
+   }
+   
+   .tab {
+      display:none;
+      margin: 1em;
    }
 
 
@@ -45,58 +94,57 @@
       site: "{{site}}",
       timeKey: {{timeKey}},
    }
+   $(document).ready(function() {
+      $('.tabheading > li').click(function() {
+         $('.tab').hide();
+         $('.tabheading > li').removeClass('active');
+         var $tab = $($(this).data('tab'));
+         $tab.show();
+         $(this).addClass('active');
+      });
+   });
 </script>
 
 </head>
 <body>
 <div id="wrap">
-    <div id="header">
-        <div id="logo">
-        </div>
-    </div>
     <div id="main">
-   <div >
-      <div style='text-align:center;float:right'>
-      <form action="/" method="GET">
-      <button type="submit">←Dashboard</button>
-      <br/>
-         <select id="timeKey" size=4>
+
+      <select id="timeKey" style="display:none" size=4>
          {{#timeKeys}}
             <option value="{{.}}">{{.}}</option>
          {{/timeKeys}}
-         </select>
-      </form>
-      </div>
+      </select>
 
       <div id="monthOverview">
-         <h1>            {{site}}, <span id="monthTimeKey"></span>
-         </h1>
+         <h1> {{site}} </h1>
          <p>
          <span id="monthHits"></span> Pages from <span id="monthUniques"></span> Uniques</span>
          </p>
       </div>
+   
+      <ul class="tabheading">
+         <li data-tab="#tab-aggregate"> Daily Pages/Uniques </li>
+         <li data-tab="#clickgraph"> Clickgraph </li>
+         <li data-tab="#tab-userAgent"> Browser/OS </li>
+         <li data-tab="#tab-referer"> Traffic sources </li>
+         <li data-tab="#tab-page"> Top Pages</li>
+      </ul>
+      <div style="clear:both"></div>
+      
+      <div id="tabs">
+      
+         <div id="clickgraph" class="tab distributioncontainer">
+            <h3> Clickgraph </h3>
 
-      <div id="aggregate" style='background-color:#eeeeee;'>
+            <a href="/clickgraphs/{{site}}/{{timeKey}}.png">
+               <img id="clickgraph" data-stat-graphpath="/clickgraphs/{{site}}/"
+                     src="/clickgraphs/{{site}}/{{timeKey}}.png"/>
+            </a>
+         </div>
 
       </div>
 
-
-      <div class="distributioncontainer">
-         <h3> Clickgraph </h3>
-
-         <a href="/clickgraphs/{{site}}/{{timeKey}}.png">
-            <img id="clickgraph" data-stat-graphpath="/clickgraphs/{{site}}/"
-                  src="/clickgraphs/{{site}}/{{timeKey}}.png"/>
-         </a>
-      </div>
-
-      <div id="distributions">
-
-      </div>
-
-   </div>
-
-    </div>
     <p>
     <a href="http://github.com/oberhamsi/ositestats">ositestats</a>
     </p>
