@@ -45,7 +45,7 @@ var updateStats = function() {
 var updateClickgraph = function() {
    for each (var site in Site.query().select()) {
       var siteKey = site.title;
-		if (config.stats.clickgraph.sites.indexOf(siteKey) != -1) {
+		if (config.clickgraph.sites.indexOf(siteKey) != -1) {
 			clickGraph(dateToKey(new Date(), 'month'), site);
 			log.info('Clickgraph written for ' + siteKey);
 		}
@@ -56,6 +56,19 @@ var updateClickgraph = function() {
 /**
  *
  */
-setInterval(updateStats, config.interval.statistics * 1000);
-setInterval(updateClickgraph, config.interval.clickgraph * 1000);
+setInterval(function() {
+   try {
+      updateStats();
+   } catch (e) {
+      log.error (e);
+   }
+}, config.interval.statistics * 1000);
+
+setInterval(function() {
+   try {
+      updateClickgraph();
+   } catch (e) {
+      log.error (e);
+   }
+}, config.interval.clickgraph * 1000);
 log.info('Started');
