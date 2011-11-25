@@ -8,11 +8,10 @@ body{
    letter-spacing: 0.05em;
 }
 
-#footer {
-   text-align:center;
-}
 
-select {
-   font-size:large;
+#footer {
+   font-size:small;
+   margin-top: 3em;
+   text-align:right;
 }
 

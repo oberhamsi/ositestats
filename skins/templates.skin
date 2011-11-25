@@ -1,23 +1,12 @@
 <script template="distribution" type="template">
    <div id="tab-${distributionKey}" class="tab">
-   <table>
-      {{if distributionKey == 'userAgent'}}
-      <thead>
-            <td style='text-align:center'>%</td>
-            <td></td>
-            <td></td>
-      </thead>
-         {{/if}}
+      <ul class="distributions">
       {{each distributions}}
-         <tr>
-            {{if distributionKey == 'userAgent'}}
-            <td>${$item.getPercent($index)}</td>
-            {{/if}}
-            <th>${key}</th>
-            <td>${value}</td>
-         </tr>
+         <li>
+            <span title="${$item.getPercent($index)}%" style="font-size:${$item.getSize($index, 15, 250)}px;">${key}</span>
+         </li>
       {{/each}}
-   </table>
+   </ul>
    </div>
 </script>
 

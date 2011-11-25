@@ -82,9 +82,21 @@
       cursor: auto;
    }
    
+   ul.distributions > li {
+      margin: 0px;
+      padding: 0px;
+   }
+   ul.distributions > li > span {
+      margin: 0px;
+      padding: 0px;
+   }
+   
    .tab {
       display:none;
       margin: 1em;
+   }
+   #main {
+      min-height: 400px;
    }
 
 
@@ -135,7 +147,6 @@
       <div id="tabs">
       
          <div id="clickgraph" class="tab distributioncontainer">
-            <h3> Clickgraph </h3>
 
             <a href="/clickgraphs/{{site}}/{{timeKey}}.png">
                <img id="clickgraph" data-stat-graphpath="/clickgraphs/{{site}}/"
@@ -145,9 +156,11 @@
 
       </div>
 
-    <p>
-    <a href="http://github.com/oberhamsi/ositestats">ositestats</a>
-    </p>
+    </div>
+    <div id="footer">
+       <p>
+       power by <a href="http://github.com/oberhamsi/ositestats">ositestats</a>
+       </p>
     </div>
 </div>
 </body>

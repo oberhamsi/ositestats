@@ -103,6 +103,10 @@ function renderDistTable(data) {
       getPercent: function(idx) {
          return String(this.data.distributions[idx].value / data.totalUniques * 100).match(/.?.\.?.?.?/);
       },
+      getSize: function(idx, minSize, maxSize) {
+         var value = Math.max(minSize, (this.data.distributions[idx].value / data.totalUniques) * maxSize);
+         return value;
+      }
    });
 };
 
