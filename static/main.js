@@ -59,17 +59,13 @@ function onTimeKeyChange() {
 
       // inject into distribution data in callback
 
-      var UNIQUES = currentMonthAggregate.uniques;
       $.get('/distributiondata/' + settings.site + '/referer/' + timeKey, function(data) {
-         data.totalUniques = UNIQUES;
          $tabs.append(renderDistTable(data, $("table#referer")));
       });
       $.get('/distributiondata/' + settings.site + '/userAgent/' + timeKey, function(data) {
-         data.totalUniques = UNIQUES;
          $tabs.append(renderDistTable(data, $("table#useragents")));
       });
       $.get('/distributiondata/' + settings.site + '/page/' + timeKey, function(data) {
-         data.totalUniques = UNIQUES;
          $tabs.append(renderDistTable(data, $("table#page")));
       });
 
@@ -91,9 +87,12 @@ function renderDistTable(data) {
    });
 
    var distData = [];
+   var sum = 0;
    keys.forEach(function(k) {
       distData.push({key: k, value: distributions[k]});
+      sum += distributions[k];
    });
+
 
    return $.tmpl('distribution', {
       distributionKey: data.distributionKey,
@@ -101,10 +100,10 @@ function renderDistTable(data) {
       distributions: distData,
    },{
       getPercent: function(idx) {
-         return String(this.data.distributions[idx].value / data.totalUniques * 100).match(/.?.\.?.?.?/);
+         return String(this.data.distributions[idx].value / sum * 100).match(/.?.\.?.?.?/);
       },
       getSize: function(idx, minSize, maxSize) {
-         var value = Math.max(minSize, (this.data.distributions[idx].value / data.totalUniques) * maxSize);
+         var value = Math.max(minSize, (this.data.distributions[idx].value / sum) * maxSize);
          return value;
       }
    });
