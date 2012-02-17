@@ -1,0 +1,30 @@
+{
+    "name": "ositestats",
+    "version": "0.3",
+    "description": "Web analytics server",
+    "keywords": ["metrics", "web"],
+    "homepage": "https://github.com/oberhamsi/ositestats/",
+    "author": {
+        "name": "Simon Oberhammer",
+        "email": "simon@nekapuzer.at",
+        "web": "http://nekapuzer.at"
+    },
+    "contributors": [],
+    "dependencies": {
+        "ringo-sqlstore": ">=0.1.1",
+        "stick": ">=0.1"
+    },
+    "repositories": [{
+        "type": "git",
+        "url": "https://github.com/oberhamsi/ositestats.git"
+    }],
+    "bugs": "http://github.com/oberhamsi/ositestats/issues",
+    "licenses": [{
+        "type": "Apache License Version 2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    }],
+    "engines": {
+        "ringojs": ">= 0.8"
+    },
+    "main": "main.js"
+}

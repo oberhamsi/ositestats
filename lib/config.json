@@ -1,0 +1,22 @@
+{
+  "http": {
+    "host": "127.0.0.1",
+    "port": 8787
+  },
+  "store": {
+    "url":"jdbc:h2:file:data",
+    "driver": "org.h2.Driver"
+  },
+  "auth": {
+    "user": "stats",
+    "password_sha1": "964cab4bb4a5111731b0c00dbb43f794698d8731"
+  },
+  "clickgraph": {
+    "sites": ["example"]
+  },
+  "interval": {
+    "statistics": 30,
+    "clickgraph": 360,
+    "hitqueue": 5
+  }
+}

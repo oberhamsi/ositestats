@@ -1,0 +1,42 @@
+#!/bin/bash
+# -----------------------------------------------------------------------------
+# Start Script for rp (RingoJS package management client)
+#
+# Needs either:
+#  * RINGO_HOME environment variable set
+#  * RingoJS' "bin" directory in the PATH environment variable
+#  * this shell script being linked into RingoJS' "bin" directory
+#
+# -----------------------------------------------------------------------------
+
+function find_ringo_home() {
+    ORIG_PWD="$(pwd -P)"
+    cd "$1/.."
+    echo "$(pwd -P)"
+    # restore original working directory
+    cd "$ORIG_PWD"
+}
+
+DIR="$(dirname "$0")"
+if [ -L $0 ] && [ -e "$DIR/ringo" ]; then
+    # rp is linked into ringo's bin dir, use this one
+    RINGO="$DIR/ringo"
+    export RINGO_HOME="$(find_ringo_home "$DIR")"
+else
+    # check if ringo is in path
+    RINGO=`type -P ringo`
+    if [ -z "$RINGO" ]; then
+        # ringo is not in path - check RINGO_HOME env variable
+        if [ -n "$RINGO_HOME" ]; then
+            RINGO="$RINGO_HOME/bin/ringo"
+        fi
+    fi
+fi
+
+if [ -z "$RINGO" ]; then
+    echo "Unable to find RingoJS."
+    echo "Please set the RINGO_HOME environment variable or add RingoJS to the path."
+    exit 1
+fi
+
+"$RINGO" --verbose ositestats/main $@

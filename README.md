@@ -6,27 +6,18 @@ A website tracking and statistics application for RingoJs.org
 Install
 ----------
 
-You need: Java, mysql-server5+
+Install package and dependancies:
 
-Install RingoJs
+   $ rp install ositestats
 
-    git clone git://github.com/ringo/ringojs.git
-    cd ringojs
-    ant jar
+Create an instance:
 
-for more details on RingoJs installation see <http://ringojs.org/getting_started>
+   $ ositestats create /var/www/foostats/
+   $ nano /var/www/foostats/config.json
+   $ ositestats launch /var/www/footstas/
 
-Install ringo-sqlstore and stick
 
-    ringo-admin install grob/ringo-sqlstore
-    ringo-admin install ringo/stick
 
-Create `config.js` using `config-example.js` as a template:
-
-    cp config-example.js config.js
-    nano config.js
-
-Create an empty database for ositestats and adapt mySQL settings in `config.js`.
 
 Optional: Clickgraph
 ---------------------
