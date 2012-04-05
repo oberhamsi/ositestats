@@ -12,9 +12,9 @@ Install package and dependancies:
 
 Create an instance:
 
-   $ ositestats create /var/www/foostats/
-   $ nano /var/www/foostats/config.json
-   $ ositestats launch /var/www/footstas/
+    $ ositestats create /var/www/foostats/
+    $ nano /var/www/foostats/config.json
+    $ ositestats launch /var/www/footstas/
 
 
 
