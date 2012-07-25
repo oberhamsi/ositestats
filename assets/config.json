@@ -12,6 +12,7 @@
     "password_sha1": "964cab4bb4a5111731b0c00dbb43f794698d8731"
   },
   "clickgraph": {
+    "dot": "~/ositestats/data/usr/bin/dot"
     "sites": ["example"]
   },
   "interval": {
