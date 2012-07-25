@@ -1,0 +1,90 @@
+tr > th {
+      text-align:left;
+   }
+
+   tr > td {
+      text-align: right;
+   }
+   td {
+      min-width: 50px;
+      height: 1.5em;
+   }
+   caption {
+      font-size: x-large;
+      font-weight: bold;
+      padding: 20px 0 0 0;
+   }
+
+   img#clickgraph {
+      width: 700px;
+   }
+
+   .uniques {
+      border-bottom: #3c80b5 3px solid;
+   }
+   .hits {
+      border-bottom: #b53b80 3px solid;
+   }
+
+   .hits-statbar {
+      background-color: #b53b80;
+      height: 5px;
+   }
+
+   .uniques-statbar {
+      background-color: #3c80b5;
+      height: 5px;
+   }
+   .hits-statbar-weekend {
+      background-color: #b59fac;
+      height: 5px;
+   }
+
+   .uniques-statbar-weekend {
+      background-color: #9facb5;
+      height: 5px;
+   }
+
+   .ui-tabs-hide{
+     display: none
+   }
+
+
+   ul {
+      list-style-type:none;
+      padding: 0px;
+      margin: 0px;
+   }
+   ul.tabheading > li {
+      float: left;
+      margin-right: 0.5em;
+      font-size:large;
+      background-color: #b50067;
+      color: white;
+      padding: 3px;
+   }
+   ul.tabheading > li:hover {
+      cursor:pointer;
+      background-color:#ff0090;
+   }
+   ul.tabheading > li.active {
+      background-color:#ff0090;
+      cursor: auto;
+   }
+
+   ul.distributions > li {
+      margin: 0px;
+      padding: 0px;
+   }
+   ul.distributions > li > span {
+      margin: 0px;
+      padding: 0px;
+   }
+
+   .tab {
+      display:none;
+      margin: 1em;
+   }
+   #main {
+      min-height: 400px;
+   }

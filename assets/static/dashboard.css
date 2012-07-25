@@ -1,0 +1,17 @@
+   .site-container {
+      text-align:center;
+      background-color:#eeeeee;
+      width: 400px;
+      height: 120px;
+   }
+   div.site-link {
+      float:right;
+      width: 50px;
+      background-color: #b50067;
+      color:white;
+      height: 120px;
+   }
+   div.site-link:hover {
+      background-color:#ff0090;
+      cursor:pointer;
+   }
