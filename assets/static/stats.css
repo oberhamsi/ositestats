@@ -60,6 +60,7 @@ tr > th {
       margin-right: 0.5em;
       font-size:large;
       background-color: #b50067;
+      border: 3px outset #b50067;
       color: white;
       padding: 3px;
    }

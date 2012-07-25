@@ -9,6 +9,7 @@
       width: 50px;
       background-color: #b50067;
       color:white;
+      border: 3px outset #b50067;
       height: 120px;
    }
    div.site-link:hover {
