@@ -1,7 +1,8 @@
 {
   "http": {
     "host": "127.0.0.1",
-    "port": 8787
+    "port": 8787,
+    "staticDir": null,
   },
   "store": {
     "url":"jdbc:h2:file:data",
