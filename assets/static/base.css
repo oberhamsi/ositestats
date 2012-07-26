@@ -1,7 +1,7 @@
-html{background:white url() no-repeat bottom right;color:black;margin:4em;}
+html{background:white url() no-repeat bottom right;color:black;margin:0em;}
 body{
-   font-family: 'Aldrich', sans-serif;
-   margin:1.75em;
+   font-family: 'UbuntuMono', sans-serif;
+   margin: 40px 0px 0px 60px;
    width:50em;
    line-height:1.75;
    word-spacing:0.1em;

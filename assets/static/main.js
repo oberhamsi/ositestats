@@ -8,11 +8,13 @@ $(document).ready(function() {
    $.template('aggregate', $('[template=aggregate]'));
 
    // user changes drop down time key
-   $('#timeKey').change(onTimeKeyChange);
-   var timeKey = document.location.hash && document.location.hash.substr(1) || settings.timeKey;
-   $('#timeKey').val(timeKey);
-   $('#timeKey').trigger('change');
-
+   $('#timeKeys > div').click(onTimeKeyChange)
+   var timeKey = document.location.hash.length > 1 && document.location.hash.substr(1) || settings.timeKey;
+   if (timeKey) {
+      $('div[data-timekey=' + timeKey + ']').click();
+   } else {
+      $('#timeKeys > div:last-child').click();
+   }
    return;
 });
 
@@ -21,15 +23,14 @@ $(document).ready(function() {
  * timeKey change handler (user changed month in drop down)
  */
 function onTimeKeyChange() {
-   var timeKey = $(this).val();
-   document.location.hash = timeKey;
-
-   var humanReadable = $(this).children("option:selected").text();
-   $('#monthTimeKey').html(humanReadable);
+   var $monthButton = $(this);
+   var timeKey = "" + $monthButton.data('timekey');
+   $('#timeKeys > div').removeClass('active');
+   $monthButton.addClass('active');
+   var activeTab = $('.tabheading > .active').data('tab');
 
    var $tabs = $('#tabs');
-   // clear old data
-   //$tabs.empty();
+   $('#tab-referer, #tab-userAgent, #tab-aggregate, #tag-page').remove();
 
    // clickgraph img src update
    updateClickGraph(timeKey);
@@ -37,7 +38,11 @@ function onTimeKeyChange() {
    // aggregates hits, uniques
    $.get('/aggregatedata/' + settings.site + '/' + timeKey, function(data) {
       $tabs.append(renderAggregateTable(data));
-      $('.tabheading > li:first').trigger('click');
+      if (!activeTab) {
+         $('.tabheading > li:first').trigger('click');
+      } else {
+         $('.tabheading > li[data-tab=' + activeTab + ']').trigger('click')
+      }
    });
 
    // aggregates hits, uniques for whole month
@@ -56,6 +61,7 @@ function onTimeKeyChange() {
 
       $("#monthUniques").html(currentMonthAggregate.uniques);
       $("#monthHits").html(currentMonthAggregate.hits);
+      $("#monthHuman").text($monthButton.text())
 
       // inject into distribution data in callback
 
@@ -68,7 +74,6 @@ function onTimeKeyChange() {
       $.get('/distributiondata/' + settings.site + '/page/' + timeKey, function(data) {
          $tabs.append(renderDistTable(data, $("table#page")));
       });
-
    });
 };
 

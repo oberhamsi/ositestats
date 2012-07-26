@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
 <title>oSiteStats</title>
-<link href='http://fonts.googleapis.com/css?family=Aldrich' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css'>
 <script type="text/javascript" src="/jquery.js"></script>
 <link rel="stylesheet" href="/base.css" />
 <link rel="stylesheet" href="/stats.css"/>
@@ -29,21 +29,21 @@
 <div id="wrap">
     <div id="main">
 
-      <select id="timeKey" style="display:none" size=4>
-         {{#timeKeys}}
-            <option value="{{.}}">{{.}}</option>
-         {{/timeKeys}}
-      </select>
+       <h1> {{site}} </h1>
 
-      <div id="monthOverview">
-         <h1> {{site}} </h1>
-         <p>
-         <span id="monthHits"></span> Pages from <span id="monthUniques"></span> Uniques</span>
-         </p>
+      <div id="timeKeys">
+         {{#timeKeys}}
+            <div data-timekey="{{.}}"><a href="#{{.}}">{{humanDate}}</a></div>
+         {{/timeKeys}}
       </div>
+      <div style="clear:both"></div>
+      <div id="monthOverview">
+         <span id="monthHuman"></span> Total: <span id="monthHits"></span> Pages, <span id="monthUniques"></span> Uniques</span>
+      </div>
+      <hr/>
 
       <ul class="tabheading">
-         <li data-tab="#tab-aggregate"> Daily Pages/Uniques </li>
+         <li data-tab="#tab-aggregate"> Pages & Uniques </li>
          <li data-tab="#clickgraph"> Clickgraph </li>
          <li data-tab="#tab-userAgent"> Browser/OS </li>
          <li data-tab="#tab-referer"> Traffic sources </li>

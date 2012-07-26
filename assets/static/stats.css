@@ -20,19 +20,21 @@ tr > th {
    }
 
    .uniques {
-      border-bottom: #3c80b5 3px solid;
+      border-bottom: #3c80b5 5px solid;
    }
    .hits {
-      border-bottom: #b53b80 3px solid;
+      border-bottom: #b53b80 5px solid;
    }
 
    .hits-statbar {
       background-color: #b53b80;
+      border: 2px outset #b53b80;
       height: 5px;
    }
 
    .uniques-statbar {
       background-color: #3c80b5;
+      border: 2px outset #3c80b5;
       height: 5px;
    }
    .hits-statbar-weekend {
@@ -63,14 +65,15 @@ tr > th {
       border: 3px outset #b50067;
       color: white;
       padding: 3px;
-   }
-   ul.tabheading > li:hover {
       cursor:pointer;
-      background-color:#ff0090;
    }
+   ul.tabheading > li:hover,
    ul.tabheading > li.active {
       background-color:#ff0090;
-      cursor: auto;
+      box-shadow: 0 0 1.5em #ff0090;
+   }
+   ul.tabheading > li.active {
+      border-style: inset;
    }
 
    ul.distributions > li {
@@ -88,4 +91,38 @@ tr > th {
    }
    #main {
       min-height: 400px;
+   }
+
+   #timeKeys > div {
+      float:left;
+      background-color: #b50067;
+      border: 3px outset #b50067;
+      padding: 3px;
+      margin: 2px;
+      width: 50px;
+      font-size: 12px;
+      font-weight:bold;
+      text-align: center;
+      cursor: pointer;
+   }
+   #timeKeys > div:hover,
+   #timeKeys > div.active {
+      background-color:#ff0090;
+      box-shadow: 0 0 1.5em #ff0090;
+   }
+   #timeKeys > div.active {
+      border-style:inset;
+   }
+   #timeKeys > div > a {
+      color: white;
+      text-decoration: none;
+   }
+
+   tr:hover {
+      background-color: #cccccc;
+   }
+
+   #monthOverview {
+      font-size:x-large;
+      font-weight:bold;
    }

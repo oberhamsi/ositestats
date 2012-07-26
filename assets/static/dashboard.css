@@ -1,6 +1,6 @@
    .site-container {
       text-align:center;
-      background-color:#eeeeee;
+      border-bottom: 2px solid #b50067;
       width: 400px;
       height: 120px;
    }
@@ -10,7 +10,7 @@
       background-color: #b50067;
       color:white;
       border: 3px outset #b50067;
-      height: 120px;
+      height: 110px;
    }
    div.site-link:hover {
       background-color:#ff0090;
