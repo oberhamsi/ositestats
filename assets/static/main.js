@@ -6,6 +6,7 @@ $(document).ready(function() {
    // templates
    $.template('distribution', $('[template=distribution]'));
    $.template('aggregate', $('[template=aggregate]'));
+   $.template('agedistribution', $('[template=agedistribution]'));
 
    // user changes drop down time key
    $('#timeKeys > div').click(onTimeKeyChange)
@@ -30,7 +31,7 @@ function onTimeKeyChange() {
    var activeTab = $('.tabheading > .active').data('tab');
 
    var $tabs = $('#tabs');
-   $('#tab-referer, #tab-userAgent, #tab-aggregate, #tag-page').remove();
+   $('#tab-referer, #tab-userAgent, #tab-aggregate, #tab-page, #tab-age').remove();
 
    // clickgraph img src update
    updateClickGraph(timeKey);
@@ -66,14 +67,53 @@ function onTimeKeyChange() {
       // inject into distribution data in callback
 
       $.get('/distributiondata/' + settings.site + '/referer/' + timeKey, function(data) {
-         $tabs.append(renderDistTable(data, $("table#referer")));
+         $tabs.append(renderDistTable(data));
       });
       $.get('/distributiondata/' + settings.site + '/userAgent/' + timeKey, function(data) {
-         $tabs.append(renderDistTable(data, $("table#useragents")));
+         $tabs.append(renderDistTable(data));
       });
       $.get('/distributiondata/' + settings.site + '/page/' + timeKey, function(data) {
-         $tabs.append(renderDistTable(data, $("table#page")));
+         $tabs.append(renderDistTable(data));
       });
+      $.get('/distributiondata/' + settings.site + '/age/' + timeKey, function(data) {
+         $tabs.append(renderAgeDistTable(data));
+      });
+   });
+};
+
+/**
+ * @returns {jQuery} rendered template
+ */
+function renderAgeDistTable(data) {
+
+   var distributions = JSON.parse(data.distributions[0].distributions);
+   var keys = [];
+   for (var key in distributions) {
+      keys.push(key);
+   }
+   keys.sort();
+
+   var distData = [];
+   var sum = 0;
+   var maxValue = 0;
+   keys.forEach(function(k) {
+      distData.push({key: k, value: distributions[k]});
+      maxValue = Math.max(maxValue, distributions[k]);
+      sum += distributions[k];
+   });
+
+   var MAX_WIDTH = 100;
+   return $.tmpl('agedistribution', {
+      distributionKey: data.distributionKey,
+      title: data.title,
+      distributions: distData,
+   },{
+      getPercent: function(idx) {
+         return String(this.data.distributions[idx].value / sum * 100).match(/.?.\.?.?.?/);
+      },
+      getPixelWidth: function(idx) {
+         return parseInt(this.data.distributions[idx].value / maxValue * MAX_WIDTH, 10);
+      },
    });
 };
 
