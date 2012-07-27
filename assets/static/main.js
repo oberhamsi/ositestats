@@ -76,48 +76,35 @@ function onTimeKeyChange() {
 
    loadGraph(timeKey);
 
-   // aggregates hits, uniques
-   $.get('/aggregatedata/' + settings.site + '/' + timeKey, function(data) {
-      $tabs.append(renderAggregateTable(data));
-      if (!activeTab) {
-         $('.tabheading > li:first').trigger('click');
-      } else {
-         $('.tabheading > li[data-tab=' + activeTab + ']').trigger('click')
-      }
-   });
+   // inject distribution data in callback
+   $.get('/alldata/' + settings.site + '/' + timeKey, function(data) {
 
-   // aggregates hits, uniques for whole month
-   $.get('/aggregatedata/' + settings.site + '/' + timeKey.substr(0,4), function(data) {
+      ['referer', 'userAgent', 'page'].forEach(function(key) {
+         $tabs.append(renderDistTable(JSON.parse(data['distributiondata/' + key].body)));
+      });
+      $tabs.append(renderAgeDistTable(JSON.parse(data['distributiondata/age'].body)));
+      $tabs.append(renderAggregateTable(JSON.parse(data['aggregatedata'].body)));
+
+      var yearData = JSON.parse(data['aggregatedata/year'].body);
       var currentMonthAggregate = null;
-      data.aggregates.some(function(aggregate) {
+      yearData.aggregates.some(function(aggregate) {
          if (aggregate.month == timeKey) {
             currentMonthAggregate = aggregate;
             return true;
          }
          return false;
       });
-      if (!currentMonthAggregate) {
-         return;
+      if (currentMonthAggregate) {
+         $("#monthUniques").html(currentMonthAggregate.uniques);
+         $("#monthHits").html(currentMonthAggregate.hits);
+         $("#monthHuman").text($monthButton.text())
       }
 
-      $("#monthUniques").html(currentMonthAggregate.uniques);
-      $("#monthHits").html(currentMonthAggregate.hits);
-      $("#monthHuman").text($monthButton.text())
-
-      // inject into distribution data in callback
-
-      $.get('/distributiondata/' + settings.site + '/referer/' + timeKey, function(data) {
-         $tabs.append(renderDistTable(data));
-      });
-      $.get('/distributiondata/' + settings.site + '/userAgent/' + timeKey, function(data) {
-         $tabs.append(renderDistTable(data));
-      });
-      $.get('/distributiondata/' + settings.site + '/page/' + timeKey, function(data) {
-         $tabs.append(renderDistTable(data));
-      });
-      $.get('/distributiondata/' + settings.site + '/age/' + timeKey, function(data) {
-         $tabs.append(renderAgeDistTable(data));
-      });
+      if (!activeTab) {
+         $('.tabheading > li:first').trigger('click');
+      } else {
+         $('.tabheading > li[data-tab=' + activeTab + ']').trigger('click')
+      }
    });
 };
 
