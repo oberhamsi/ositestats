@@ -14,39 +14,11 @@ Create an instance:
 
     $ ositestats create /var/www/foostats/
     $ nano /var/www/foostats/config.json
-    $ ositestats launch /var/www/footstas/
 
+Launch it:
 
+    $ ositestats serve /var/www/footstas/
 
-
-Optional: Clickgraph
----------------------
-The clickgraph shows the most often used paths through your website. This component is optional.
-
-Install graphviz
-
-    aptitude install graphviz
-
-specifically `/usr/bin/dot` must be present
-
-RingoJs will create directories and files below `static/clickgraphs/`:
-
-    mkdir static/clickgraphs
-    // chmod & chown as necessary
-
-Usage
-----------
-
-Start with
-
-    ringo main.js
-
-The app gives you a dashboard to create new sites that need tracking:
-
-  * Site name - keep to lowercase, alphanums for now `examplesite`
-  * Domain - comma seperated list of TLDs that belong to that site `example.com, a.example.com, b.example.com, example.org`
-
-The list of domains is essential! Count requests must originate from that domain or they are not counted.
 
 Tracking Code
 ----------------
@@ -55,8 +27,9 @@ Insert this at bottom of html files to trigger a count request for that page:
 
     // You MUST change the following two variables to match
     // your setup:
-    //   * 'stats.example.com' (COUNTER_DOMAIN)
-    //   * 'examplesite' (SITE_NAME)
+    //
+    //   * COUNTER_DOMAIN
+    //   * SITE_NAME
     //
     <script type="text/javascript">
       (function() {
@@ -163,7 +136,3 @@ currently supported <DISTRUBITON_KEY>s:
                  }
              ]
          }
-
-#### `/static/clickgraphs/<SITENAME>/<YYYYMM>.png`
-
-ClickGraph png for requested month
