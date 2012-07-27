@@ -3,12 +3,7 @@
  * Main
  */
 var graph = null;
-$(document).ready(function() {
-   // templates
-   $.template('distribution', $('[template=distribution]'));
-   $.template('aggregate', $('[template=aggregate]'));
-   $.template('agedistribution', $('[template=agedistribution]'));
-
+var setupGraph = function() {
    graph = Viva.Graph.graph();
    var layout = Viva.Graph.Layout.forceDirected(graph, {
       springLength : 180,
@@ -34,6 +29,15 @@ $(document).ready(function() {
    });
    renderer.run();
    graphics.graphCenterChanged(300, 250)
+}
+
+$(document).ready(function() {
+   // templates
+   $.template('distribution', $('[template=distribution]'));
+   $.template('aggregate', $('[template=aggregate]'));
+   $.template('agedistribution', $('[template=agedistribution]'));
+
+   setupGraph();
 
    $('#timeKeys > div').click(onTimeKeyChange)
    var timeKey = document.location.hash.length > 1 && document.location.hash.substr(1) || settings.timeKey;
@@ -42,7 +46,6 @@ $(document).ready(function() {
    } else {
       $('#timeKeys > div:last-child').click();
    }
-
    return;
 });
 
@@ -133,10 +136,16 @@ function renderAgeDistTable(data) {
    var distData = [];
    var sum = 0;
    var maxValue = 0;
-   keys.forEach(function(k) {
+   var lastKey = null;
+   keys.forEach(function(k, idx) {
+      k = parseInt(k, 10)
+      for (var missingK = lastKey+1; missingK < k; missingK++) {
+         distData.push({key: missingK, value: 0});
+      }
       distData.push({key: k, value: distributions[k]});
       maxValue = Math.max(maxValue, distributions[k]);
       sum += distributions[k];
+      lastKey = k;
    });
 
    var MAX_WIDTH = 100;

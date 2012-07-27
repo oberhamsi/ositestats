@@ -14,13 +14,10 @@
    <div id="tab-${distributionKey}" class="tab">
       <table>
         <tr>
-         <th>Months</th><th>Uniques</th>
+         <th>Uniques</th><th></th><th>Age <br/>in months</th>
         </tr>
       {{each distributions}}
          <tr>
-            <td>
-             ${key}
-            </td>
             <td>
              ${this.value}
             </td>
@@ -28,6 +25,9 @@
             <div class="age-statbar" style="width: ${$item.getPixelWidth($index)}px;">
             &nbsp;
             </div>
+            </td>
+            <td>
+             ${key}
             </td>
          </tr>
       {{/each}}
