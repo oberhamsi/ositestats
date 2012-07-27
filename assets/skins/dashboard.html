@@ -11,9 +11,10 @@
       $('.sparkline').sparkline('html', {
          fillColor: '#3c80b5',
          lineColor: '#3c80b5',
-	      defaultPixelsPerValue: 3,
-	      minSpotColor: false,
-	      spotColor: false
+	       defaultPixelsPerValue: 1,
+	       minSpotColor: false,
+	       spotColor: false,
+         height: 35
 	   });
 	   $('div.site-link').click(function(){
 	      document.location.href = $(this).data('detailhref');
@@ -38,12 +39,10 @@
             </div>
 
             <h2>{{title}}</h2>
-            <p>
              <span class='sparkline'>{{sparkValues}}</span><br/>
             {{sparkAvg}} Ø
             &nbsp;
             {{sparkMax}} max
-            </p>
          </div>
          <div style="clear:both"></div>
       {{/sites}}
