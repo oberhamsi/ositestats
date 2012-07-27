@@ -134,3 +134,14 @@
       font-size:x-large;
       font-weight:bold;
    }
+
+   #spinner {
+      background: url('/ajax-loader.gif') 30% 10% no-repeat;
+
+      height: 800px;
+      width: 80%;
+      position:absolute;
+      top: 160px;
+      left: 20px;
+      background-color: rgba(255,255,255, 0.9);
+   }

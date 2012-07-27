@@ -73,7 +73,7 @@ function onTimeKeyChange() {
 
    var $tabs = $('#tabs');
    $('#tab-referer, #tab-userAgent, #tab-aggregate, #tab-page, #tab-age').remove();
-
+   $('#spinner').show();
    loadGraph(timeKey);
 
    // inject distribution data in callback
@@ -105,6 +105,7 @@ function onTimeKeyChange() {
       } else {
          $('.tabheading > li[data-tab=' + activeTab + ']').trigger('click')
       }
+      $('#spinner').hide();
    });
 };
 
