@@ -2,13 +2,39 @@
 /**
  * Main
  */
+var graph = null;
 $(document).ready(function() {
    // templates
    $.template('distribution', $('[template=distribution]'));
    $.template('aggregate', $('[template=aggregate]'));
    $.template('agedistribution', $('[template=agedistribution]'));
 
-   // user changes drop down time key
+   graph = Viva.Graph.graph();
+   var layout = Viva.Graph.Layout.forceDirected(graph, {
+      springLength : 180,
+      springCoeff : 0.000005,
+   });
+   var graphics = Viva.Graph.View.svgGraphics();
+   graphics.link(function(node) {
+   var svg = Viva.Graph.svg('line')
+         .attr('stroke', '#999')
+         .attr('stroke-width', Math.max(1, node.data.relativeWeight))
+         .attr("marker-end", "url(#Triangle)");
+      return svg;
+   });
+   graphics.node(function(node) {
+      var svg = Viva.Graph.svg('text')
+         .text(node.id);
+      return svg;
+   });
+   var renderer = Viva.Graph.View.renderer(graph, {
+      layout: layout,
+      graphics: graphics,
+      container: $('#clickgraph')[0]
+   });
+   renderer.run();
+   graphics.graphCenterChanged(300, 250)
+
    $('#timeKeys > div').click(onTimeKeyChange)
    var timeKey = document.location.hash.length > 1 && document.location.hash.substr(1) || settings.timeKey;
    if (timeKey) {
@@ -16,9 +42,21 @@ $(document).ready(function() {
    } else {
       $('#timeKeys > div:last-child').click();
    }
+
    return;
 });
 
+function loadGraph(timeKey) {
+   graph.clear();
+   $.ajax({
+      url: '/clickgraphs/' + settings.site + '/' + timeKey + '.json',
+      success: function(data) {
+         data.links.forEach(function(link) {
+            graph.addLink(link.from, link.to, link);
+         });
+      }
+   });
+}
 
 /**
  * timeKey change handler (user changed month in drop down)
@@ -33,8 +71,7 @@ function onTimeKeyChange() {
    var $tabs = $('#tabs');
    $('#tab-referer, #tab-userAgent, #tab-aggregate, #tab-page, #tab-age').remove();
 
-   // clickgraph img src update
-   updateClickGraph(timeKey);
+   loadGraph(timeKey);
 
    // aggregates hits, uniques
    $.get('/aggregatedata/' + settings.site + '/' + timeKey, function(data) {
@@ -187,12 +224,3 @@ function renderAggregateTable(data) {
    });
 };
 
-/**
- * update clickgraph img src
- */
-function updateClickGraph(timeKey) {
-   $clickgraph = $("#clickgraph");
-   var url = $clickgraph.attr("data-stat-graphpath") + timeKey + ".png";
-   $clickgraph.attr("src", url);
-   return;
-};
