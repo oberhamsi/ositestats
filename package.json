@@ -26,5 +26,8 @@
     "engines": {
         "ringojs": ">= 0.8"
     },
-    "main": "main.js"
+    "main": "./lib/main.js",
+    "directories": {
+        "lib": "lib/"
+    }
 }
