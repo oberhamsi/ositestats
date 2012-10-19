@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block head %}
+<link rel="stylesheet" href="/stats.css"/>
+<script type="text/javascript" src="/vivagraph.min.js"></script>
+<script type="text/javascript" src="/main.js"></script>
+
+{% endblock %}
+
+{% block content %}
+
+       <h1> {{site}} </h1>
+
+      <div id="timeKeys">
+        {% for timeValue in timeKeys %}
+            <div data-timekey="{{timeValue}}" class="{% if timeValue == pageTimeKey %} active {% endif %} "><a href="/stats/{{site}}/{{timeValue}}">{{timeValue}}</a></div>
+        {% endfor %}
+      </div>
+      <div style="clear:both"></div>
+      <div id="monthOverview">
+         Served {{aggregates.monthly.0.hits}} Pages to {{aggregates.monthly.0.uniques}} Uniques
+      </div>
+      <hr/>
+
+      <ul class="tabheading">
+         <li data-tab="#tab-aggregate"> Pages & Uniques </li>
+         <li data-tab="#clickgraph"> Clickgraph </li>
+         <li data-tab="#tab-age"> Unique Age </li>
+         <li data-tab="#tab-userAgent"> Browser/OS </li>
+         <li data-tab="#tab-referer"> Traffic sources </li>
+         <li data-tab="#tab-page"> Top Pages</li>
+      </ul>
+      <div style="clear:both"></div>
+
+      <div id="tabs">
+
+      <div id="tab-aggregate" class="tab">
+         <table>
+            <tr>
+            <th></th>
+            <th class="hits"> Pages </th>
+            <th class="uniques"> Uniques </th>
+            </tr>
+            {% for aggregate in aggregates.daily %}
+            <tr>
+               <th> {{aggregate.day}} </th>
+               <td> {{aggregate.hits}}</td>
+               <td> {{aggregate.uniques}}</td>
+               <td>
+                  <div class="hits-statbar" style="width: {% widthratio aggregate.hits aggregates.monthly.0.hits 5000 %}px;">
+                  &nbsp;
+                  </div>
+                  <div class="uniques-statbar" style="width: {% widthratio aggregate.uniques aggregates.monthly.0.uniques 5000 %}px;">
+                  &nbsp;
+                  </div>
+               </td>
+            </tr>
+            {% endfor %}
+         </table>
+      </div>
+
+        {% for distribution in distributions %}
+         <div id="tab-{{distribution.key}}" class="tab">
+            <table>
+            {% for dist in distribution.data|sortByKey:"value" %}
+               <tr>
+                <td>
+                  {{dist.key}}
+                </td>
+                <td>
+                  {{dist.value}}
+                </td>
+               </tr>
+            {% endfor %}
+          </table>
+         </div>
+         {% endfor %}
+
+         <div id="clickgraph" class="tab distributioncontainer">
+
+         </div>
+
+      </div>
+      <div id="spinner" style="display:none">
+        &nbsp;
+      </div>
+
+    </div>
+    <div id="footer">
+       <p>
+       powered by <a href="http://github.com/oberhamsi/ositestats">ositestats</a>
+       </p>
+    </div>
+
+{% endblock %}

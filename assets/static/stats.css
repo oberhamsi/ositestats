@@ -28,33 +28,6 @@
       border-bottom: #b53b80 5px solid;
    }
 
-   .hits-statbar {
-      background-color: #b53b80;
-      border: 2px outset #b53b80;
-      height: 5px;
-   }
-
-   .uniques-statbar {
-      background-color: #3c80b5;
-      border: 2px outset #3c80b5;
-      height: 5px;
-   }
-   .hits-statbar-weekend {
-      background-color: #b59fac;
-      height: 5px;
-   }
-
-   .uniques-statbar-weekend {
-      background-color: #9facb5;
-      height: 5px;
-   }
-
-   .age-statbar {
-      background-color: #3c80b5;
-      border: 2px outset #3c80b5;
-      height: 5px;
-   }
-
    .ui-tabs-hide{
      display: none
    }
@@ -133,15 +106,4 @@
    #monthOverview {
       font-size:x-large;
       font-weight:bold;
-   }
-
-   #spinner {
-      background: url('/ajax-loader.gif') 30% 10% no-repeat;
-
-      height: 800px;
-      width: 80%;
-      position:absolute;
-      top: 160px;
-      left: 20px;
-      background-color: rgba(255,255,255, 0.9);
    }

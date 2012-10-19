@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <link rel="stylesheet" href="/dashboard.css"/>
+  <script type="text/javascript" src="/jquery.sparkline.js"></script>
+  <script>
+     $(document).ready(function() {
+        $('.sparkline').sparkline('html', {
+           fillColor: '#3c80b5',
+           lineColor: '#3c80b5',
+            defaultPixelsPerValue: 1,
+            minSpotColor: false,
+            spotColor: false,
+           height: 35
+        });
+        $('div.site-link').click(function(){
+           document.location.href = $(this).data('detailhref');
+        });
+     });
+  </script>
+{% endblock %}
+
+{% block content %}
+ <h1>Uniques per day</h1>
+
+      {% for site in sites %}
+         <div class="site-container">
+            <div data-detailhref="./stats/{{site.title}}" class="site-link">
+                  <span>→</span>
+            </div>
+
+            <h2>{{site.title}}</h2>
+             <span class='sparkline'>{{site.sparkValues}}</span><br/>
+            {{site.sparkAvg}} Ø
+            &nbsp;
+            {{site.sparkMax}} max
+         </div>
+         <div style="clear:both"></div>
+      {% endfor %}
+
+    </div>
+    <a href="http://github.com/oberhamsi/ositestats">ositestats</a>
+    </p>
+    </div>
+{% endblock %}
+
+
+<!--
+<div class="siteinfo">
+   <h2> New Site </h2>
+   <form method="POST">
+      Site Name<br/>
+      <input name="newSiteTitle" type="text"><br/>
+      Domains (comma seperated)<br/>
+      <input name="newSiteDomain" type="text" size=50><br/>
+      <input value="create" type="submit"/>
+   </form>
+</div>
+-->
