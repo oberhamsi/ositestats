@@ -31,6 +31,31 @@ var setupGraph = function() {
    graphics.graphCenterChanged(300, 250)
 }
 
+var setupCharts = function() {
+   var days = $('#tab-aggregate table tr th').slice(3).map(function() { return $(this).text()}).get();
+   var pages = $('#tab-aggregate table tr td:nth-child(2)').map(function() { return parseInt($(this).text(), 10)}).get();
+   var uniques = $('#tab-aggregate table tr td:nth-child(3)').map(function() { return parseInt($(this).text(), 10)}).get();
+   pages.reverse();
+   uniques.reverse();
+   days.reverse();
+   console.log(days, uniques)
+   new Ico.LineGraph(
+      "aggregategraph",
+      [pages, uniques],
+      {
+         //labels: {values: days, angle: 90, add_padding: true, grid:false},
+         colors: ['#B53B80', '#3C80B5'],
+         font_size: 10,
+         axis: true,
+         curve_amount: 0,
+         x_padding_left: 40,
+         y_padding_bottom: 40,
+         width: 700,
+         height: 300
+      }
+   );
+}
+
 $(document).ready(function() {
    $('.tabheading > li').click(function() {
       $('.tab').hide();
@@ -40,6 +65,7 @@ $(document).ready(function() {
       $(this).addClass('active');
    });
    setupGraph();
+   setupCharts();
    $('.tabheading > li:first').click();
    return;
 });

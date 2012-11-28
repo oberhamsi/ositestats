@@ -1,8 +1,8 @@
-html{background:white url() no-repeat bottom right;color:black;margin:0em;}
+html{background:#7fc8ff url() no-repeat bottom right;color:black;margin:0em;}
 body{
    font-family: 'UbuntuMono', sans-serif;
    margin: 40px 0px 0px 60px;
-   width:52em;
+   width: 60em;
    line-height:1.75;
    word-spacing:0.1em;
    letter-spacing: 0.05em;
@@ -13,5 +13,10 @@ body{
    font-size:small;
    margin-top: 3em;
    text-align:right;
+}
+
+#content {
+   background-color: white;
+   width: 30em;
 }
 

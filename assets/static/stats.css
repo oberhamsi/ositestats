@@ -15,7 +15,7 @@
       padding: 20px 0 0 0;
    }
 
-   #clickgraph, svg {
+   #clickgraph > svg {
       width: 100%;
       height: 500px;
       border: 1px solid gray;
@@ -43,7 +43,7 @@
       margin-right: 0.5em;
       font-size:large;
       background-color: #b50067;
-      border: 3px outset #b50067;
+      border: 2px outset #b50067;
       color: white;
       padding: 3px;
       cursor:pointer;
@@ -74,27 +74,26 @@
       min-height: 400px;
    }
 
-   #timeKeys > div {
+   #timeKeys > a {
       float:left;
       background-color: #b50067;
-      border: 3px outset #b50067;
+      border: 2px outset #b50067;
       padding: 3px;
       margin: 2px;
-      width: 50px;
       font-size: 12px;
       font-weight:bold;
       text-align: center;
       cursor: pointer;
    }
-   #timeKeys > div:hover,
-   #timeKeys > div.active {
+   #timeKeys > a:hover,
+   #timeKeys > a.active {
       background-color:#ff0090;
       box-shadow: 0 0 1.5em #ff0090;
    }
-   #timeKeys > div.active {
+   #timeKeys > a.active {
       border-style:inset;
    }
-   #timeKeys > div > a {
+   #timeKeys > a {
       color: white;
       text-decoration: none;
    }
@@ -106,4 +105,12 @@
    #monthOverview {
       font-size:x-large;
       font-weight:bold;
+   }
+
+   div.content {
+      background-color: white;
+      padding: 0.5em;
+   }
+   h1 {
+      margin: 0px;
    }

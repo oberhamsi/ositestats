@@ -3,6 +3,8 @@
 {% block head %}
 <link rel="stylesheet" href="/stats.css"/>
 <script type="text/javascript" src="/vivagraph.min.js"></script>
+<script type="text/javascript" src="/raphael-min.js"></script>
+<script type="text/javascript" src="/ico.js"></script>
 <script type="text/javascript" src="/main.js"></script>
 
 {% endblock %}
@@ -13,12 +15,17 @@
 
       <div id="timeKeys">
         {% for timeValue in timeKeys %}
-            <div data-timekey="{{timeValue}}" class="{% if timeValue == pageTimeKey %} active {% endif %} "><a href="/stats/{{site}}/{{timeValue}}">{{timeValue}}</a></div>
+          <a href="/stats/{{site}}/{{timeValue}}" data-timekey="{{timeValue}}" class="{% if timeValue == pageTimeKey %} active {% endif %} ">
+            {{timeValue|keytodate|date:"MMM yyyy"}}
+          </a>
         {% endfor %}
       </div>
       <div style="clear:both"></div>
+
+
+  <div class="content">
       <div id="monthOverview">
-         Served {{aggregates.monthly.0.hits}} Pages to {{aggregates.monthly.0.uniques}} Uniques
+         Served {{aggregates.monthly.0.hits}} pages to {{aggregates.monthly.0.uniques}} unique clients.
       </div>
       <hr/>
 
@@ -35,6 +42,7 @@
       <div id="tabs">
 
       <div id="tab-aggregate" class="tab">
+        <div id="aggregategraph"></div>
          <table>
             <tr>
             <th></th>
@@ -43,17 +51,9 @@
             </tr>
             {% for aggregate in aggregates.daily %}
             <tr>
-               <th> {{aggregate.day}} </th>
+               <th> {{aggregate.day|keytodate|date:"dd"}}.</th>
                <td> {{aggregate.hits}}</td>
                <td> {{aggregate.uniques}}</td>
-               <td>
-                  <div class="hits-statbar" style="width: {% widthratio aggregate.hits aggregates.monthly.0.hits 5000 %}px;">
-                  &nbsp;
-                  </div>
-                  <div class="uniques-statbar" style="width: {% widthratio aggregate.uniques aggregates.monthly.0.uniques 5000 %}px;">
-                  &nbsp;
-                  </div>
-               </td>
             </tr>
             {% endfor %}
          </table>
@@ -77,15 +77,10 @@
          {% endfor %}
 
          <div id="clickgraph" class="tab distributioncontainer">
-
          </div>
-
       </div>
-      <div id="spinner" style="display:none">
-        &nbsp;
-      </div>
-
     </div>
+  </div>
     <div id="footer">
        <p>
        powered by <a href="http://github.com/oberhamsi/ositestats">ositestats</a>
