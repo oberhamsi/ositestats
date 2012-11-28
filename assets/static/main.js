@@ -10,6 +10,7 @@ var setupGraph = function() {
       springCoeff : 0.000005,
    });
    var graphics = Viva.Graph.View.svgGraphics();
+
    graphics.link(function(node) {
    var svg = Viva.Graph.svg('line')
          .attr('stroke', '#999')
@@ -28,6 +29,30 @@ var setupGraph = function() {
       container: $('#clickgraph')[0]
    });
    renderer.run();
+   // Rendering arrow shape is achieved by using SVG markers, part of the SVG
+   // standard: http://www.w3.org/TR/SVG/painting.html#Markers
+   var createMarker = function(id) {
+           return Viva.Graph.svg('marker')
+                      .attr('id', id)
+                      .attr('viewBox', "0 0 10 10")
+                      .attr('refX', "10")
+                      .attr('refY', "5")
+                      .attr('markerUnits', "userSpaceOnUse")
+                      .attr('markerWidth', "30")
+                      .attr('markerHeight', "10")
+                      .attr('stroke', '#999')
+                      .attr('fill', 'white')
+                      .attr('orient', "auto");
+    };
+   window.graphics = graphics;
+
+   var marker = createMarker('Triangle');
+   marker.append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z');
+
+   // Marker should be defined only once in <defs> child element of root <svg> element:
+
+   var defs = graphics.getSvgRoot().append('defs');
+   defs.append(marker);
    graphics.graphCenterChanged(300, 250)
 }
 
