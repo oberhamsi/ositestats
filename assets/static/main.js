@@ -79,30 +79,32 @@ var setupCharts = function() {
       "aggregategraph",
       [pages, uniques],
       {
-         //labels: {values: days, angle: 90, add_padding: true, grid:false},
+         labels: {values: days, angle: -30, add_padding: true, grid:false},
          colors: ['#B53B80', '#3C80B5'],
          font_size: 10,
          axis: true,
-         curve_amount: 0,
+         curve_amount: 5,
          x_padding_left: 40,
-         y_padding_bottom: 40,
-         width: 700,
-         height: 300
+         y_padding_top: 40,
+         y_padding_bottom: 20,
+         width: 800,
+         height: 400,
+	       status_bar: true
       }
    );
 }
 
 $(document).ready(function() {
-   $('.tabheading > li').click(function() {
-      $('.tab').hide();
-      $('.tabheading > li').removeClass('active');
-      var $tab = $($(this).data('tab'));
-      $tab.show();
-      $(this).addClass('active');
-   });
    setupGraph();
    loadGraph(settings.pageTimeKey)
    setupCharts();
+   $('.tabheading > li').click(function() {
+      $('.tab').fadeOut(150);
+      $('.tabheading > li').removeClass('active');
+      var $tab = $($(this).data('tab'));
+      $tab.slideDown(400);
+      $(this).addClass('active');
+   });
    $('.tabheading > li:first').click();
    return;
 });

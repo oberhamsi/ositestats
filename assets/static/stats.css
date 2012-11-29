@@ -16,7 +16,7 @@
    }
 
    #clickgraph > svg {
-      width: 100%;
+      width: 800px;
       height: 500px;
       border: 1px solid gray;
    }
@@ -39,7 +39,6 @@
       margin: 0px;
    }
    ul.tabheading > li {
-      float: left;
       margin-right: 0.5em;
       font-size:large;
       background-color: #b50067;
@@ -47,6 +46,10 @@
       color: white;
       padding: 3px;
       cursor:pointer;
+   }
+   .tabs {
+      float:left;
+      margin: 1em 20px 0px 0px;
    }
    ul.tabheading > li:hover,
    ul.tabheading > li.active {
@@ -104,13 +107,25 @@
 
    #monthOverview {
       font-size:x-large;
-      font-weight:bold;
    }
 
    div.content {
       background-color: white;
       padding: 0.5em;
+      margin: 1em 0em 0em 0em;
+      float:left;
+      min-width:800px;
    }
    h1 {
       margin: 0px;
+      color: white;
+   }
+   .hidden {
+     display:none;
+	}
+
+   .hint {
+      background-color: #7fc8ff;
+      width:100%;
+      display:block;
    }

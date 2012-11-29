@@ -28,28 +28,35 @@
       </div>
       <div style="clear:both"></div>
 
-
-  <div class="content">
-      <div id="monthOverview">
-         Served {{aggregates.monthly.0.hits}} pages to {{aggregates.monthly.0.uniques}} unique clients.
-      </div>
-      <hr/>
-
+<div class="tabs">
       <ul class="tabheading">
-         <li data-tab="#tab-aggregate"> Pages & Uniques </li>
-         <li data-tab="#clickgraph"> Clickgraph </li>
-         <li data-tab="#tab-age"> Unique Age </li>
+         <li data-tab="#tab-aggregate"> Hits & Clients </li>
+         <li data-tab="#clickgraph"> Heatmap </li>
+         <li data-tab="#tab-age"> Client Age </li>
          <li data-tab="#tab-userAgent"> Browser/OS </li>
          <li data-tab="#tab-referer"> Traffic sources </li>
          <li data-tab="#tab-page"> Top Pages</li>
       </ul>
+</div>
+  <div class="content">
+
+
       <div style="clear:both"></div>
 
       <div id="tabs">
 
       <div id="tab-aggregate" class="tab">
+            <div id="monthOverview">
+         Served {{aggregates.monthly.0.hits}} page hits to {{aggregates.monthly.0.uniques}} unique clients.
+      </div>
         <div id="aggregategraph"></div>
-         <table>
+
+        <p>
+         <span class="uniques">Clients</span> and <span class="hits">Hits</span> per day.
+       </p>
+
+
+         <table class="hidden">
             <tr>
             <th></th>
             <th class="hits"> Pages </th>
@@ -67,8 +74,30 @@
 
         {% for distribution in distributions %}
          <div id="tab-{{distribution.key}}" class="tab">
+
+             {% if distribution.key == 'referer' %}
+             <span class="hint">
+              Clients per traffic source. Read example: "x clients were first refered by domain y".
+            </span>
+            {% elif distribution.key == 'page' %}
+              <span class="hint">
+                Pages with most hits.
+              </span>
+              {% endif %}
             <table>
+               <tr><th>
+                 {% if distribution.key == 'age' %}
+                  Age <br>(months)
+                  {% endif %}
+               </th><th>
+                 {% if distribution.key != 'page' %}
+                  Clients<br/>
+                  {% else %}
+                  Hits
+                  {% endif %}
+             </th></tr>
             {% for dist in distribution.data|sortByKey:"value" %}
+
                <tr>
                 <td>
                   {{dist.key}}
@@ -79,18 +108,28 @@
                </tr>
             {% endfor %}
           </table>
+           <span class="hint">
+            {% if distribution.key == 'userAgent' %}
+              Clients per operating system & browser.
+           {% elif distribution.key == 'age' %}
+              Read example: "x clients are y months old".
+             {% endif %}
+           </span>
+
          </div>
          {% endfor %}
 
          <div id="clickgraph" class="tab distributioncontainer">
+       <span class="hint">
+          The top links your clients used. Drag and zoom with mouse.
+        </span>
          </div>
+
       </div>
     </div>
   </div>
-    <div id="footer">
-       <p>
-       powered by <a href="http://github.com/oberhamsi/ositestats">ositestats</a>
-       </p>
-    </div>
+  <div id="footer">
+  Powered by <a href="http://ringojs.org/">RingoJs</a> and <a href="http://github.com/oberhamsi/ositestats">oSiteStats</a>.
+</div>
 
 {% endblock %}

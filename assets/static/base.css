@@ -1,8 +1,8 @@
-html{background:#7fc8ff url() no-repeat bottom right;color:black;margin:0em;}
+html{background:#7fc8ff url() no-repeat bottom right;
+   color:black;margin:0em;}
 body{
    font-family: 'UbuntuMono', sans-serif;
-   margin: 40px 0px 0px 60px;
-   width: 60em;
+   margin: 10px 0px 0px 30px;
    line-height:1.75;
    word-spacing:0.1em;
    letter-spacing: 0.05em;
@@ -11,8 +11,9 @@ body{
 
 #footer {
    font-size:small;
-   margin-top: 3em;
-   text-align:right;
+   padding:1em 0em 0em 0em;
+   text-align:center;
+   clear:both;
 }
 
 #content {
