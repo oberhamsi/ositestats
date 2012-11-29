@@ -77,7 +77,7 @@
 
              {% if distribution.key == 'referer' %}
              <span class="hint">
-              Clients per traffic source. Read example: "x clients were first refered by domain y".
+              Hits per traffic source. Read example: "x hits were first refered by domain y".
             </span>
             {% elif distribution.key == 'page' %}
               <span class="hint">
@@ -90,20 +90,20 @@
                   Age <br>(months)
                   {% endif %}
                </th><th>
-                 {% if distribution.key != 'page' %}
-                  Clients<br/>
-                  {% else %}
+                {% if distribution.key == 'age' %}
+                  Clients
+                {% else %}
                   Hits
-                  {% endif %}
+                {% endif %}
              </th></tr>
-            {% for dist in distribution.data|sortByKey:"value" %}
+            {% for dist in distribution.data|sortByKey:"count" %}
 
                <tr>
                 <td>
-                  {{dist.key}}
+                  {{dist|byKey:distribution.key}}
                 </td>
                 <td>
-                  {{dist.value}}
+                  {{dist|byKey:"count"}}
                 </td>
                </tr>
             {% endfor %}
