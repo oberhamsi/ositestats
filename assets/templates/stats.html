@@ -91,26 +91,35 @@
                   {% endif %}
                </th><th>
                 {% if distribution.key == 'age' %}
-                  Clients
-                {% else %}
-                  Hits
+                  Clients<br/>(count)
                 {% endif %}
              </th></tr>
             {% for dist in distribution.data|sortByKey:"count" %}
 
-               <tr>
-                <td>
-                  {{dist|byKey:distribution.key}}
-                </td>
-                <td>
-                  {{dist|byKey:"count"}}
-                </td>
-               </tr>
+              {% with distPercent=dist.count|percent:distribution.sum %}
+
+                {% if distPercent > 5 %}
+                  <tr class="highpercent" style="font-size:{% widthratio distPercent 100 200 %}">
+                {% elif distPercent < 0.5 %}
+                  <tr class="verylowpercent">
+                {% else %}
+                  <tr class="lowpercent">
+                {% endif %}
+                    <td>{{dist|byKey:distribution.key}}</td>
+                    <td>
+                      {% if distribution.key == 'age' %}
+                         {{dist.count}}
+                      {% else %}
+                          {{distPercent|floatformat:"0"}}%
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endwith %}
             {% endfor %}
           </table>
            <span class="hint">
             {% if distribution.key == 'userAgent' %}
-              Clients per operating system & browser.
+              Clients per operating system &amp; browser.
            {% elif distribution.key == 'age' %}
               Read example: "x clients are y months old".
              {% endif %}
