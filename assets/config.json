@@ -19,6 +19,5 @@
   "interval": {
     "statistics": 30,
     "clickgraph": 360,
-    "hitqueue": 5
   }
 }
