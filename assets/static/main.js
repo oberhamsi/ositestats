@@ -56,18 +56,6 @@ var setupGraph = function() {
    graphics.graphCenterChanged(300, 250)
 }
 
-function loadGraph(timeKey) {
-   graph.clear();
-   $.ajax({
-      url: '/clickgraphs/' + settings.site + '/' + timeKey + '.json',
-      success: function(data) {
-         data.links.forEach(function(link) {
-            graph.addLink(link.from, link.to, link);
-         });
-      }
-   });
-}
-
 var setupCharts = function() {
    var days = $('#tab-aggregate table tr th').slice(3).map(function() { return $(this).text()}).get();
    var pages = $('#tab-aggregate table tr td:nth-child(2)').map(function() { return parseInt($(this).text(), 10)}).get();
@@ -96,7 +84,6 @@ var setupCharts = function() {
 
 $(document).ready(function() {
    setupGraph();
-   loadGraph(settings.pageTimeKey)
    setupCharts();
    $('.tabheading > li').click(function() {
       $('.tab').fadeOut(150);
