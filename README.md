@@ -65,4 +65,6 @@ Content requested by the User; i.e. one request to the counter path as used by t
 
 ### UserAgent, Referrer
 
-The distribution of UserAgents and Referers. While this is straight forward for UserAgents (a Unique always has, per definition, only one UserAgent) this is weirder for Referers: each Unique can only contribute one Referer per aggregation (this is an arbirtary restriction imposed by ositestats for a certain effect, read on) although that unique might really have come from several different sources on different occassions within the distribution's timespan.
+The distribution of UserAgents and Referers.
+
+A Unique can come from several sources within the aggregation timespan but ositestats only counts the first Referer for each Unique. So the Referrer count gives you a top list of domains by which a Unique was *first* refered to you within the given timespan.
