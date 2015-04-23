@@ -2,7 +2,7 @@
   "http": {
     "host": "127.0.0.1",
     "port": 8787,
-    "staticDir": null,
+    "staticDir": null
   },
   "store": {
     "url":"jdbc:h2:file:data",
@@ -18,6 +18,6 @@
   },
   "interval": {
     "statistics": 30,
-    "clickgraph": 360,
+    "clickgraph": 360
   }
 }
