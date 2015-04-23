@@ -15,6 +15,14 @@ Create an instance:
     $ ositestats create /var/www/foostats/
     $ nano /var/www/foostats/config.json
 
+Add a site to track to your instance:
+
+    $ ositestats addiste /var/www/foostats/ example-site example.com
+
+If your site is reachable under multiple domains, you can seperate them with ",". E.g.:
+
+    $ ositestats addiste /var/www/foostats/ example-site example.com,foo.example.com,example.org
+
 Launch it:
 
     $ ositestats serve /var/www/footstas/
